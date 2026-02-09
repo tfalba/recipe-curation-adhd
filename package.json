@@ -1,0 +1,16 @@
+{
+  "name": "recipe-curation-adhd",
+  "private": true,
+  "packageManager": "pnpm@10.29.2",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "tsx": "^4.21.0",
+    "typescript": "~5.9.3"
+  }
+}

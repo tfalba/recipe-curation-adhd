@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --shadow-panel: 0 12px 30px rgba(0,0,0,0.45);
+  --shadow-inset: inset 0 1px 0 rgba(255,255,255,0.06);
+  --shadow-focus: 0 0 0 3px rgba(37,99,235,0.55);
+  --shadow-glow: 0 0 24px rgba(163,230,53,0.25);
+    --color-bg: #0B1220;
+  --color-surface: #111827;
+  --color-surface-2: #0F172A;
+  --color-border: #1F2937;
+  --color-text: #F8FAFC;
+  --color-muted: #94A3B8;
+
+  --color-primary: #2563EB;
+  --color-accent: #A3E635;
+  --color-violet: #7C3AED;
+
+  --color-success: #22C55E;
+  --color-warning: #FBBF24;
+  --color-danger: #F43F5E;
+  --color-info: #38BDF8;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: #0B1220;
+  color: #F8FAFC;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.55);
+  border-radius: 12px;
+}

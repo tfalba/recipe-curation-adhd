@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.env.*
+apps/*/node_modules
+apps/*/dist
+apps/web/.vite
+apps/api/.env
+apps/api/.env.*
