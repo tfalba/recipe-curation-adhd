@@ -29,12 +29,43 @@
 
 body {
   margin: 0;
-  background: #0B1220;
+  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.18), transparent 52%),
+    radial-gradient(circle at 20% 20%, rgba(163, 230, 53, 0.12), transparent 45%),
+    #0B1220;
   color: #F8FAFC;
+  font-family: "Inter", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 :focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.55);
   border-radius: 12px;
+}
+
+.recipe-prose {
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.glow-border {
+  box-shadow: 0 0 0 1px rgba(163, 230, 53, 0.28), 0 0 24px rgba(163, 230, 53, 0.15);
+}
+
+.reduce-motion * {
+  transition-duration: 0ms !important;
+  animation-duration: 0ms !important;
+}
+
+[data-line-spacing="roomy"] .recipe-prose {
+  line-height: 1.8;
+}
+
+[data-line-spacing="normal"] .recipe-prose {
+  line-height: 1.5;
+}
+
+.extra-contrast button:focus-visible,
+.extra-contrast input:focus-visible,
+.extra-contrast textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.6);
 }

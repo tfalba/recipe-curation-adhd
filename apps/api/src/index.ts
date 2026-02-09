@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express from "express";
+import express, { type Request, type Response } from "express";
 import cors from "cors";
 import OpenAI from "openai";
 
@@ -9,13 +9,13 @@ app.use(express.json({ limit: "1mb" }));
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", (_req: Request, res: Response) => res.json({ ok: true }));
 
 // Minimal placeholder endpoint — you’ll replace schema/prompting in Codex
-app.post("/api/transform", async (req, res) => {
+app.post("/api/transform", async (req: Request, res: Response) => {
   try {
-    const { recipeText } = req.body ?? {};
-    if (!recipeText || typeof recipeText !== "string") {
+    const recipeText = typeof req.body?.recipeText === "string" ? req.body.recipeText : null;
+    if (!recipeText) {
       return res.status(400).json({ error: "recipeText is required" });
     }
 
@@ -25,9 +25,10 @@ app.post("/api/transform", async (req, res) => {
       input: `Turn this recipe into: (1) structured ingredients, (2) short chunked steps.\n\n${recipeText}`
     });
 
-    res.json({ output: response.output_text });
-  } catch (err: any) {
-    res.status(500).json({ error: err?.message ?? "Unknown error" });
+    res.json({ output: response.output_text ?? "" });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ error: message });
   }
 });
 
