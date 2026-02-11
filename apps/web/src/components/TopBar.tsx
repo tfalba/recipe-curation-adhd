@@ -19,11 +19,11 @@ export default function TopBar({
     <header className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface/90 px-5 py-4 shadow-panel backdrop-blur">
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/20 text-primary">
-          RQ
+          RG
         </div>
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted">
-            Recipe Quest
+            Recipe Genius
           </p>
           <p className="text-lg font-display font-semibold">
             {recipeTitle}
