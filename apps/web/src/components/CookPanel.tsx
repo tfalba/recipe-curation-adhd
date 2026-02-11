@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { StepData, TimerItem } from "./types";
 import { formatTime } from "./utils";
 
@@ -26,6 +27,16 @@ export default function CookPanel({
   timers,
   showRescue,
 }: CookPanelProps) {
+  const [touchedIngredient, setTouchedIngredient] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!touchedIngredient) {
+      return;
+    }
+    const timeout = window.setTimeout(() => setTouchedIngredient(null), 2000);
+    return () => window.clearTimeout(timeout);
+  }, [touchedIngredient]);
+
   const renderBullet = (text: string) => {
     const names = activeStep.ingredients
       .map((ingredient) => ingredient.name)
@@ -141,11 +152,23 @@ export default function CookPanel({
                   >
                     <button
                       type="button"
+                      onTouchStart={() =>
+                        setTouchedIngredient(
+                          `${ingredient.name}-${ingredient.qty}`
+                        )
+                      }
                       className="text-left text-text focus:outline-none"
                     >
                       {ingredient.name}
                     </button>
-                    <span className="pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-border bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20">
+                    <span
+                      className={`pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-border bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20 ${
+                        touchedIngredient ===
+                        `${ingredient.name}-${ingredient.qty}`
+                          ? "opacity-100"
+                          : ""
+                      }`}
+                    >
                       {ingredient.qty}
                     </span>
                   </li>
