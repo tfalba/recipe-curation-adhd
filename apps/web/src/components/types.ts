@@ -11,7 +11,7 @@ export type StepData = {
   bullets: string[];
   chips: string[];
   timerSeconds: number;
-  needsNow: string[];
+  needsNow: { label: string; type: "ingredient" | "other" }[];
   nextPreview: string[];
   summary: string;
 };

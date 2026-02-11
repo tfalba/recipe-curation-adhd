@@ -14,7 +14,7 @@ export default function ProcessingPanel() {
             Processing
           </p>
           <h3 className="text-xl font-display font-semibold">
-            Parsing -> Structuring -> Simplifying -> Building guide
+            Parsing {'>'} Structuring {'>'} Simplifying {'>'} Building guide
           </h3>
         </div>
         <span className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted">

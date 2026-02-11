@@ -1,4 +1,35 @@
+import { useRef, useState } from "react";
+import { useRecipe } from "../recipe/RecipeContext";
+
 export default function InboxPanel() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [urlMode, setUrlMode] = useState(false);
+  const [urlValue, setUrlValue] = useState("");
+  const [uploadedName, setUploadedName] = useState<string | null>(null);
+  const { recipeText, setRecipeText, generateFromText, status, error } =
+    useRecipe();
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleUploadChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setUploadedName(file ? file.name : null);
+  };
+
+  const handleUrlToggle = () => {
+    setUrlMode((value) => !value);
+  };
+
+  const handleUrlSubmit = () => {
+    if (!urlValue.trim()) {
+      return;
+    }
+    setUploadedName(`URL: ${urlValue.trim()}`);
+    setUrlMode(false);
+  };
+
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -12,22 +43,65 @@ export default function InboxPanel() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted">
+          <button
+            onClick={handleUrlToggle}
+            className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
+          >
             Paste URL
           </button>
-          <button className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted">
+          <button
+            onClick={handleUploadClick}
+            className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
+          >
             Upload
           </button>
         </div>
       </div>
+      {urlMode ? (
+        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-surface-2 p-3">
+          <input
+            value={urlValue}
+            onChange={(event) => setUrlValue(event.target.value)}
+            className="min-h-[44px] flex-1 bg-transparent px-3 text-sm text-text focus:outline-none"
+            placeholder="Paste a recipe URL..."
+          />
+          <button
+            onClick={handleUrlSubmit}
+            className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-white"
+          >
+            Use URL
+          </button>
+        </div>
+      ) : null}
       <div className="mt-6 rounded-2xl border border-border bg-surface-2 p-4">
         <textarea
           className="h-40 w-full resize-none bg-transparent text-sm text-text focus:outline-none"
           placeholder="Paste recipe text here..."
+          value={recipeText}
+          onChange={(event) => setRecipeText(event.target.value)}
         />
       </div>
-      <button className="mt-4 w-full min-h-[44px] rounded-2xl bg-accent px-4 text-sm font-semibold text-black shadow-glow transition duration-quick ease-snappy hover:translate-y-[-1px]">
-        Turn this into a cooking guide
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept=".txt,.pdf"
+        onChange={handleUploadChange}
+      />
+      {uploadedName ? (
+        <p className="mt-3 text-xs text-muted">Selected: {uploadedName}</p>
+      ) : (
+        <p className="mt-3 text-xs text-muted">
+          You can paste text, drop a URL, or upload a file.
+        </p>
+      )}
+      {error ? <p className="mt-2 text-xs text-danger">{error}</p> : null}
+      <button
+        onClick={generateFromText}
+        disabled={status === "loading"}
+        className="mt-4 w-full min-h-[44px] rounded-2xl bg-accent px-4 text-sm font-semibold text-black shadow-glow transition duration-quick ease-snappy hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
+      >
+        {status === "loading" ? "Building guide..." : "Turn this into a cooking guide"}
       </button>
     </section>
   );

@@ -1,23 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
-import AppShell from "./components/AppShell";
-import BottomNav from "./components/BottomNav";
-import CookPanel from "./components/CookPanel";
-import InboxPanel from "./components/InboxPanel";
-import LibraryPanel from "./components/LibraryPanel";
-import MobileView from "./components/MobileView";
-import ProcessingPanel from "./components/ProcessingPanel";
-import ReviewPanel from "./components/ReviewPanel";
-import SettingsPanel from "./components/SettingsPanel";
-import TopBar from "./components/TopBar";
-import WhyPanel from "./components/WhyPanel";
-import type { TimerItem, ViewKey } from "./components/types";
-import { ingredients, quickFixes, steps } from "./data";
+import {
+  AppShell,
+  BottomNav,
+  CookPanel,
+  InboxPanel,
+  LibraryPanel,
+  MobileView,
+  ProcessingPanel,
+  ReviewPanel,
+  SettingsPanel,
+  TopBar,
+  WhyPanel,
+} from "./components";
+import type { TimerItem, ViewKey } from "./components";
+import { quickFixes } from "./data";
+import { useRecipe } from "./recipe/RecipeContext";
 
-const nextStepIndex = (index: number) => (index + 1) % steps.length;
-const prevStepIndex = (index: number) =>
-  (index - 1 + steps.length) % steps.length;
+const nextStepIndex = (index: number, total: number) =>
+  total === 0 ? 0 : (index + 1) % total;
+const prevStepIndex = (index: number, total: number) =>
+  total === 0 ? 0 : (index - 1 + total) % total;
 
 export default function App() {
+  const { steps, ingredients } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("inbox");
   const [activeStepIndex, setActiveStepIndex] = useState(1);
   const [focusMode, setFocusMode] = useState(true);
@@ -44,8 +49,8 @@ export default function App() {
   ]);
   const [showRescue, setShowRescue] = useState(false);
 
-  const activeStep = steps[activeStepIndex];
-  const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length}`;
+  const activeStep = steps[activeStepIndex] ?? steps[0];
+  const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
 
   useEffect(() => {
     if (!timers.some((timer) => timer.running)) {
@@ -96,11 +101,11 @@ export default function App() {
   };
 
   const handleNextStep = () => {
-    setActiveStepIndex((index) => nextStepIndex(index));
+    setActiveStepIndex((index) => nextStepIndex(index, steps.length));
   };
 
   const handlePrevStep = () => {
-    setActiveStepIndex((index) => prevStepIndex(index));
+    setActiveStepIndex((index) => prevStepIndex(index, steps.length));
   };
 
   const handleRescue = () => {
@@ -108,8 +113,14 @@ export default function App() {
     window.setTimeout(() => setShowRescue(false), 2400);
   };
 
+  useEffect(() => {
+    if (activeStepIndex >= steps.length && steps.length > 0) {
+      setActiveStepIndex(0);
+    }
+  }, [activeStepIndex, steps.length]);
+
   const rootClass = [
-    "min-h-screen bg-bg text-text font-body",
+    "app-glass-bg text-text font-body",
     reduceMotion ? "reduce-motion" : "",
     largeText ? "text-[17px]" : "text-[15px] md:text-base",
     colorIntensity === "extra-contrast" ? "extra-contrast" : "standard-contrast",

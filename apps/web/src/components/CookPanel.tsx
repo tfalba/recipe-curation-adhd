@@ -64,15 +64,20 @@ export default function CookPanel({
             ))}
           </ul>
           <div className="mt-4 flex flex-wrap gap-2">
-            {activeStep.chips.map((chip) => (
+            {activeStep.needsNow.map((chip) => (
               <span
-                key={chip}
-                className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted"
+                key={chip.label}
+                className={`rounded-full px-3 py-1 text-xs ${
+                  chip.type === "other"
+                    ? "bg-violet/90 text-white"
+                    : "bg-bg border border-white/70 text-muted"
+                }`}
               >
-                {chip}
+                {chip.label}
               </span>
             ))}
           </div>
+
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={onPrev}
@@ -116,9 +121,18 @@ export default function CookPanel({
           <div className="space-y-3">
             <div className="rounded-2xl border border-border bg-surface-2 p-4">
               <h5 className="text-sm font-semibold">This step needs</h5>
-              <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted">
+              <ul className="mt-3 flex flex-wrap gap-2 text-sm text-muted">
                 {activeStep.needsNow.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li
+                    key={item.label}
+                    className={`rounded-full px-3 py-1 text-xs ${
+                      item.type === "other"
+                        ? "bg-violet/90 text-white"
+                        : "bg-bg text-muted"
+                    }`}
+                  >
+                    {item.label}
+                  </li>
                 ))}
               </ul>
             </div>
