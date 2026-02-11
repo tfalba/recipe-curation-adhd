@@ -12,6 +12,7 @@ export type StepData = {
   chips: string[];
   timerSeconds: number;
   needsNow: { label: string; type: "ingredient" | "other" }[];
+  ingredients: Ingredient[];
   nextPreview: string[];
   summary: string;
 };

@@ -16,6 +16,10 @@ export const steps: StepData[] = [
       { label: "Skillet", type: "other" },
       { label: "Tongs", type: "other" },
     ],
+    ingredients: [
+      { name: "Chicken thighs", qty: "1.5 lb", note: "patted dry" },
+      { name: "Olive oil", qty: "2 tbsp", note: "divided" },
+    ],
     nextPreview: ["Saute garlic", "Whisk in broth + lemon", "Simmer briefly"],
     summary: "Sear chicken until golden, then set aside.",
   },
@@ -34,6 +38,11 @@ export const steps: StepData[] = [
       { label: "Broth", type: "ingredient" },
       { label: "Whisk", type: "other" },
     ],
+    ingredients: [
+      { name: "Garlic", qty: "3 cloves", note: "minced" },
+      { name: "Chicken broth", qty: "1 cup", note: "low sodium" },
+      { name: "Lemon", qty: "1", note: "zest + juice" },
+    ],
     nextPreview: ["Return chicken", "Spoon sauce over", "Top with parsley"],
     summary: "Whisk together lemony sauce until glossy.",
   },
@@ -46,6 +55,10 @@ export const steps: StepData[] = [
       { label: "Chicken", type: "ingredient" },
       { label: "Parsley", type: "ingredient" },
       { label: "Serving plates", type: "other" },
+    ],
+    ingredients: [
+      { name: "Chicken thighs", qty: "1.5 lb", note: "patted dry" },
+      { name: "Parsley", qty: "2 tbsp", note: "chopped" },
     ],
     nextPreview: ["Serve", "Enjoy"],
     summary: "Finish with sauce and herbs, then serve.",

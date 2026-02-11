@@ -69,8 +69,9 @@ app.post("/api/transform", async (req: Request, res: Response) => {
         "You are a helpful assistant that outputs JSON only. " +
         "Return a JSON object with keys: ingredients (array) and steps (array). " +
         "Each ingredient: { qty: string, name: string, note: string }. " +
-        "Each step: { title: string, bullets: string[], chips: string[], timerSeconds: number, needsNow: { label: string, type: \"ingredient\" | \"other\" }[], nextPreview: string[], summary: string }. " +
+        "Each step: { title: string, bullets: string[], chips: string[], timerSeconds: number, needsNow: { label: string, type: \"ingredient\" | \"other\" }[], ingredients: Ingredient[], nextPreview: string[], summary: string }. " +
         "Classify needsNow.type as \"ingredient\" for edible items from the ingredient list, and \"other\" for tools, cookware, appliances, temperatures, timers, and techniques. " +
+        "Include in step.ingredients the subset of the global ingredients used in that step. " +
         "Examples of other: whisk, skillet, oven, 350F, medium heat, timer.",
       input:
         "Convert the recipe into structured ingredients and short chunked steps. " +
@@ -119,6 +120,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
           chips?: unknown;
           timerSeconds?: unknown;
           needsNow?: unknown;
+          ingredients?: unknown;
           nextPreview?: unknown;
           summary?: unknown;
         };
@@ -145,6 +147,20 @@ app.post("/api/transform", async (req: Request, res: Response) => {
               .filter((entry) => entry.label.trim().length > 0)
           : [];
 
+        const stepIngredients = Array.isArray(candidate.ingredients)
+          ? candidate.ingredients
+              .filter((entry) => typeof entry === "object" && entry !== null)
+              .map((entry) => {
+                const ing = entry as { qty?: unknown; name?: unknown; note?: unknown };
+                return {
+                  qty: typeof ing.qty === "string" ? ing.qty : "",
+                  name: typeof ing.name === "string" ? ing.name : "",
+                  note: typeof ing.note === "string" ? ing.note : "",
+                };
+              })
+              .filter((entry) => entry.name.trim().length > 0)
+          : [];
+
         return {
           title: typeof candidate.title === "string" ? candidate.title : "",
           bullets: Array.isArray(candidate.bullets)
@@ -158,6 +174,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
               ? Math.max(0, Math.round(candidate.timerSeconds))
               : 0,
           needsNow,
+          ingredients: stepIngredients,
           nextPreview: Array.isArray(candidate.nextPreview)
             ? candidate.nextPreview.filter((n) => typeof n === "string")
             : [],

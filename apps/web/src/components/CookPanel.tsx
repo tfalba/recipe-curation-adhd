@@ -112,11 +112,25 @@ export default function CookPanel({
                     key={item.label}
                     className={`rounded-full px-3 py-1 text-xs ${
                       item.type === "ingredient"
-                        ? "bg-violet/90 text-white"
+                        ? "bg-violet/90 text-white/90"
                         : "bg-bg border border-white/70 text-muted"
                     }`}
                   >
                     {item.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface-2 p-4">
+              <h5 className="text-sm font-semibold">Ingredients for this step</h5>
+              <ul className="mt-3 flex flex-wrap gap-2 text-sm text-muted">
+                {activeStep.ingredients.map((ingredient) => (
+                  <li
+                    key={`${ingredient.name}-${ingredient.qty}`}
+                    className="rounded-full bg-bg px-3 py-1 text-xs text-muted"
+                  >
+                    <span className="text-text">{ingredient.qty}</span>{" "}
+                    {ingredient.name}
                   </li>
                 ))}
               </ul>
