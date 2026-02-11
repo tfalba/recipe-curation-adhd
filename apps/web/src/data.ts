@@ -235,7 +235,476 @@ export const ingredientsSheetPanSalmon: Ingredient[] = [
   { name: "Fresh dill", qty: "1 tbsp", note: "chopped" },
 ];
 
+export const stepsBananaBread: StepData[] = 
+ [
+        {
+            "title": "Preheat and prepare pan",
+            "bullets": [
+                "Position a rack in the center of your oven.",
+                "Preheat oven to 350°F (177°C).",
+                "Spray a 9x5” loaf pan with non-stick cooking spray or line with parchment paper."
+            ],
+            "chips": [
+                "350°F (177°C)",
+                "rack",
+                "loaf pan",
+                "non-stick cooking spray",
+                "parchment paper",
+                "oven"
+            ],
+            "timerSeconds": 0,
+            "needsNow": [
+                {
+                    "label": "350°F (177°C)",
+                    "type": "other"
+                },
+                {
+                    "label": "loaf pan",
+                    "type": "other"
+                },
+                {
+                    "label": "non-stick cooking spray",
+                    "type": "other"
+                },
+                {
+                    "label": "parchment paper",
+                    "type": "other"
+                }
+            ],
+            "ingredients": [],
+            "nextPreview": [
+                "Mash bananas"
+            ],
+            "summary": "Prepare your oven and loaf pan for baking."
+        },
+        {
+            "title": "Mash bananas",
+            "bullets": [
+                "In a small mixing bowl, mash bananas with a fork.",
+                "Set mashed bananas aside."
+            ],
+            "chips": [
+                "bananas",
+                "fork",
+                "mixing bowl"
+            ],
+            "timerSeconds": 0,
+            "needsNow": [
+                {
+                    "label": "very ripe bananas",
+                    "type": "ingredient"
+                },
+                {
+                    "label": "fork",
+                    "type": "other"
+                },
+                {
+                    "label": "mixing bowl",
+                    "type": "other"
+                }
+            ],
+            "ingredients": [
+                {
+                    "qty": "1 ½ cups (340 g)",
+                    "name": "very ripe bananas",
+                    "note": "about 4 medium"
+                }
+            ],
+            "nextPreview": [
+                "Combine dry ingredients"
+            ],
+            "summary": "Mash ripe bananas using a fork in a bowl."
+        },
+        {
+            "title": "Combine dry ingredients",
+            "bullets": [
+                "In a mixing bowl, whisk together flour, baking soda, salt, and cinnamon."
+            ],
+            "chips": [
+                "flour",
+                "baking soda",
+                "salt",
+                "cinnamon",
+                "whisk",
+                "mixing bowl"
+            ],
+            "timerSeconds": 0,
+            "needsNow": [
+                {
+                    "label": "all purpose flour",
+                    "type": "other"
+                },
+                {
+                    "label": "baking soda",
+                    "type": "ingredient"
+                },
+                {
+                    "label": "fine sea salt",
+                    "type": "other"
+                },
+                {
+                    "label": "ground cinnamon",
+                    "type": "other"
+                },
+                {
+                    "label": "whisk",
+                    "type": "other"
+                },
+                {
+                    "label": "mixing bowl",
+                    "type": "other"
+                }
+            ],
+            "ingredients": [
+                {
+                    "qty": "2 ½ cups (300 g)",
+                    "name": "all purpose flour",
+                    "note": "spooned and leveled"
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "baking soda",
+                    "note": ""
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "fine sea salt",
+                    "note": ""
+                },
+                {
+                    "qty": "¼ teaspoon",
+                    "name": "ground cinnamon",
+                    "note": ""
+                }
+            ],
+            "nextPreview": [
+                "Combine wet ingredients"
+            ],
+            "summary": "Whisk together all dry ingredients in a bowl."
+        },
+        {
+            "title": "Combine wet ingredients",
+            "bullets": [
+                "In the same bowl with mashed bananas, whisk in sugar, oil, eggs, vanilla extract, and sour cream until combined."
+            ],
+            "chips": [
+                "mashed bananas",
+                "sugar",
+                "vegetable oil",
+                "eggs",
+                "vanilla extract",
+                "sour cream",
+                "whisk"
+            ],
+            "timerSeconds": 0,
+            "needsNow": [
+                {
+                    "label": "granulated white sugar",
+                    "type": "ingredient"
+                },
+                {
+                    "label": "vegetable oil",
+                    "type": "ingredient"
+                },
+                {
+                    "label": "eggs",
+                    "type": "ingredient"
+                },
+                {
+                    "label": "vanilla extract",
+                    "type": "other"
+                },
+                {
+                    "label": "sour cream",
+                    "type": "other"
+                },
+                {
+                    "label": "whisk",
+                    "type": "other"
+                }
+            ],
+            "ingredients": [
+                {
+                    "qty": "1 ¼ cups (250 g)",
+                    "name": "granulated white sugar",
+                    "note": ""
+                },
+                {
+                    "qty": "½ cup (120 mL)",
+                    "name": "vegetable oil",
+                    "note": ""
+                },
+                {
+                    "qty": "2 large",
+                    "name": "eggs",
+                    "note": "room temperature"
+                },
+                {
+                    "qty": "½ cup (113 g)",
+                    "name": "sour cream",
+                    "note": ""
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "vanilla extract",
+                    "note": ""
+                },
+                {
+                    "qty": "1 ½ cups (340 g)",
+                    "name": "very ripe bananas",
+                    "note": "about 4 medium"
+                }
+            ],
+            "nextPreview": [
+                "Combine wet and dry ingredients"
+            ],
+            "summary": "Mix mashed bananas with sugar, oil, eggs, vanilla, and sour cream."
+        },
+        {
+            "title": "Combine wet and dry ingredients",
+            "bullets": [
+                "Add the dry ingredients into the wet ingredients.",
+                "Mix together gently with a spatula until just combined."
+            ],
+            "chips": [
+                "wet ingredients",
+                "dry ingredients",
+                "spatula",
+                "mixing bowl"
+            ],
+            "timerSeconds": 0,
+            "needsNow": [
+                {
+                    "label": "all purpose flour",
+                    "type": "other"
+                },
+                {
+                    "label": "baking soda",
+                    "type": "ingredient"
+                },
+                {
+                    "label": "fine sea salt",
+                    "type": "other"
+                },
+                {
+                    "label": "ground cinnamon",
+                    "type": "other"
+                },
+                {
+                    "label": "spatula",
+                    "type": "other"
+                }
+            ],
+            "ingredients": [
+                {
+                    "qty": "2 ½ cups (300 g)",
+                    "name": "all purpose flour",
+                    "note": "spooned and leveled"
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "baking soda",
+                    "note": ""
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "fine sea salt",
+                    "note": ""
+                },
+                {
+                    "qty": "¼ teaspoon",
+                    "name": "ground cinnamon",
+                    "note": ""
+                },
+                {
+                    "qty": "1 ¼ cups (250 g)",
+                    "name": "granulated white sugar",
+                    "note": ""
+                },
+                {
+                    "qty": "½ cup (120 mL)",
+                    "name": "vegetable oil",
+                    "note": ""
+                },
+                {
+                    "qty": "2 large",
+                    "name": "eggs",
+                    "note": "room temperature"
+                },
+                {
+                    "qty": "½ cup (113 g)",
+                    "name": "sour cream",
+                    "note": ""
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "vanilla extract",
+                    "note": ""
+                },
+                {
+                    "qty": "1 ½ cups (340 g)",
+                    "name": "very ripe bananas",
+                    "note": "about 4 medium"
+                }
+            ],
+            "nextPreview": [
+                "Bake"
+            ],
+            "summary": "Gently fold dry ingredients into wet ingredients until just mixed."
+        },
+        {
+            "title": "Bake",
+            "bullets": [
+                "Pour batter into the prepared loaf pan.",
+                "Bake for 60-65 minutes at 350°F (177°C) until a toothpick inserted comes out clean.",
+                "If using a glass pan, you may need to bake an additional 5 minutes.",
+                "Remove bread from the oven and cool completely in the pan on a wire rack.",
+                "Store bread covered at room temperature for 2 days or refrigerated for up to 1 week."
+            ],
+            "chips": [
+                "batter",
+                "loaf pan",
+                "oven",
+                "toothpick",
+                "wire cooling rack"
+            ],
+            "timerSeconds": 3900,
+            "needsNow": [
+                {
+                    "label": "loaf pan",
+                    "type": "other"
+                },
+                {
+                    "label": "oven",
+                    "type": "other"
+                },
+                {
+                    "label": "wire cooling rack",
+                    "type": "other"
+                },
+                {
+                    "label": "timer",
+                    "type": "other"
+                }
+            ],
+            "ingredients": [
+                {
+                    "qty": "1 ¼ cups (250 g)",
+                    "name": "granulated white sugar",
+                    "note": ""
+                },
+                {
+                    "qty": "½ cup (120 mL)",
+                    "name": "vegetable oil",
+                    "note": ""
+                },
+                {
+                    "qty": "2 large",
+                    "name": "eggs",
+                    "note": "room temperature"
+                },
+                {
+                    "qty": "½ cup (113 g)",
+                    "name": "sour cream",
+                    "note": ""
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "vanilla extract",
+                    "note": ""
+                },
+                {
+                    "qty": "1 ½ cups (340 g)",
+                    "name": "very ripe bananas",
+                    "note": "about 4 medium"
+                },
+                {
+                    "qty": "2 ½ cups (300 g)",
+                    "name": "all purpose flour",
+                    "note": "spooned and leveled"
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "baking soda",
+                    "note": ""
+                },
+                {
+                    "qty": "1 teaspoon",
+                    "name": "fine sea salt",
+                    "note": ""
+                },
+                {
+                    "qty": "¼ teaspoon",
+                    "name": "ground cinnamon",
+                    "note": ""
+                }
+            ],
+            "nextPreview": [],
+            "summary": "Bake the banana bread until fully cooked then cool before storing."
+        }
+    ];
+
+  export const ingredientsBananaBread = [
+        {
+            "qty": "1 ½ cups (340 g)",
+            "name": "very ripe bananas",
+            "note": "about 4 medium"
+        },
+        {
+            "qty": "2 ½ cups (300 g)",
+            "name": "all purpose flour",
+            "note": "spooned and leveled"
+        },
+        {
+            "qty": "1 teaspoon",
+            "name": "baking soda",
+            "note": ""
+        },
+        {
+            "qty": "1 teaspoon",
+            "name": "fine sea salt",
+            "note": ""
+        },
+        {
+            "qty": "¼ teaspoon",
+            "name": "ground cinnamon",
+            "note": ""
+        },
+        {
+            "qty": "1 ¼ cups (250 g)",
+            "name": "granulated white sugar",
+            "note": ""
+        },
+        {
+            "qty": "½ cup (120 mL)",
+            "name": "vegetable oil",
+            "note": ""
+        },
+        {
+            "qty": "2 large",
+            "name": "eggs",
+            "note": "room temperature"
+        },
+        {
+            "qty": "½ cup (113 g)",
+            "name": "sour cream",
+            "note": ""
+        },
+        {
+            "qty": "1 teaspoon",
+            "name": "vanilla extract",
+            "note": ""
+        }
+    ];
+
+export const recipeTitleBananaBread = "Banana Bread";
+
 export const libraryRecipes = [
+  {
+    title: recipeTitleBananaBread,
+    steps: stepsBananaBread,
+    ingredients: ingredientsBananaBread,
+  },
   {
     title: recipeTitleLemonChicken,
     steps: stepsLemonChicken,
@@ -252,6 +721,8 @@ export const libraryRecipes = [
     ingredients: ingredientsSheetPanSalmon,
   },
 ];
+
+
 
 export const quickFixes = [
   "Split long steps",
