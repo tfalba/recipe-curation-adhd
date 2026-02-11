@@ -127,9 +127,8 @@ export default function CookPanel({
                 {activeStep.ingredients.map((ingredient) => (
                   <li
                     key={`${ingredient.name}-${ingredient.qty}`}
-                    className="rounded-full bg-bg px-3 py-1 text-xs text-muted"
+                    className="rounded-full bg-violet/80 px-3 py-1 text-xs text-text"
                   >
-                    <span className="text-text">{ingredient.qty}</span>{" "}
                     {ingredient.name}
                   </li>
                 ))}

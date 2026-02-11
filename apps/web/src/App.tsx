@@ -90,7 +90,7 @@ export default function App() {
 
   const handleRescue = () => {
     setShowRescue(true);
-    window.setTimeout(() => setShowRescue(false), 2400);
+    window.setTimeout(() => setShowRescue(false), 4000);
   };
 
   useEffect(() => {
