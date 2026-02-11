@@ -5,6 +5,7 @@ type TopBarProps = {
   onToggleFocus: () => void;
   recipeTitle: string;
   isCook: boolean;
+  showSaveGuide: boolean;
 };
 
 export default function TopBar({
@@ -14,6 +15,7 @@ export default function TopBar({
   onToggleFocus,
   recipeTitle,
   isCook,
+  showSaveGuide,
 }: TopBarProps) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface/90 px-5 py-4 shadow-panel backdrop-blur">
@@ -49,9 +51,11 @@ export default function TopBar({
         >
           Focus
         </button>
-        <button className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-white shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]">
-          Save Guide
-        </button>
+        {showSaveGuide ? (
+          <button className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-white shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]">
+            Save Guide
+          </button>
+        ) : null}
       </div>
     </header>
   );

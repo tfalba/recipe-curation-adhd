@@ -24,14 +24,9 @@ export default function GetStartedPanel({
           <p className="mt-3 text-sm text-muted">
             Pick where you want to jump back in.
           </p>
+         
         </div>
         <div className="grid gap-4">
-          <button
-            onClick={onCreateNewGuide}
-            className="min-h-[56px] rounded-3xl bg-primary/20 px-4 text-left text-sm font-semibold text-primary shadow-inset transition duration-quick ease-snappy hover:translate-y-[-1px]"
-          >
-            Create a new guide
-          </button>
           <div className="grid gap-4 sm:grid-cols-2">
             <button
               onClick={onReviewGuide}
@@ -48,6 +43,12 @@ export default function GetStartedPanel({
           </div>
         </div>
       </div>
+       <button
+            onClick={onCreateNewGuide}
+            className="mt-6 min-h-[56px] w-full rounded-3xl bg-primary/20 px-4 text-left text-lg font-semibold text-white/80 shadow-glow transition duration-quick ease-snappy hover:translate-y-[-1px]"
+          >
+            Create a new guide from any recipe...
+          </button>
     </section>
   );
 }

@@ -22,6 +22,7 @@ type RecipeContextValue = {
   setRecipeTitle: (value: string) => void;
   recipeVersion: number;
   hasSelectedRecipe: boolean;
+  recipeSource: "generated" | "library" | "none";
   steps: StepData[];
   ingredients: Ingredient[];
   status: RecipeStatus;
@@ -48,6 +49,9 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipeTitle, setRecipeTitle] = useState(seedTitle);
   const [recipeVersion, setRecipeVersion] = useState(0);
   const [hasSelectedRecipe, setHasSelectedRecipe] = useState(true);
+  const [recipeSource, setRecipeSource] = useState<
+    "generated" | "library" | "none"
+  >("library");
   const [steps, setSteps] = useState<StepData[]>(seedSteps);
   const [ingredients, setIngredients] = useState<Ingredient[]>(seedIngredients);
   const [status, setStatus] = useState<RecipeStatus>("idle");
@@ -91,6 +95,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       setIngredients(payload.ingredients);
       setStatus("success");
       setHasSelectedRecipe(true);
+      setRecipeSource("generated");
       setRecipeVersion((value) => value + 1);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -107,6 +112,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       setRecipeTitle,
       recipeVersion,
       hasSelectedRecipe,
+      recipeSource,
       steps,
       ingredients,
       status,
@@ -119,6 +125,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
         setStatus("success");
         setError(null);
         setHasSelectedRecipe(true);
+        setRecipeSource("library");
         setRecipeVersion((value) => value + 1);
       },
       clearRecipeSelection: () => {
@@ -127,6 +134,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
         setStatus("idle");
         setError(null);
         setHasSelectedRecipe(false);
+        setRecipeSource("none");
       },
       setSteps,
       setIngredients,
@@ -136,6 +144,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       recipeTitle,
       recipeVersion,
       hasSelectedRecipe,
+      recipeSource,
       steps,
       ingredients,
       status,

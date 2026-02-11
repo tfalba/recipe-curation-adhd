@@ -23,6 +23,7 @@ export default function App() {
     recipeVersion,
     status,
     hasSelectedRecipe,
+    recipeSource,
     clearRecipeSelection,
   } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
@@ -179,6 +180,7 @@ export default function App() {
             {...appShellProps}
             recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
             isCook={activeView === "cook"}
+            showSaveGuide={recipeSource === "generated"}
           />
 
           <main className="mt-6 space-y-6">
