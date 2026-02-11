@@ -3,9 +3,7 @@ type TopBarProps = {
   progressLabel: string;
   focusMode: boolean;
   onToggleFocus: () => void;
-  onOpenSettings: () => void;
   isCook: boolean;
-  isMobile: boolean;
 };
 
 export default function TopBar({
@@ -13,9 +11,7 @@ export default function TopBar({
   progressLabel,
   focusMode,
   onToggleFocus,
-  onOpenSettings,
   isCook,
-  isMobile,
 }: TopBarProps) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface/90 px-5 py-4 shadow-panel backdrop-blur">
@@ -28,7 +24,7 @@ export default function TopBar({
             Recipe Quest
           </p>
           <p className="text-lg font-display font-semibold">
-            {isMobile ? viewTitle : "Lemon Skillet Chicken"}
+            {viewTitle}
           </p>
         </div>
       </div>
@@ -38,9 +34,7 @@ export default function TopBar({
             {progressLabel}
           </span>
         ) : (
-          <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-            {viewTitle}
-          </span>
+          null
         )}
         <button
           onClick={onToggleFocus}
@@ -51,12 +45,6 @@ export default function TopBar({
           }`}
         >
           Focus
-        </button>
-        <button
-          onClick={onOpenSettings}
-          className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted transition duration-quick ease-snappy hover:text-text"
-        >
-          Settings
         </button>
         <button className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-white shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]">
           Save Guide

@@ -26,20 +26,7 @@ export default function App() {
   const [colorIntensity, setColorIntensity] = useState<
     "standard" | "extra-contrast"
   >("extra-contrast");
-  const [timers, setTimers] = useState<TimerItem[]>([
-    {
-      id: "sauce",
-      label: "Sauce simmer",
-      remainingSeconds: 134,
-      running: true,
-    },
-    {
-      id: "rest",
-      label: "Chicken rest",
-      remainingSeconds: 220,
-      running: false,
-    },
-  ]);
+  const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
@@ -122,7 +109,7 @@ export default function App() {
     .join(" ");
 
   const viewTitleMap: Record<ViewKey, string> = {
-    overview: "Paste recipe",
+    overview: "Get Started",
     processing: "Processing",
     review: "Review",
     cook: "Cook Mode",
@@ -136,7 +123,6 @@ export default function App() {
       progressLabel,
       focusMode,
       onToggleFocus: () => setFocusMode((value) => !value),
-      onOpenSettings: () => setActiveView("settings"),
     }),
     [activeView, focusMode, progressLabel]
   );
@@ -148,7 +134,6 @@ export default function App() {
           <TopBar
             {...appShellProps}
             isCook={activeView === "cook"}
-            isMobile={false}
           />
 
           <main className="mt-6 space-y-6">
