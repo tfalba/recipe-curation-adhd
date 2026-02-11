@@ -114,6 +114,18 @@ export default function App() {
     setColorIntensity("extra-contrast");
   };
 
+  const handleCreateNewGuide = () => {
+    clearRecipeSelection();
+    resetUiDefaults();
+    setActiveView("overview");
+    window.setTimeout(() => {
+      document.getElementById("inbox")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+  };
+
   useEffect(() => {
     if (activeStepIndex >= steps.length && steps.length > 0) {
       setActiveStepIndex(0);
@@ -155,7 +167,12 @@ export default function App() {
 
   return (
     <div className={rootClass} data-line-spacing={lineSpacing}>
-      {activeView === "overview" && <HeroAboveTheFold />}
+      {activeView === "overview" && (
+        <HeroAboveTheFold
+          onCreateNewGuide={() => handleCreateNewGuide()}
+          onSeeExample={() => setActiveView("cook")}
+        />
+      )}
       <AppShell>
         <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
           <TopBar
@@ -173,9 +190,7 @@ export default function App() {
               hasSelectedRecipe={hasSelectedRecipe}
               recipeTitle={recipeTitle}
               onCreateNewGuide={() => {
-                clearRecipeSelection();
-                resetUiDefaults();
-                setActiveView("overview");
+                handleCreateNewGuide();
               }}
               onReviewGuide={() => setActiveView("review")}
               onCookGuide={() => setActiveView("cook")}

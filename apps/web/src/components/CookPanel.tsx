@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { StepData, TimerItem } from "./types";
 import { formatTime } from "./utils";
 
@@ -28,6 +28,8 @@ export default function CookPanel({
   showRescue,
 }: CookPanelProps) {
   const [touchedIngredient, setTouchedIngredient] = useState<string | null>(null);
+  const [hoveredIngredient, setHoveredIngredient] = useState<string | null>(null);
+  const ingredientsRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     if (!touchedIngredient) {
@@ -36,6 +38,28 @@ export default function CookPanel({
     const timeout = window.setTimeout(() => setTouchedIngredient(null), 2000);
     return () => window.clearTimeout(timeout);
   }, [touchedIngredient]);
+
+  const activeIngredientId = hoveredIngredient ?? touchedIngredient;
+
+  useEffect(() => {
+    const handleOutside = (event: MouseEvent | TouchEvent) => {
+      if (!ingredientsRef.current) {
+        return;
+      }
+      if (event.target instanceof Node && ingredientsRef.current.contains(event.target)) {
+        return;
+      }
+      setHoveredIngredient(null);
+      setTouchedIngredient(null);
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, []);
 
   const renderBullet = (text: string) => {
     const names = activeStep.ingredients
@@ -142,39 +166,67 @@ export default function CookPanel({
 
         {focusMode ? null : (
           <div className="space-y-3">
-            <div className="rounded-2xl border border-border bg-surface-2 p-4">
-              <h5 className="text-sm font-semibold">Ingredients for this step</h5>
-              <ul className="mt-3 flex flex-wrap gap-2 text-sm text-muted">
-                {activeStep.ingredients.map((ingredient) => (
-                  <li
-                    key={`${ingredient.name}-${ingredient.qty}`}
-                    className="group relative rounded-full bg-surface border border-violet/80 px-3 py-1 text-xs text-text focus-within:ring-2 focus-within:ring-white/60"
-                  >
-                    <button
-                      type="button"
-                      onTouchStart={() =>
-                        setTouchedIngredient(
+            {activeStep.ingredients.length ? (
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <h5 className="text-sm font-semibold">
+                  Ingredients for this step
+                </h5>
+                <ul
+                  ref={ingredientsRef}
+                  className="my-3 flex flex-wrap gap-2 text-sm text-muted"
+                >
+                  {activeStep.ingredients.map((ingredient) => (
+                    <li
+                      key={`${ingredient.name}-${ingredient.qty}`}
+                      className={`group relative rounded-full bg-surface border border-violet/80 px-3 py-1 text-xs text-text focus-within:ring-2 focus-within:ring-white/60 transition duration-quick ease-snappy ${
+                        activeIngredientId &&
+                        activeIngredientId !==
                           `${ingredient.name}-${ingredient.qty}`
-                        )
-                      }
-                      className="text-left text-text focus:outline-none"
-                    >
-                      {ingredient.name}
-                    </button>
-                    <span
-                      className={`pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-border bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20 ${
-                        touchedIngredient ===
-                        `${ingredient.name}-${ingredient.qty}`
-                          ? "opacity-100"
-                          : ""
+                          ? "opacity-25"
+                          : "opacity-100"
                       }`}
                     >
-                      {ingredient.qty}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      <button
+                        type="button"
+                        onMouseEnter={() =>
+                          setHoveredIngredient(
+                            `${ingredient.name}-${ingredient.qty}`
+                          )
+                        }
+                        onMouseLeave={() => setHoveredIngredient(null)}
+                        onFocus={() =>
+                          setHoveredIngredient(
+                            `${ingredient.name}-${ingredient.qty}`
+                          )
+                        }
+                        onBlur={() => setHoveredIngredient(null)}
+                        onTouchStart={() =>
+                          setTouchedIngredient(
+                            `${ingredient.name}-${ingredient.qty}`
+                          )
+                        }
+                        className="text-left text-text focus:outline-none"
+                      >
+                        {ingredient.name}
+                      </button>
+                      <span
+                        className={`pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-border bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20 ${
+                          touchedIngredient ===
+                          `${ingredient.name}-${ingredient.qty}`
+                            ? "opacity-100"
+                            : ""
+                        }`}
+                      >
+                        {ingredient.qty}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <span className="mx-auto hidden lg:block text-xs text-muted">Hover over an ingredient to view its quantity.</span>
+                <span className="mx-auto lg:hidden text-xs text-muted">Click on an ingredient to view its quantity.</span>
+
+              </div>
+            ) : null}
             <div className="rounded-2xl border border-border bg-surface-2 p-4">
               <h5 className="text-sm font-semibold">Next step preview</h5>
               <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted">

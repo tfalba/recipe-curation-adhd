@@ -1,6 +1,14 @@
-import backgroundHero from "../assets/genius-kitchen.jpg"
+import backgroundHero from "../assets/genius-kitchen.jpg";
 
-export function HeroAboveTheFold() {
+type HeroAboveTheFoldProps = {
+  onCreateNewGuide: () => void;
+  onSeeExample: () => void;
+};
+
+export function HeroAboveTheFold({
+  onCreateNewGuide,
+  onSeeExample,
+}: HeroAboveTheFoldProps) {
   return (
     <section className="relative overflow-hidden bg-bg text-text">
       {/* Background image (Prompt 1) */}
@@ -28,11 +36,17 @@ export function HeroAboveTheFold() {
 
             {/* Primary CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <button className="h-[44px] px-6 rounded-2xl bg-primary text-white font-semibold shadow-panel hover:opacity-90 transition-normal">
-                Turn recipe into a cooking guide
+              <button
+                onClick={onCreateNewGuide}
+                className="h-[44px] px-6 rounded-2xl bg-primary text-white font-semibold shadow-panel hover:opacity-90 transition-normal"
+              >
+                Turn any recipe into a cooking guide
               </button>
 
-              <button className="h-[44px] px-6 rounded-2xl border border-border bg-surface/40 text-text hover:bg-surface-2 transition-normal">
+              <button
+                onClick={onSeeExample}
+                className="h-[44px] px-6 rounded-2xl border border-border bg-surface/40 text-text hover:bg-surface-2 transition-normal"
+              >
                 See an example
               </button>
             </div>
@@ -44,7 +58,6 @@ export function HeroAboveTheFold() {
               <span>✓ Progress + “Where was I?” rescue</span>
             </div>
 
-            {/* Tiny “how it works” */}
             <div className="pt-4 grid grid-cols-3 gap-3 max-w-xl">
               {[
                 { title: "Paste", desc: "Any recipe text" },
@@ -62,10 +75,8 @@ export function HeroAboveTheFold() {
             </div>
           </div>
 
-          {/* Right: Product preview (Paste Inbox + Cook Player mock) */}
           <div className="md:col-span-6">
 
-            {/* Footnote below preview */}
             <div className="mt-4 text-sm text-muted">
               Optimized for low-glare kitchen use • big tap targets • thick focus rings
             </div>

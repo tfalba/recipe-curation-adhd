@@ -77,6 +77,7 @@ export default function MobileView({
           steps={steps}
           ingredients={ingredients}
           quickFixes={quickFixes}
+          onGenerateCookMode={onCookGuide}
         />
       );
     case "cook":

@@ -4,12 +4,14 @@ type ReviewPanelProps = {
   steps: StepData[];
   ingredients: Ingredient[];
   quickFixes: string[];
+  onGenerateCookMode?: () => void;
 };
 
 export default function ReviewPanel({
   steps,
   ingredients,
   quickFixes,
+  onGenerateCookMode,
 }: ReviewPanelProps) {
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
@@ -87,8 +89,11 @@ export default function ReviewPanel({
                 </label>
               ))}
             </div>
-            <button className="mt-4 min-h-[36px] w-full rounded-2xl bg-primary px-4 text-sm font-semibold text-white">
-              Generate Cook Mode
+            <button
+              onClick={onGenerateCookMode}
+              className="mt-4 min-h-[36px] w-full rounded-2xl bg-primary px-4 text-sm font-semibold text-white"
+            >
+              Go To Cook Mode
             </button>
           </div>
           <div className="rounded-2xl border border-border bg-surface-2 p-4">

@@ -31,7 +31,10 @@ export default function InboxPanel() {
   };
 
   return (
-    <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
+    <section
+      id="inbox"
+      className="rounded-3xl border border-border bg-surface p-6 shadow-panel"
+    >
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-muted">Inbox</p>
