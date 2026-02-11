@@ -63,21 +63,6 @@ export default function CookPanel({
               <li key={bullet}>{bullet}</li>
             ))}
           </ul>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {activeStep.needsNow.map((chip) => (
-              <span
-                key={chip.label}
-                className={`rounded-full px-3 py-1 text-xs ${
-                  chip.type === "other"
-                    ? "bg-violet/90 text-white"
-                    : "bg-bg border border-white/70 text-muted"
-                }`}
-              >
-                {chip.label}
-              </span>
-            ))}
-          </div>
-
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={onPrev}
@@ -126,9 +111,9 @@ export default function CookPanel({
                   <li
                     key={item.label}
                     className={`rounded-full px-3 py-1 text-xs ${
-                      item.type === "other"
+                      item.type === "ingredient"
                         ? "bg-violet/90 text-white"
-                        : "bg-bg text-muted"
+                        : "bg-bg border border-white/70 text-muted"
                     }`}
                   >
                     {item.label}
