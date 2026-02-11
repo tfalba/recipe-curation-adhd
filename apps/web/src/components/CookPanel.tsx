@@ -105,31 +105,22 @@ export default function CookPanel({
         {focusMode ? null : (
           <div className="space-y-3">
             <div className="rounded-2xl border border-border bg-surface-2 p-4">
-              <h5 className="text-sm font-semibold">This step needs</h5>
-              <ul className="mt-3 flex flex-wrap gap-2 text-sm text-muted">
-                {activeStep.needsNow.map((item) => (
-                  <li
-                    key={item.label}
-                    className={`rounded-full px-3 py-1 text-xs ${
-                      item.type === "ingredient"
-                        ? "bg-violet/90 text-white/90"
-                        : "bg-bg border border-white/70 text-muted"
-                    }`}
-                  >
-                    {item.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-2xl border border-border bg-surface-2 p-4">
               <h5 className="text-sm font-semibold">Ingredients for this step</h5>
               <ul className="mt-3 flex flex-wrap gap-2 text-sm text-muted">
                 {activeStep.ingredients.map((ingredient) => (
                   <li
                     key={`${ingredient.name}-${ingredient.qty}`}
-                    className="rounded-full bg-violet/80 px-3 py-1 text-xs text-text"
+                    className="group relative rounded-full bg-surface border border-violet/80 px-3 py-1 text-xs text-text focus-within:ring-2 focus-within:ring-white/60"
                   >
-                    {ingredient.name}
+                    <button
+                      type="button"
+                      className="text-left text-text focus:outline-none"
+                    >
+                      {ingredient.name}
+                    </button>
+                    <span className="pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-border bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20">
+                      {ingredient.qty}
+                    </span>
                   </li>
                 ))}
               </ul>
