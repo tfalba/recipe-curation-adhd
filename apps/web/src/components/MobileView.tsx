@@ -96,7 +96,7 @@ export default function MobileView({
         />
       );
     case "library":
-      return <LibraryPanel />;
+      return <LibraryPanel onSelectRecipe={onReviewGuide} />;
     case "settings":
       return <SettingsPanel {...settingsProps} />;
     default:

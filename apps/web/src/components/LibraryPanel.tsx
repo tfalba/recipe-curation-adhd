@@ -1,7 +1,11 @@
 import { libraryRecipes } from "../data";
 import { useRecipe } from "../recipe/RecipeContext";
 
-export default function LibraryPanel() {
+type LibraryPanelProps = {
+  onSelectRecipe?: () => void;
+};
+
+export default function LibraryPanel({ onSelectRecipe }: LibraryPanelProps) {
   const { applyRecipe } = useRecipe();
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
@@ -31,10 +35,13 @@ export default function LibraryPanel() {
                 Edit
               </button>
               <button
-                onClick={() => applyRecipe(recipe)}
+                onClick={() => {
+                  applyRecipe(recipe);
+                  onSelectRecipe?.();
+                }}
                 className="min-h-[36px] flex-1 rounded-full bg-accent text-xs font-semibold text-black"
               >
-                Cook
+                Select Recipe
               </button>
             </div>
           </div>
