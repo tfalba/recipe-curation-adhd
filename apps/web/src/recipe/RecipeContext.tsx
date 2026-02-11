@@ -7,13 +7,19 @@ import {
   type ReactNode,
 } from "react";
 import type { Ingredient, StepData } from "../components";
-import { ingredientsLemonChicken as seedIngredients, stepsLemonChicken as seedSteps } from "../data";
+import {
+  ingredientsLemonChicken as seedIngredients,
+  recipeTitleLemonChicken as seedTitle,
+  stepsLemonChicken as seedSteps,
+} from "../data";
 
 type RecipeStatus = "idle" | "loading" | "success" | "error";
 
 type RecipeContextValue = {
   recipeText: string;
   setRecipeText: (value: string) => void;
+  recipeTitle: string;
+  setRecipeTitle: (value: string) => void;
   steps: StepData[];
   ingredients: Ingredient[];
   status: RecipeStatus;
@@ -31,6 +37,7 @@ const API_BASE =
 
 export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipeText, setRecipeText] = useState("");
+  const [recipeTitle, setRecipeTitle] = useState(seedTitle);
   const [steps, setSteps] = useState<StepData[]>(seedSteps);
   const [ingredients, setIngredients] = useState<Ingredient[]>(seedIngredients);
   const [status, setStatus] = useState<RecipeStatus>("idle");
@@ -67,6 +74,9 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
         throw new Error("OpenAI response was missing steps or ingredients.");
       }
 
+      if (typeof payload?.recipeTitle === "string" && payload.recipeTitle.trim()) {
+        setRecipeTitle(payload.recipeTitle.trim());
+      }
       setSteps(payload.steps);
       setIngredients(payload.ingredients);
       setStatus("success");
@@ -81,6 +91,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     () => ({
       recipeText,
       setRecipeText,
+      recipeTitle,
+      setRecipeTitle,
       steps,
       ingredients,
       status,
@@ -89,7 +101,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       setSteps,
       setIngredients,
     }),
-    [recipeText, steps, ingredients, status, error, generateFromText]
+    [recipeText, recipeTitle, steps, ingredients, status, error, generateFromText]
   );
 
   return (

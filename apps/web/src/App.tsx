@@ -15,7 +15,7 @@ const prevStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index - 1 + total) % total;
 
 export default function App() {
-  const { steps, ingredients } = useRecipe();
+  const { steps, ingredients, recipeTitle } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
   const [activeStepIndex, setActiveStepIndex] = useState(1);
   const [focusMode, setFocusMode] = useState(true);
@@ -133,6 +133,7 @@ export default function App() {
         <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
           <TopBar
             {...appShellProps}
+            recipeTitle={recipeTitle}
             isCook={activeView === "cook"}
           />
 

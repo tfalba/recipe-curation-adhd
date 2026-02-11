@@ -3,6 +3,7 @@ type TopBarProps = {
   progressLabel: string;
   focusMode: boolean;
   onToggleFocus: () => void;
+  recipeTitle: string;
   isCook: boolean;
 };
 
@@ -11,6 +12,7 @@ export default function TopBar({
   progressLabel,
   focusMode,
   onToggleFocus,
+  recipeTitle,
   isCook,
 }: TopBarProps) {
   return (
@@ -24,7 +26,8 @@ export default function TopBar({
             Recipe Quest
           </p>
           <p className="text-lg font-display font-semibold">
-            {viewTitle}
+            {recipeTitle}
+            <span className="sr-only">{viewTitle}</span>
           </p>
         </div>
       </div>

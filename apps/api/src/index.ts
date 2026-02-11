@@ -67,7 +67,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
       model: "gpt-4.1-mini",
       instructions:
         "You are a helpful assistant that outputs JSON only. " +
-        "Return a JSON object with keys: ingredients (array) and steps (array). " +
+        "Return a JSON object with keys: recipeTitle (string), ingredients (array), and steps (array). " +
         "Each ingredient: { qty: string, name: string, note: string }. " +
         "Each step: { title: string, bullets: string[], chips: string[], timerSeconds: number, needsNow: { label: string, type: \"ingredient\" | \"other\" }[], ingredients: Ingredient[], nextPreview: string[], summary: string }. " +
         "Classify needsNow.type as \"ingredient\" for edible items from the ingredient list, and \"other\" for tools, cookware, appliances, temperatures, timers, and techniques. " +
@@ -91,6 +91,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
     }
 
     const data = parsed as {
+      recipeTitle?: unknown;
       ingredients?: unknown;
       steps?: unknown;
     };
@@ -98,6 +99,11 @@ app.post("/api/transform", async (req: Request, res: Response) => {
     if (!Array.isArray(data.ingredients) || !Array.isArray(data.steps)) {
       return res.status(500).json({ error: "OpenAI response missing steps or ingredients." });
     }
+
+    const recipeTitle =
+      typeof data.recipeTitle === "string" && data.recipeTitle.trim().length > 0
+        ? data.recipeTitle.trim()
+        : "Untitled recipe";
 
     const ingredients = data.ingredients
       .filter((item) => typeof item === "object" && item !== null)
@@ -187,7 +193,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
       return res.status(500).json({ error: "OpenAI response missing usable steps or ingredients." });
     }
 
-    res.json({ ingredients, steps });
+    res.json({ recipeTitle, ingredients, steps });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     res.status(500).json({ error: message });

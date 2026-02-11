@@ -1,5 +1,6 @@
 import type { Ingredient, StepData } from "./components/types";
 
+export const recipeTitleLemonChicken = "Lemon Skillet Chicken";
 export const stepsLemonChicken: StepData[] = [
   {
     title: "Sear the chicken",
@@ -65,6 +66,7 @@ export const stepsLemonChicken: StepData[] = [
   },
 ];
 
+export const recipeTitleMisoNoodles = "Miso Noodles";
 export const stepsMisoNoodles: StepData[] = [
   {
     title: "Boil the noodles",
@@ -134,6 +136,7 @@ export const stepsMisoNoodles: StepData[] = [
   },
 ];
 
+export const recipeTitleSheetPanSalmon = "Sheet Pan Salmon";
 export const stepsSheetPanSalmon: StepData[] = [
   {
     title: "Prep the pan",
