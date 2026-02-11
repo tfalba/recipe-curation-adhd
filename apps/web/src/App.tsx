@@ -17,7 +17,7 @@ const prevStepIndex = (index: number, total: number) =>
 export default function App() {
   const { steps, ingredients, recipeTitle } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
-  const [activeStepIndex, setActiveStepIndex] = useState(1);
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [focusMode, setFocusMode] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [largeText, setLargeText] = useState(false);
