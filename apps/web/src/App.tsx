@@ -2,15 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AppShell,
   BottomNav,
-  CookPanel,
-  InboxPanel,
-  LibraryPanel,
   MobileView,
-  ProcessingPanel,
-  ReviewPanel,
-  SettingsPanel,
   TopBar,
-  WhyPanel,
 } from "./components";
 import type { TimerItem, ViewKey } from "./components";
 import { quickFixes } from "./data";
@@ -23,7 +16,7 @@ const prevStepIndex = (index: number, total: number) =>
 
 export default function App() {
   const { steps, ingredients } = useRecipe();
-  const [activeView, setActiveView] = useState<ViewKey>("inbox");
+  const [activeView, setActiveView] = useState<ViewKey>("overview");
   const [activeStepIndex, setActiveStepIndex] = useState(1);
   const [focusMode, setFocusMode] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -129,7 +122,7 @@ export default function App() {
     .join(" ");
 
   const viewTitleMap: Record<ViewKey, string> = {
-    inbox: "Paste recipe",
+    overview: "Paste recipe",
     processing: "Processing",
     review: "Review",
     cook: "Cook Mode",
@@ -158,50 +151,7 @@ export default function App() {
             isMobile={false}
           />
 
-          <main className="mt-8 hidden gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_320px]">
-            <section className="space-y-6">
-              <InboxPanel />
-              <ProcessingPanel />
-              <ReviewPanel
-                steps={steps}
-                ingredients={ingredients}
-                quickFixes={quickFixes}
-              />
-              <CookPanel
-                focusMode={focusMode}
-                progressLabel={progressLabel}
-                currentTimerLabel={currentTimerLabel}
-                activeStep={activeStep}
-                onPrev={handlePrevStep}
-                onNext={handleNextStep}
-                onStartTimer={handleStartTimer}
-                onRescue={handleRescue}
-                timers={timers}
-                showRescue={showRescue}
-              />
-              <LibraryPanel />
-            </section>
-
-            <aside className="space-y-6">
-              <WhyPanel />
-              <SettingsPanel
-                focusMode={focusMode}
-                reduceMotion={reduceMotion}
-                largeText={largeText}
-                lineSpacing={lineSpacing}
-                soundOn={soundOn}
-                colorIntensity={colorIntensity}
-                onToggleFocus={() => setFocusMode((value) => !value)}
-                onToggleReduceMotion={() => setReduceMotion((value) => !value)}
-                onToggleLargeText={() => setLargeText((value) => !value)}
-                onToggleSound={() => setSoundOn((value) => !value)}
-                onChangeLineSpacing={setLineSpacing}
-                onChangeColorIntensity={setColorIntensity}
-              />
-            </aside>
-          </main>
-
-          <main className="mt-6 space-y-6 lg:hidden">
+          <main className="mt-6 space-y-6">
             <MobileView
               view={activeView}
               steps={steps}

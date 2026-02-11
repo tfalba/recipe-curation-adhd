@@ -43,7 +43,7 @@ export default function CookPanel({
       </div>
       <div
         className={`mt-6 grid gap-4 ${
-          focusMode ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_280px]"
+          focusMode ? "lg:grid-cols-1" : "md:grid-cols-[minmax(0,1fr)_280px]"
         }`}
       >
         <div className="rounded-3xl border border-border bg-bg p-6">

@@ -7,7 +7,7 @@ type BottomNavProps = {
 
 export default function BottomNav({ activeView, onChange }: BottomNavProps) {
   const items: { key: ViewKey; label: string }[] = [
-    { key: "inbox", label: "Inbox" },
+    { key: "overview", label: "Overview" },
     { key: "review", label: "Review" },
     { key: "cook", label: "Cook" },
     { key: "library", label: "Library" },
@@ -15,7 +15,7 @@ export default function BottomNav({ activeView, onChange }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-around border-t border-border bg-surface/90 px-4 py-3 text-xs text-muted backdrop-blur lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-around border-t border-border bg-surface/90 px-4 py-3 text-xs text-muted backdrop-blur">
       {items.map((item) => (
         <button
           key={item.key}

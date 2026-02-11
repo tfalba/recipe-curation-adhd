@@ -6,6 +6,7 @@ import LibraryPanel from "./LibraryPanel";
 import ProcessingPanel from "./ProcessingPanel";
 import ReviewPanel from "./ReviewPanel";
 import SettingsPanel from "./SettingsPanel";
+import WhyPanel from "./WhyPanel";
 
 type MobileViewProps = {
   view: ViewKey;
@@ -73,6 +74,11 @@ export default function MobileView({
     case "settings":
       return <SettingsPanel {...settingsProps} />;
     default:
-      return <InboxPanel />;
+      return (
+        <section>
+          <InboxPanel />
+          <WhyPanel />
+        </section>
+      );
   }
 }

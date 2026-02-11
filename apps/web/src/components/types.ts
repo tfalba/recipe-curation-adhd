@@ -1,5 +1,5 @@
 export type ViewKey =
-  | "inbox"
+  | "overview"
   | "processing"
   | "review"
   | "cook"
