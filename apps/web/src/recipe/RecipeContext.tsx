@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Ingredient, StepData } from "../components";
-import { ingredients as seedIngredients, steps as seedSteps } from "../data";
+import { ingredientsLemonChicken as seedIngredients, stepsLemonChicken as seedSteps } from "../data";
 
 type RecipeStatus = "idle" | "loading" | "success" | "error";
 

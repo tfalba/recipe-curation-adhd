@@ -26,6 +26,33 @@ export default function CookPanel({
   timers,
   showRescue,
 }: CookPanelProps) {
+  const renderBullet = (text: string) => {
+    const names = activeStep.ingredients
+      .map((ingredient) => ingredient.name)
+      .filter((name) => name.trim().length > 0);
+
+    if (names.length === 0) {
+      return text;
+    }
+
+    const escaped = names
+      .sort((a, b) => b.length - a.length)
+      .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const pattern = new RegExp(`(${escaped.join("|")})`, "gi");
+    const parts = text.split(pattern);
+
+    return parts.map((part, index) => {
+      if (index % 2 === 1) {
+        return (
+          <span key={`${part}-${index}`} className="text-accent underline decoration-accent">
+            {part}
+          </span>
+        );
+      }
+      return <span key={`${part}-${index}`}>{part}</span>;
+    });
+  };
+
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -60,7 +87,7 @@ export default function CookPanel({
           </h4>
           <ul className="recipe-prose mt-4 list-disc space-y-3 pl-5 text-base text-text">
             {activeStep.bullets.map((bullet) => (
-              <li key={bullet}>{bullet}</li>
+              <li key={bullet}>{renderBullet(bullet)}</li>
             ))}
           </ul>
           <div className="mt-6 flex flex-wrap gap-3">
