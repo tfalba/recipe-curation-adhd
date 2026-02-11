@@ -235,6 +235,24 @@ export const ingredientsSheetPanSalmon: Ingredient[] = [
   { name: "Fresh dill", qty: "1 tbsp", note: "chopped" },
 ];
 
+export const libraryRecipes = [
+  {
+    title: recipeTitleLemonChicken,
+    steps: stepsLemonChicken,
+    ingredients: ingredientsLemonChicken,
+  },
+  {
+    title: recipeTitleMisoNoodles,
+    steps: stepsMisoNoodles,
+    ingredients: ingredientsMisoNoodles,
+  },
+  {
+    title: recipeTitleSheetPanSalmon,
+    steps: stepsSheetPanSalmon,
+    ingredients: ingredientsSheetPanSalmon,
+  },
+];
+
 export const quickFixes = [
   "Split long steps",
   "Convert to bullets",

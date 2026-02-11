@@ -25,6 +25,11 @@ type RecipeContextValue = {
   status: RecipeStatus;
   error: string | null;
   generateFromText: () => Promise<void>;
+  applyRecipe: (recipe: {
+    title: string;
+    steps: StepData[];
+    ingredients: Ingredient[];
+  }) => void;
   setSteps: (steps: StepData[]) => void;
   setIngredients: (ingredients: Ingredient[]) => void;
 };
@@ -98,6 +103,13 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       status,
       error,
       generateFromText,
+      applyRecipe: (recipe) => {
+        setRecipeTitle(recipe.title);
+        setSteps(recipe.steps);
+        setIngredients(recipe.ingredients);
+        setStatus("success");
+        setError(null);
+      },
       setSteps,
       setIngredients,
     }),
