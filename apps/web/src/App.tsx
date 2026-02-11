@@ -8,6 +8,7 @@ import {
 import type { TimerItem, ViewKey } from "./components";
 import { quickFixes } from "./data";
 import { useRecipe } from "./recipe/RecipeContext";
+import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
 
 const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
@@ -15,7 +16,15 @@ const prevStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index - 1 + total) % total;
 
 export default function App() {
-  const { steps, ingredients, recipeTitle } = useRecipe();
+  const {
+    steps,
+    ingredients,
+    recipeTitle,
+    recipeVersion,
+    status,
+    hasSelectedRecipe,
+    clearRecipeSelection,
+  } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [focusMode, setFocusMode] = useState(true);
@@ -93,11 +102,28 @@ export default function App() {
     window.setTimeout(() => setShowRescue(false), 4000);
   };
 
+  const resetUiDefaults = () => {
+    setTimers([]);
+    setActiveStepIndex(0);
+    setShowRescue(false);
+    setFocusMode(true);
+    setReduceMotion(false);
+    setLargeText(false);
+    setLineSpacing("roomy");
+    setSoundOn(true);
+    setColorIntensity("extra-contrast");
+  };
+
   useEffect(() => {
     if (activeStepIndex >= steps.length && steps.length > 0) {
       setActiveStepIndex(0);
     }
   }, [activeStepIndex, steps.length]);
+
+  useEffect(() => {
+    setTimers([]);
+    setActiveStepIndex(0);
+  }, [recipeVersion]);
 
   const rootClass = [
     "app-glass-bg text-text font-body",
@@ -129,11 +155,12 @@ export default function App() {
 
   return (
     <div className={rootClass} data-line-spacing={lineSpacing}>
+      {activeView === "overview" && <HeroAboveTheFold />}
       <AppShell>
         <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
           <TopBar
             {...appShellProps}
-            recipeTitle={recipeTitle}
+            recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
             isCook={activeView === "cook"}
           />
 
@@ -143,6 +170,15 @@ export default function App() {
               steps={steps}
               ingredients={ingredients}
               quickFixes={quickFixes}
+              hasSelectedRecipe={hasSelectedRecipe}
+              recipeTitle={recipeTitle}
+              onCreateNewGuide={() => {
+                clearRecipeSelection();
+                resetUiDefaults();
+                setActiveView("overview");
+              }}
+              onReviewGuide={() => setActiveView("review")}
+              onCookGuide={() => setActiveView("cook")}
               focusMode={focusMode}
               progressLabel={progressLabel}
               currentTimerLabel={currentTimerLabel}

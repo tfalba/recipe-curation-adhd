@@ -20,6 +20,8 @@ type RecipeContextValue = {
   setRecipeText: (value: string) => void;
   recipeTitle: string;
   setRecipeTitle: (value: string) => void;
+  recipeVersion: number;
+  hasSelectedRecipe: boolean;
   steps: StepData[];
   ingredients: Ingredient[];
   status: RecipeStatus;
@@ -30,6 +32,7 @@ type RecipeContextValue = {
     steps: StepData[];
     ingredients: Ingredient[];
   }) => void;
+  clearRecipeSelection: () => void;
   setSteps: (steps: StepData[]) => void;
   setIngredients: (ingredients: Ingredient[]) => void;
 };
@@ -43,6 +46,8 @@ const API_BASE =
 export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipeText, setRecipeText] = useState("");
   const [recipeTitle, setRecipeTitle] = useState(seedTitle);
+  const [recipeVersion, setRecipeVersion] = useState(0);
+  const [hasSelectedRecipe, setHasSelectedRecipe] = useState(true);
   const [steps, setSteps] = useState<StepData[]>(seedSteps);
   const [ingredients, setIngredients] = useState<Ingredient[]>(seedIngredients);
   const [status, setStatus] = useState<RecipeStatus>("idle");
@@ -85,6 +90,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       setSteps(payload.steps);
       setIngredients(payload.ingredients);
       setStatus("success");
+      setHasSelectedRecipe(true);
+      setRecipeVersion((value) => value + 1);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
@@ -98,6 +105,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       setRecipeText,
       recipeTitle,
       setRecipeTitle,
+      recipeVersion,
+      hasSelectedRecipe,
       steps,
       ingredients,
       status,
@@ -109,11 +118,30 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
         setIngredients(recipe.ingredients);
         setStatus("success");
         setError(null);
+        setHasSelectedRecipe(true);
+        setRecipeVersion((value) => value + 1);
+      },
+      clearRecipeSelection: () => {
+        setRecipeTitle("Get Started");
+        setRecipeText("");
+        setStatus("idle");
+        setError(null);
+        setHasSelectedRecipe(false);
       },
       setSteps,
       setIngredients,
     }),
-    [recipeText, recipeTitle, steps, ingredients, status, error, generateFromText]
+    [
+      recipeText,
+      recipeTitle,
+      recipeVersion,
+      hasSelectedRecipe,
+      steps,
+      ingredients,
+      status,
+      error,
+      generateFromText,
+    ]
   );
 
   return (

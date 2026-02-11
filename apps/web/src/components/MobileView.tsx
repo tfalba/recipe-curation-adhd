@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import type { Ingredient, StepData, TimerItem, ViewKey } from "./types";
 import CookPanel from "./CookPanel";
+import GetStartedPanel from "./GetStartedPanel";
 import InboxPanel from "./InboxPanel";
 import LibraryPanel from "./LibraryPanel";
 import ProcessingPanel from "./ProcessingPanel";
@@ -13,6 +14,11 @@ type MobileViewProps = {
   steps: StepData[];
   ingredients: Ingredient[];
   quickFixes: string[];
+  hasSelectedRecipe: boolean;
+  recipeTitle: string;
+  onCreateNewGuide: () => void;
+  onReviewGuide: () => void;
+  onCookGuide: () => void;
   focusMode: boolean;
   progressLabel: string;
   currentTimerLabel: string;
@@ -31,6 +37,11 @@ export default function MobileView({
   steps,
   ingredients,
   quickFixes,
+  hasSelectedRecipe,
+  recipeTitle,
+  onCreateNewGuide,
+  onReviewGuide,
+  onCookGuide,
   focusMode,
   progressLabel,
   currentTimerLabel,
@@ -46,6 +57,20 @@ export default function MobileView({
   switch (view) {
     case "processing":
       return <ProcessingPanel />;
+    case "overview":
+      return hasSelectedRecipe ? (
+        <GetStartedPanel
+          recipeTitle={recipeTitle}
+          onCreateNewGuide={onCreateNewGuide}
+          onReviewGuide={onReviewGuide}
+          onCookGuide={onCookGuide}
+        />
+      ) : (
+        <section>
+          <InboxPanel />
+          <WhyPanel />
+        </section>
+      );
     case "review":
       return (
         <ReviewPanel
@@ -74,11 +99,6 @@ export default function MobileView({
     case "settings":
       return <SettingsPanel {...settingsProps} />;
     default:
-      return (
-        <section>
-          <InboxPanel />
-          <WhyPanel />
-        </section>
-      );
+      return <WhyPanel />;
   }
 }

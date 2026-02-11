@@ -1,6 +1,7 @@
 export { default as AppShell } from "./AppShell";
 export { default as BottomNav } from "./BottomNav";
 export { default as CookPanel } from "./CookPanel";
+export { default as GetStartedPanel } from "./GetStartedPanel";
 export { default as InboxPanel } from "./InboxPanel";
 export { default as LibraryPanel } from "./LibraryPanel";
 export { default as MobileView } from "./MobileView";

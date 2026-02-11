@@ -15,7 +15,7 @@ export default function LibraryPanel() {
           </h3>
         </div>
         <button className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-white">
-          New paste
+          New Recipe
         </button>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-3">
