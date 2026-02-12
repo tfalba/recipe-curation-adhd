@@ -2,36 +2,131 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --shadow-panel: 0 12px 30px rgba(0,0,0,0.45);
-  --shadow-inset: inset 0 1px 0 rgba(255,255,255,0.06);
-  --shadow-focus: 0 0 0 3px rgba(37,99,235,0.55);
-  --shadow-glow: 0 0 24px rgba(163,230,53,0.25);
-    --color-bg: #0B1220;
+  --shadow-panel: 0 12px 30px rgba(0, 0, 0, 0.45);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.55);
+  --shadow-glow: 0 0 24px rgba(163, 230, 53, 0.25);
+  --color-bg: #0b1220;
   --color-surface: #111827;
-  --color-surface-2: #0F172A;
-  --color-border: #1F2937;
-  --color-text: #F8FAFC;
-  --color-muted: #94A3B8;
+  --color-surface-2: #0f172a;
+  --color-border: #1f2937;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
 
-  --color-primary: #2563EB;
-  --color-accent: #A3E635;
-  --color-violet: #7C3AED;
+  --color-primary: #2563eb;
+  --color-accent: #a3e635;
+  --color-violet: #7c3aed;
 
-  --color-success: #22C55E;
-  --color-warning: #FBBF24;
-  --color-danger: #F43F5E;
-  --color-info: #38BDF8;
+  --color-success: #22c55e;
+  --color-warning: #fbbf24;
+  --color-danger: #f43f5e;
+  --color-info: #38bdf8;
 }
 
 :root {
   color-scheme: dark;
+  --hero-radial-1: radial-gradient(
+    900px 620px at 12% -8%,
+    rgba(124, 58, 237, 0.68),
+    transparent 60%
+  );
+  --hero-radial-2: radial-gradient(
+    820px 560px at 88% 6%,
+    rgba(148, 163, 184, 0.88),
+    transparent 58%
+  );
+  --hero-linear: linear-gradient(
+    140deg,
+    rgba(124, 58, 237, 0.42),
+    rgba(148, 163, 184, 0.1) 55%,
+    rgba(11, 18, 32, 0.98)
+  );
+  --hero-sheen: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+}
+
+.theme-light {
+  color-scheme: light;
+  --color-bg: #fff8e7;
+  --color-surface: #fffaed;
+  --color-surface-2: #f6e9c8;
+  --color-border: #e7d9b5;
+  --color-text: #3b2f2a;
+  --color-muted: #64564b;
+  --color-primary: #e4573d;
+  --color-accent: #2b7609;
+  --color-violet: #f59a31;
+  --color-success: #3e9c6d;
+  --color-warning: #e9b949;
+  --color-danger: #e2504c;
+  --color-info: #5aa9e6;
+  --shadow-panel: 0 12px 30px rgba(139, 103, 69, 0.18);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  --shadow-focus: 0 0 0 3px rgba(228, 87, 61, 0.35);
+  --shadow-glow: 0 0 0 1px rgba(127, 176, 105, 0.28),
+    0 0 24px rgba(127, 176, 105, 0.15);
+  --hero-radial-1: radial-gradient(
+    900px 620px at 10% -10%,
+    rgba(233, 185, 73, 0.35),
+    transparent 62%
+  );
+  --hero-radial-2: radial-gradient(
+    760px 520px at 85% 8%,
+    rgba(127, 176, 105, 0.35),
+    transparent 58%
+  );
+  --hero-linear: linear-gradient(
+    140deg,
+    rgba(255, 248, 231, 0.9),
+    rgba(255, 243, 214, 0.65) 55%,
+    rgba(250, 240, 221, 0.9)
+  );
+  --hero-sheen: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.1)
+  );
+}
+
+.theme-dark {
+  color-scheme: dark;
+  --shadow-panel: 0 12px 30px rgba(0, 0, 0, 0.45);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.55);
+  --shadow-glow: 0 0 0 1px rgba(163, 230, 53, 0.28),
+    0 0 24px rgba(163, 230, 53, 0.15);
+  --shadow-contrast: 0 0 0 3px rgba(163, 230, 53, 0.6);
+  --color-bg: rgb(11, 18, 32);
+  --color-surface: rgb(17, 24, 39);
+  --color-surface-2: rgb(15, 23, 42);
+  --color-border: rgb(31, 41, 55);
+  --color-text: rgb(248, 250, 252);
+  --color-muted: rgb(188, 207, 233);
+
+  --color-primary: rgb(37, 99, 235);
+  --color-accent: rgb(163, 230, 53);
+  --color-violet: rgb(124, 58, 237);
+
+  --color-success: rgb(34, 197, 94);
+  --color-warning: rgb(251, 191, 36);
+  --color-danger: rgb(244, 63, 94);
+  --color-info: rgb(56, 189, 248);
 }
 
 body {
   margin: 0;
-  background: #0B1220;
-  color: #F8FAFC;
-  font-family: "Inter", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family:
+    "Inter",
+    "Manrope",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 
 .app-glass-bg {
@@ -46,10 +141,7 @@ body {
   position: fixed;
   inset: -20% -10% -10% -10%;
   z-index: -2;
-  background:
-    radial-gradient(900px 620px at 12% -8%, rgba(124, 58, 237, 0.68), transparent 60%),
-    radial-gradient(820px 560px at 88% 6%, rgba(148, 163, 184, 0.88), transparent 58%),
-    linear-gradient(140deg, rgba(124, 58, 237, 0.42), rgba(148, 163, 184, 0.1) 55%, rgba(11, 18, 32, 0.98));
+  background: var(--hero-radial-1), var(--hero-radial-2), var(--hero-linear);
 }
 
 .app-glass-bg::after {
@@ -57,13 +149,15 @@ body {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  background: var(--hero-sheen);
   backdrop-filter: blur(18px) saturate(125%);
 }
 
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.55);
+  /* box-shadow: 0 0 0 3px var(--color-accent, 0.55); */
+  box-shadow: var(--shadow-focus);
+  /* box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.55); */
   border-radius: 12px;
 }
 
@@ -73,7 +167,10 @@ body {
 }
 
 .glow-border {
-  box-shadow: 0 0 0 1px rgba(163, 230, 53, 0.28), 0 0 24px rgba(163, 230, 53, 0.15);
+  /* box-shadow:
+    0 0 0 1px rgba(163, 230, 53, 0.28),
+    0 0 24px rgba(163, 230, 53, 0.15); */
+    box-shadow: var(--shadow-glow);
 }
 
 .reduce-motion * {
@@ -92,5 +189,6 @@ body {
 .extra-contrast button:focus-visible,
 .extra-contrast input:focus-visible,
 .extra-contrast textarea:focus-visible {
-  box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.6);
+  /* box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.6); */
+  box-shadow: var(--shadow-contrast);
 }

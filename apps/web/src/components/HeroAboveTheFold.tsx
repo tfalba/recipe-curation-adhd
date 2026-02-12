@@ -1,11 +1,19 @@
 import backgroundHero from "../assets/genius-kitchen.jpg";
+import backgroundHeroLight from "../assets/rustic-table-background.png";
+import backgroundHeroLight2 from "../assets/colorful-food-cutting-board.jpeg";
+import backgroundHeroLight3 from "../assets/congerdesign-chunks-594496_1920.jpg";
+import backgroundHeroLight4 from "../assets/congerdesign-mushrooms-756406_1920.jpg";
+import backgroundHeroLight5 from "../assets/congerdesign-waffles-2190961_1920.jpg";
+import backgroundHeroLight6 from "../assets/daria-yakovleva-cooking-2132874_1920.jpg";
 
 type HeroAboveTheFoldProps = {
+  themeMode: "dark" | "light";
   onCreateNewGuide: () => void;
   onSeeExample: () => void;
 };
 
 export function HeroAboveTheFold({
+  themeMode,
   onCreateNewGuide,
   onSeeExample,
 }: HeroAboveTheFoldProps) {
@@ -13,8 +21,8 @@ export function HeroAboveTheFold({
     <section className="relative overflow-hidden bg-bg text-text">
       {/* Background image (Prompt 1) */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-45"
-        style={{ backgroundImage: `url(${backgroundHero})` }}
+        className="absolute inset-0 bg-cover bg-center opacity-75"
+        style={{ backgroundImage: `url(${themeMode === "dark" ? backgroundHero : backgroundHeroLight3})` }}
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-6xl px-6 py-14 md:py-20">
@@ -29,7 +37,7 @@ export function HeroAboveTheFold({
               Cook one clear step <span className="text-muted">at a time.</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted max-w-xl">
+            <p className="text-lg md:text-xl text-accent max-w-xl bg-surface/30">
               Paste any recipe. We turn it into a distraction-friendly cooking guide:
               short steps, ingredient callouts, and timers—so you keep moving.
             </p>
@@ -38,21 +46,21 @@ export function HeroAboveTheFold({
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <button
                 onClick={onCreateNewGuide}
-                className="h-[44px] px-6 rounded-2xl bg-primary text-white font-semibold shadow-panel hover:opacity-90 transition-normal"
+                className="h-[44px] px-6 rounded-2xl bg-primary text-text font-semibold shadow-panel hover:opacity-90 transition-normal"
               >
                 Turn any recipe into a cooking guide
               </button>
 
               <button
                 onClick={onSeeExample}
-                className="h-[44px] px-6 rounded-2xl border border-border bg-surface/40 text-text hover:bg-surface-2 transition-normal"
+                className="h-[44px] px-6 rounded-2xl border border-border bg-violet/40 text-text hover:bg-surface-2 transition-normal"
               >
                 See an example
               </button>
             </div>
 
             {/* Trust + reassurance */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted bg-surface/50 font-semibold">
               <span>✓ Edit anything before you start</span>
               <span>✓ No walls of text in Cook Mode</span>
               <span>✓ Progress + “Where was I?” rescue</span>
@@ -77,7 +85,7 @@ export function HeroAboveTheFold({
 
           <div className="md:col-span-6">
 
-            <div className="mt-4 text-sm text-muted">
+            <div className="mt-4 text-sm text-muted bg-surface/50 font-semibold">
               Optimized for low-glare kitchen use • big tap targets • thick focus rings
             </div>
           </div>

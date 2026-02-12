@@ -70,7 +70,7 @@ export default function InboxPanel() {
           />
           <button
             onClick={handleUrlSubmit}
-            className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-white"
+            className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-text"
           >
             Use URL
           </button>
@@ -102,7 +102,7 @@ export default function InboxPanel() {
       <button
         onClick={generateFromText}
         disabled={status === "loading"}
-        className="mt-4 w-full min-h-[44px] rounded-2xl bg-accent px-4 text-sm font-semibold text-black shadow-glow transition duration-quick ease-snappy hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-4 w-full min-h-[44px] rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-glow transition duration-quick ease-snappy hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {status === "loading" ? "Building guide..." : "Turn this into a cooking guide"}
       </button>

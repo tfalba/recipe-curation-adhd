@@ -99,7 +99,7 @@ export default function CookPanel({
             One step per screen. Big, calm, focused.
           </h3>
         </div>
-        <span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-black">
+        <span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-bg">
           {focusMode ? "Focus mode on" : "Standard mode"}
         </span>
       </div>
@@ -113,7 +113,7 @@ export default function CookPanel({
             <span className="rounded-full bg-surface-2 px-3 py-1 text-xs text-muted">
               {progressLabel}
             </span>
-            <span className="rounded-full bg-primary/20 px-3 py-1 text-xs text-primary">
+            <span className="rounded-full bg-primary/40 px-3 py-1 text-xs text-muted">
               {currentTimerLabel}
             </span>
           </div>
@@ -128,26 +128,26 @@ export default function CookPanel({
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={onPrev}
-              className="min-h-[52px] flex-1 rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
+              className="min-h-[52px] flex-1 rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted shadow-focus"
             >
               Back
             </button>
             <button
               onClick={onStartTimer}
-              className="min-h-[52px] flex-1 rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
+              className="min-h-[52px] flex-1 rounded-2xl border border-border bg-violet/40 px-4 text-sm font-semibold text-muted shadow-glow"
             >
               Start timer
             </button>
             <button
               onClick={onNext}
-              className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-black shadow-glow"
+              className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-glow"
             >
               Next
             </button>
           </div>
           <button
             onClick={onRescue}
-            className="mt-4 w-full min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
+            className="mt-4 w-full min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted shadow-inset"
           >
             I got distracted
           </button>
@@ -178,7 +178,7 @@ export default function CookPanel({
                   {activeStep.ingredients.map((ingredient) => (
                     <li
                       key={`${ingredient.name}-${ingredient.qty}`}
-                      className={`group relative rounded-full bg-surface border border-violet/80 px-3 py-1 text-xs text-text focus-within:ring-2 focus-within:ring-white/60 transition duration-quick ease-snappy ${
+                      className={`group relative rounded-full bg-surface border border-violet/80 px-3 py-1 text-xs text-text focus-within:ring-2 focus-within:ring-text/60 transition duration-quick ease-snappy ${
                         activeIngredientId &&
                         activeIngredientId !==
                           `${ingredient.name}-${ingredient.qty}`

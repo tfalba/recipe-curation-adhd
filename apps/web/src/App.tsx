@@ -36,6 +36,18 @@ export default function App() {
   const [colorIntensity, setColorIntensity] = useState<
     "standard" | "extra-contrast"
   >("extra-contrast");
+  const [themeMode, setThemeMode] = useState<"dark" | "light">(() => {
+    if (typeof window === "undefined") {
+      return "dark";
+    }
+    const stored = window.localStorage.getItem("recipe-theme");
+    if (stored === "light" || stored === "dark") {
+      return stored;
+    }
+    return window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark";
+  });
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
 
@@ -113,6 +125,7 @@ export default function App() {
     setLineSpacing("roomy");
     setSoundOn(true);
     setColorIntensity("extra-contrast");
+    setThemeMode("dark");
   };
 
   const handleCreateNewGuide = () => {
@@ -134,12 +147,17 @@ export default function App() {
   }, [activeStepIndex, steps.length]);
 
   useEffect(() => {
+    window.localStorage.setItem("recipe-theme", themeMode);
+  }, [themeMode]);
+
+  useEffect(() => {
     setTimers([]);
     setActiveStepIndex(0);
   }, [recipeVersion]);
 
   const rootClass = [
     "app-glass-bg text-text font-body",
+    themeMode === "light" ? "theme-light" : "theme-dark",
     reduceMotion ? "reduce-motion" : "",
     largeText ? "text-[17px]" : "text-[15px] md:text-base",
     colorIntensity === "extra-contrast" ? "extra-contrast" : "standard-contrast",
@@ -170,6 +188,7 @@ export default function App() {
     <div className={rootClass} data-line-spacing={lineSpacing}>
       {activeView === "overview" && (
         <HeroAboveTheFold
+          themeMode={themeMode}
           onCreateNewGuide={() => handleCreateNewGuide()}
           onSeeExample={() => setActiveView("cook")}
         />
@@ -213,10 +232,13 @@ export default function App() {
                 lineSpacing,
                 soundOn,
                 colorIntensity,
+                themeMode,
                 onToggleFocus: () => setFocusMode((value) => !value),
                 onToggleReduceMotion: () => setReduceMotion((value) => !value),
                 onToggleLargeText: () => setLargeText((value) => !value),
                 onToggleSound: () => setSoundOn((value) => !value),
+                onToggleTheme: () =>
+                  setThemeMode((value) => (value === "dark" ? "light" : "dark")),
                 onChangeLineSpacing: setLineSpacing,
                 onChangeColorIntensity: setColorIntensity,
               }}

@@ -5,10 +5,12 @@ type SettingsPanelProps = {
   lineSpacing: "normal" | "roomy";
   soundOn: boolean;
   colorIntensity: "standard" | "extra-contrast";
+  themeMode: "dark" | "light";
   onToggleFocus: () => void;
   onToggleReduceMotion: () => void;
   onToggleLargeText: () => void;
   onToggleSound: () => void;
+  onToggleTheme: () => void;
   onChangeLineSpacing: (value: "normal" | "roomy") => void;
   onChangeColorIntensity: (value: "standard" | "extra-contrast") => void;
 };
@@ -27,10 +29,12 @@ export default function SettingsPanel({
   lineSpacing,
   soundOn,
   colorIntensity,
+  themeMode,
   onToggleFocus,
   onToggleReduceMotion,
   onToggleLargeText,
   onToggleSound,
+  onToggleTheme,
   onChangeLineSpacing,
   onChangeColorIntensity,
 }: SettingsPanelProps) {
@@ -65,6 +69,12 @@ export default function SettingsPanel({
           active={soundOn}
         />
         <SettingRow
+          label="Theme"
+          value={themeMode === "dark" ? "Dark" : "Light"}
+          onClick={onToggleTheme}
+          active={themeMode === "light"}
+        />
+        <SettingRow
           label="Line spacing"
           value={lineSpacing === "roomy" ? "Roomy" : "Normal"}
           onClick={() =>
@@ -94,7 +104,7 @@ function SettingRow({ label, value, active, onClick }: SettingRowProps) {
     <button
       onClick={onClick}
       className={`flex w-full items-center justify-between rounded-2xl border border-border px-3 py-3 text-sm ${
-        active ? "bg-accent/20 text-accent" : "bg-surface-2 text-muted"
+        active ? "bg-accent/20 text-muted" : "bg-surface-2 text-muted"
       }`}
     >
       <span>{label}</span>

@@ -20,7 +20,7 @@ export default function TopBar({
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface/90 px-5 py-4 shadow-panel backdrop-blur">
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/20 text-primary">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/40 text-muted">
           RG
         </div>
         <div>
@@ -52,7 +52,7 @@ export default function TopBar({
           Focus
         </button>
         {showSaveGuide ? (
-          <button className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-white shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]">
+          <button className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-text shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]">
             Save Guide
           </button>
         ) : null}

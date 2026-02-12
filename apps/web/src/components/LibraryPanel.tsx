@@ -22,7 +22,7 @@ export default function LibraryPanel({
             Library for fast re-cooks
           </h3>
         </div>
-        <button className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-white">
+        <button className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-text">
           New Recipe
         </button>
       </div>
@@ -40,7 +40,7 @@ export default function LibraryPanel({
                   applyRecipe(recipe);
                   onSelectRecipeReview?.();
                 }}
-              className="min-h-[36px] flex-1 rounded-full border border-violet/60 bg-violet/20 text-xs font-semibold text-white shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow">
+              className="min-h-[36px] flex-1 rounded-full border border-violet/60 bg-violet/20 text-xs font-semibold text-text shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow">
                 Review
               </button>
             
@@ -49,7 +49,7 @@ export default function LibraryPanel({
                   applyRecipe(recipe);
                   onSelectRecipeCook?.();
                 }}
-                className="min-h-[36px] flex-1 rounded-full bg-accent text-xs font-semibold text-black"
+                className="min-h-[36px] flex-1 rounded-full bg-accent text-xs font-semibold text-bg"
               >
                 Cook
               </button>
