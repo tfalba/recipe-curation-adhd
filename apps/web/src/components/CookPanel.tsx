@@ -205,6 +205,7 @@ export default function CookPanel({
                             `${ingredient.name}-${ingredient.qty}`
                           )
                         }
+                        onTouchEnd={() => setTouchedIngredient(null)}
                         className="text-left text-text focus:outline-none"
                       >
                         {ingredient.name}

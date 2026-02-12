@@ -30,7 +30,7 @@ export default function GetStartedPanel({
           <div className="grid gap-4 sm:grid-cols-2">
             <button
               onClick={onReviewGuide}
-              className="min-h-[56px] rounded-3xl bg-violet/80 px-4 text-sm font-semibold text-white shadow-panel transition duration-quick ease-snappy hover:translate-y-[-1px]"
+              className="min-h-[56px] rounded-3xl border border-violet/60 bg-violet/20 px-4 text-sm font-semibold text-white shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow"
             >
               Review
             </button>

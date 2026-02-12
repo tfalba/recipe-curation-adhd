@@ -2,10 +2,14 @@ import { libraryRecipes } from "../data";
 import { useRecipe } from "../recipe/RecipeContext";
 
 type LibraryPanelProps = {
-  onSelectRecipe?: () => void;
+  onSelectRecipeReview?: () => void;
+  onSelectRecipeCook?: () => void;
 };
 
-export default function LibraryPanel({ onSelectRecipe }: LibraryPanelProps) {
+export default function LibraryPanel({
+  onSelectRecipeReview,
+  onSelectRecipeCook,
+}: LibraryPanelProps) {
   const { applyRecipe } = useRecipe();
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
@@ -31,17 +35,23 @@ export default function LibraryPanel({ onSelectRecipe }: LibraryPanelProps) {
             <p className="text-sm font-semibold">{recipe.title}</p>
             <p className="mt-2 text-xs text-muted">Last cooked 2 days ago</p>
             <div className="mt-3 flex gap-2">
-              <button className="min-h-[36px] flex-1 rounded-full border border-border bg-bg text-xs text-muted">
-                Edit
+              <button 
+                 onClick={() => {
+                  applyRecipe(recipe);
+                  onSelectRecipeReview?.();
+                }}
+              className="min-h-[36px] flex-1 rounded-full border border-violet/60 bg-violet/20 text-xs font-semibold text-white shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow">
+                Review
               </button>
+            
               <button
                 onClick={() => {
                   applyRecipe(recipe);
-                  onSelectRecipe?.();
+                  onSelectRecipeCook?.();
                 }}
                 className="min-h-[36px] flex-1 rounded-full bg-accent text-xs font-semibold text-black"
               >
-                Select Recipe
+                Cook
               </button>
             </div>
           </div>

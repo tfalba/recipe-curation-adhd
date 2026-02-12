@@ -180,7 +180,7 @@ export default function App() {
             {...appShellProps}
             recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
             isCook={activeView === "cook"}
-            showSaveGuide={recipeSource === "generated"}
+            showSaveGuide={recipeSource === "generated" && status === "success"}
           />
 
           <main className="mt-6 space-y-6">

@@ -76,9 +76,9 @@ export default function InboxPanel() {
           </button>
         </div>
       ) : null}
-      <div className="mt-6 rounded-2xl border border-border bg-surface-2 p-4">
+      <div className="mt-6 rounded-2xl border border-border bg-surface-2 p-2">
         <textarea
-          className="h-40 w-full resize-none bg-transparent text-sm text-text focus:outline-none"
+          className="h-40 w-full p-2 resize-none bg-transparent text-sm text-text focus:outline-none"
           placeholder="Paste recipe text here..."
           value={recipeText}
           onChange={(event) => setRecipeText(event.target.value)}
