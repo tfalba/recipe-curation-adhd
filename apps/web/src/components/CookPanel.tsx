@@ -110,7 +110,7 @@ export default function CookPanel({
           focusMode ? "lg:grid-cols-1" : "md:grid-cols-[minmax(0,1fr)_280px]"
         }`}
       >
-        <div className="rounded-3xl border border-border bg-bg p-6">
+        <div className="rounded-3xl border border-border bg-bg p-2 md:p-6">
           <div className="flex items-center justify-between">
             <span className="rounded-full bg-surface-2 px-3 py-1 text-xs text-muted">
               {progressLabel}
@@ -174,7 +174,7 @@ export default function CookPanel({
         {focusMode ? null : (
           <div className="space-y-3">
             {activeStep.ingredients.length ? (
-              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+              <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
                 <h5 className="text-sm font-semibold">
                   Ingredients for this step
                 </h5>
@@ -235,7 +235,7 @@ export default function CookPanel({
 
               </div>
             ) : null}
-            <div className="rounded-2xl border border-border bg-surface-2 p-4">
+            <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
               <h5 className="text-sm font-semibold">Next step preview</h5>
               <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted">
                 {activeStep.nextPreview.map((item) => (
@@ -243,7 +243,7 @@ export default function CookPanel({
                 ))}
               </ul>
             </div>
-            <div className="rounded-2xl border border-border bg-surface-2 p-4">
+            <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
               <h5 className="text-sm font-semibold">Active timers</h5>
               <div className="mt-3 space-y-2">
                 {timers.map((timer) => (

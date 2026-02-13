@@ -56,7 +56,7 @@ export default function ReviewPanel({
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="rounded-2xl border border-border bg-surface-2 p-4"
+              className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4"
             >
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold">Step {index + 1}</p>
@@ -86,7 +86,7 @@ export default function ReviewPanel({
           ))}
         </div>
         <div className="space-y-3">
-          <div className="rounded-2xl border border-border bg-surface-2 p-4">
+          <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
             <h4 className="text-sm font-semibold">Ingredients</h4>
             <p className="text-xs text-muted">Grouped by step (tap to change)</p>
             <div className="mt-3 space-y-3">
@@ -114,7 +114,7 @@ export default function ReviewPanel({
               Go To Cook Mode
             </button>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-2 p-4">
+          <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
             <h4 className="text-sm font-semibold">Recipe summary</h4>
             <div className="mt-3 flex flex-wrap gap-2">
               {["4 servings", "25 min", "Skillet", "High protein"].map((chip) => (

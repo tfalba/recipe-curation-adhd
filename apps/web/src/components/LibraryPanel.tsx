@@ -30,7 +30,7 @@ export default function LibraryPanel({
         {libraryRecipes.map((recipe) => (
           <div
             key={recipe.title}
-            className="rounded-2xl border border-border bg-surface-2 p-4 shadow-focus"
+            className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4 shadow-focus"
           >
             <p className="text-sm font-semibold">{recipe.title}</p>
             <p className="mt-2 text-xs text-muted">Last cooked 2 days ago</p>

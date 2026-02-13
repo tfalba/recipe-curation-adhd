@@ -203,7 +203,7 @@ export default function App() {
             showSaveGuide={recipeSource === "generated" && status === "success"}
           />
 
-          <main className="mt-6 space-y-6">
+          <main className="mt-2 md:mt-6 space-y-4 md:space-y-6">
             <MobileView
               view={activeView}
               steps={steps}
