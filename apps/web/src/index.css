@@ -58,7 +58,7 @@
   --color-muted: #64564b;
   --color-primary: #e4573d;
   --color-accent: #2b7609;
-  --color-violet: #f59a31;
+  --color-violet: #FF9800;
   --color-success: #3e9c6d;
   --color-warning: #e9b949;
   --color-danger: #e2504c;
@@ -131,7 +131,6 @@ body {
 
 .app-glass-bg {
   position: relative;
-  min-height: 100vh;
   background-color: var(--color-bg);
   isolation: isolate;
 }

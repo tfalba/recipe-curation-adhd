@@ -58,7 +58,7 @@ export default function ReviewPanel({
                 {step.chips.map((chip) => (
                   <span
                     key={chip}
-                    className="rounded-full bg-bg px-3 py-1 text-xs text-muted"
+                    className="rounded-full bg-bg px-3 py-1 text-xs text-muted shadow-focus"
                   >
                     {chip}
                   </span>
@@ -91,7 +91,7 @@ export default function ReviewPanel({
             </div>
             <button
               onClick={onGenerateCookMode}
-              className="mt-4 min-h-[36px] w-full rounded-2xl bg-primary px-4 text-sm font-semibold text-text"
+              className="mt-4 min-h-[36px] w-full rounded-2xl bg-primary px-4 text-sm font-semibold text-muted"
             >
               Go To Cook Mode
             </button>

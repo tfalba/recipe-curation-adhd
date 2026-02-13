@@ -22,7 +22,7 @@ export default function LibraryPanel({
             Library for fast re-cooks
           </h3>
         </div>
-        <button className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-text">
+        <button className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-bg">
           New Recipe
         </button>
       </div>
@@ -34,13 +34,13 @@ export default function LibraryPanel({
           >
             <p className="text-sm font-semibold">{recipe.title}</p>
             <p className="mt-2 text-xs text-muted">Last cooked 2 days ago</p>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex gap-4">
               <button 
                  onClick={() => {
                   applyRecipe(recipe);
                   onSelectRecipeReview?.();
                 }}
-              className="min-h-[36px] flex-1 rounded-full border border-violet/60 bg-violet/20 text-xs font-semibold text-text shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow">
+              className="min-h-[36px] flex-1 rounded-full border border-violet/50 bg-violet/70 text-xs font-semibold text-text shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow">
                 Review
               </button>
             
@@ -49,7 +49,7 @@ export default function LibraryPanel({
                   applyRecipe(recipe);
                   onSelectRecipeCook?.();
                 }}
-                className="min-h-[36px] flex-1 rounded-full bg-accent text-xs font-semibold text-bg"
+                className="min-h-[36px] flex-1 rounded-full bg-accent/90 border border-accent/40 text-xs font-semibold text-bg shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow"
               >
                 Cook
               </button>

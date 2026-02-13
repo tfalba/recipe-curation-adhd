@@ -5,5 +5,5 @@ type AppShellProps = {
 };
 
 export default function AppShell({ children }: AppShellProps) {
-  return <div className="min-h-screen">{children}</div>;
+  return <div className="min-h-[95vh]">{children}</div>;
 }

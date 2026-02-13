@@ -43,7 +43,7 @@ export default function SettingsPanel({
       <h4 className="text-lg font-display font-semibold">
         Settings + Accessibility
       </h4>
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-6">
         <SettingRow
           label="Focus Mode default"
           value={focusMode ? "On" : "Off"}
@@ -103,8 +103,9 @@ function SettingRow({ label, value, active, onClick }: SettingRowProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-2xl border border-border px-3 py-3 text-sm ${
-        active ? "bg-accent/20 text-muted" : "bg-surface-2 text-muted"
+      className={`flex w-full items-center justify-between rounded-2xl px-3 py-3 text-sm shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow ${
+        active ? "bg-accent/80 border border-accent text-bg" : "bg-violet50 border border-violet/40 text-muted"
+
       }`}
     >
       <span>{label}</span>

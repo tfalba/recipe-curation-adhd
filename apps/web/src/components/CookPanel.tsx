@@ -134,13 +134,13 @@ export default function CookPanel({
             </button>
             <button
               onClick={onStartTimer}
-              className="min-h-[52px] flex-1 rounded-2xl border border-border bg-violet/40 px-4 text-sm font-semibold text-muted shadow-glow"
+              className="min-h-[52px] flex-1 rounded-2xl border border-violet/50 bg-violet/70 px-4 text-sm font-semibold text-muted shadow-panel"
             >
               Start timer
             </button>
             <button
               onClick={onNext}
-              className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-glow"
+              className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-panel"
             >
               Next
             </button>
@@ -211,7 +211,7 @@ export default function CookPanel({
                         {ingredient.name}
                       </button>
                       <span
-                        className={`pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-border bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20 ${
+                        className={`pointer-events-none absolute top-full mt-2 left-1/4 -translate-x-1/2 whitespace-nowrap rounded-xl border border-violet/10 bg-violet/80 px-3 py-1 text-[11px] text-text opacity-0 shadow-panel transition duration-quick ease-snappy group-hover:opacity-100 group-focus-within:opacity-100 z-20 ${
                           touchedIngredient ===
                           `${ingredient.name}-${ingredient.qty}`
                             ? "opacity-100"

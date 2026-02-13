@@ -9,6 +9,7 @@ import type { TimerItem, ViewKey } from "./components";
 import { quickFixes } from "./data";
 import { useRecipe } from "./recipe/RecipeContext";
 import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
+import { FooterBelowTheFold } from "./components/FooterBelowTheFold";
 
 const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
@@ -28,7 +29,7 @@ export default function App() {
   } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [focusMode, setFocusMode] = useState(true);
+  const [focusMode, setFocusMode] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [largeText, setLargeText] = useState(false);
   const [lineSpacing, setLineSpacing] = useState<"normal" | "roomy">("roomy");
@@ -194,7 +195,7 @@ export default function App() {
         />
       )}
       <AppShell>
-        <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
+        <div className="mx-auto flex w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
           <TopBar
             {...appShellProps}
             recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
@@ -246,6 +247,7 @@ export default function App() {
           </main>
         </div>
       </AppShell>
+      <FooterBelowTheFold themeMode={themeMode} />
 
       <BottomNav activeView={activeView} onChange={setActiveView} />
     </div>
