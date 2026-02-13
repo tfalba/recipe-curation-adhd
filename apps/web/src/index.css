@@ -191,3 +191,14 @@ body {
   /* box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.6); */
   box-shadow: var(--shadow-contrast);
 }
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spinner-rotate 1.8s linear infinite;
+  transform-style: preserve-3d;
+}

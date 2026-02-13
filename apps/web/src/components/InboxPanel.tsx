@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useRecipe } from "../recipe/RecipeContext";
+import boilingVideo from "../assets/water-boiling.mp4";
 
 export default function InboxPanel() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -78,12 +79,25 @@ export default function InboxPanel() {
         </div>
       ) : null}
       <div className="mt-6 rounded-2xl border border-border bg-surface-2 p-2">
-        <textarea
-          className="h-40 w-full p-2 resize-none bg-transparent text-sm text-text focus:outline-none"
-          placeholder="Paste recipe text here..."
-          value={recipeText}
-          onChange={(event) => setRecipeText(event.target.value)}
-        />
+        {status === "loading" ? (
+          <div className="flex h-60 items-center justify-center overflow-hidden rounded-xl">
+            <video
+              className="h-full w-full object-cover"
+              src={boilingVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
+        ) : (
+          <textarea
+            className="h-60 w-full p-2 resize-none bg-transparent text-sm text-text focus:outline-none"
+            placeholder="Paste recipe text here..."
+            value={recipeText}
+            onChange={(event) => setRecipeText(event.target.value)}
+          />
+        )}
       </div>
       <input
         ref={fileInputRef}
