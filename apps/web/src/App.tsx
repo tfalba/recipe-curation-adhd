@@ -45,9 +45,9 @@ export default function App() {
     if (stored === "light" || stored === "dark") {
       return stored;
     }
-    return window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
+    return window.matchMedia("(prefers-color-scheme: dark").matches
+      ? "dark"
+      : "light";
   });
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
@@ -214,6 +214,7 @@ export default function App() {
               onCreateNewGuide={() => {
                 handleCreateNewGuide();
               }}
+              onCreateNewRecipe={handleCreateNewGuide}
               onReviewGuide={() => setActiveView("review")}
               onCookGuide={() => setActiveView("cook")}
               focusMode={focusMode}

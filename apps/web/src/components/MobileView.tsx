@@ -19,6 +19,7 @@ type MobileViewProps = {
   onCreateNewGuide: () => void;
   onReviewGuide: () => void;
   onCookGuide: () => void;
+  onCreateNewRecipe: () => void;
   focusMode: boolean;
   progressLabel: string;
   currentTimerLabel: string;
@@ -42,6 +43,7 @@ export default function MobileView({
   onCreateNewGuide,
   onReviewGuide,
   onCookGuide,
+  onCreateNewRecipe,
   focusMode,
   progressLabel,
   currentTimerLabel,
@@ -100,6 +102,7 @@ export default function MobileView({
         <LibraryPanel
           onSelectRecipeReview={onReviewGuide}
           onSelectRecipeCook={onCookGuide}
+          onCreateNewRecipe={onCreateNewRecipe}
         />
       );
     case "settings":

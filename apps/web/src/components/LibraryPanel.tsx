@@ -4,11 +4,13 @@ import { useRecipe } from "../recipe/RecipeContext";
 type LibraryPanelProps = {
   onSelectRecipeReview?: () => void;
   onSelectRecipeCook?: () => void;
+  onCreateNewRecipe?: () => void;
 };
 
 export default function LibraryPanel({
   onSelectRecipeReview,
   onSelectRecipeCook,
+  onCreateNewRecipe,
 }: LibraryPanelProps) {
   const { applyRecipe } = useRecipe();
   return (
@@ -22,7 +24,10 @@ export default function LibraryPanel({
             Library for fast re-cooks
           </h3>
         </div>
-        <button className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-bg">
+        <button
+          onClick={onCreateNewRecipe}
+          className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-bg"
+        >
           New Recipe
         </button>
       </div>
