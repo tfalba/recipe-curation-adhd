@@ -23,11 +23,17 @@ type RecipeContextValue = {
   recipeVersion: number;
   hasSelectedRecipe: boolean;
   recipeSource: RecipeSource;
+  savedRecipes: {
+    title: string;
+    steps: StepData[];
+    ingredients: Ingredient[];
+  }[];
   steps: StepData[];
   ingredients: Ingredient[];
   status: RecipeStatus;
   error: string | null;
   generateFromText: () => Promise<void>;
+  saveCurrentRecipe: () => boolean;
   applyRecipe: (recipe: {
     title: string;
     steps: StepData[];
@@ -50,6 +56,23 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipeVersion, setRecipeVersion] = useState(0);
   const [hasSelectedRecipe, setHasSelectedRecipe] = useState(true);
   const [recipeSource, setRecipeSource] = useState<RecipeSource>("library");
+  const [savedRecipes, setSavedRecipes] = useState<
+    { title: string; steps: StepData[]; ingredients: Ingredient[] }[]
+  >(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+    try {
+      const stored = window.localStorage.getItem("saved-recipes");
+      if (!stored) {
+        return [];
+      }
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   const [steps, setSteps] = useState<StepData[]>(seedSteps);
   const [ingredients, setIngredients] = useState<Ingredient[]>(seedIngredients);
   const [status, setStatus] = useState<RecipeStatus>("idle");
@@ -102,6 +125,21 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     }
   }, [recipeText]);
 
+  const saveCurrentRecipe = useCallback(() => {
+    if (!recipeTitle.trim() || steps.length === 0 || ingredients.length === 0) {
+      return false;
+    }
+    setSavedRecipes((current) => {
+      const next = [
+        { title: recipeTitle.trim(), steps, ingredients },
+        ...current.filter((recipe) => recipe.title !== recipeTitle.trim()),
+      ];
+      window.localStorage.setItem("saved-recipes", JSON.stringify(next));
+      return next;
+    });
+    return true;
+  }, [recipeTitle, steps, ingredients]);
+
   const value = useMemo<RecipeContextValue>(
     () => ({
       recipeText,
@@ -111,11 +149,13 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       recipeVersion,
       hasSelectedRecipe,
       recipeSource,
+      savedRecipes,
       steps,
       ingredients,
       status,
       error,
       generateFromText,
+      saveCurrentRecipe,
       applyRecipe: (recipe) => {
         setRecipeTitle(recipe.title);
         setSteps(recipe.steps);
@@ -143,11 +183,13 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       recipeVersion,
       hasSelectedRecipe,
       recipeSource,
+      savedRecipes,
       steps,
       ingredients,
       status,
       error,
       generateFromText,
+      saveCurrentRecipe,
     ]
   );
 

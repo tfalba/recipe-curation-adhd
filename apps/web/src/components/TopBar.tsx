@@ -6,6 +6,7 @@ type TopBarProps = {
   recipeTitle: string;
   isCook: boolean;
   showSaveGuide: boolean;
+  onSaveGuide?: () => void;
 };
 
 export default function TopBar({
@@ -16,6 +17,7 @@ export default function TopBar({
   recipeTitle,
   isCook,
   showSaveGuide,
+  onSaveGuide,
 }: TopBarProps) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-surface/90 px-5 py-4 shadow-panel backdrop-blur">
@@ -52,7 +54,10 @@ export default function TopBar({
           Focus
         </button>
         {showSaveGuide ? (
-          <button className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-text shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]">
+          <button
+            onClick={onSaveGuide}
+            className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-text shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]"
+          >
             Save Guide
           </button>
         ) : null}

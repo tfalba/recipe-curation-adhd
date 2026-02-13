@@ -26,6 +26,8 @@ export default function App() {
     hasSelectedRecipe,
     recipeSource,
     clearRecipeSelection,
+    saveCurrentRecipe,
+    savedRecipes,
   } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
@@ -51,6 +53,7 @@ export default function App() {
   });
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
+  const [saveNotice, setSaveNotice] = useState(false);
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
   const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
@@ -116,22 +119,8 @@ export default function App() {
     window.setTimeout(() => setShowRescue(false), 4000);
   };
 
-  const resetUiDefaults = () => {
-    setTimers([]);
-    setActiveStepIndex(0);
-    setShowRescue(false);
-    setFocusMode(false);
-    setReduceMotion(false);
-    setLargeText(false);
-    setLineSpacing("roomy");
-    setSoundOn(true);
-    setColorIntensity("extra-contrast");
-    setThemeMode("dark");
-  };
-
   const handleCreateNewGuide = () => {
     clearRecipeSelection();
-    resetUiDefaults();
     setActiveView("overview");
     window.setTimeout(() => {
       document.getElementById("inbox")?.scrollIntoView({
@@ -154,7 +143,20 @@ export default function App() {
   useEffect(() => {
     setTimers([]);
     setActiveStepIndex(0);
+    setSaveNotice(false);
   }, [recipeVersion]);
+
+  const isRecipeSaved = savedRecipes.some(
+    (recipe) => recipe.title === recipeTitle
+  );
+
+  const handleSaveGuide = () => {
+    const didSave = saveCurrentRecipe();
+    if (didSave) {
+      setSaveNotice(true);
+      window.setTimeout(() => setSaveNotice(false), 3000);
+    }
+  };
 
   const rootClass = [
     "app-glass-bg text-text font-body",
@@ -200,8 +202,16 @@ export default function App() {
             {...appShellProps}
             recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
             isCook={activeView === "cook"}
-            showSaveGuide={recipeSource === "generated" && status === "success"}
+            showSaveGuide={
+              recipeSource === "generated" && status === "success" && !isRecipeSaved
+            }
+            onSaveGuide={handleSaveGuide}
           />
+          {saveNotice ? (
+            <div className="mt-4 rounded-2xl border border-success/40 bg-success/15 px-4 py-3 text-sm text-text shadow-panel">
+              Recipe saved to your library.
+            </div>
+          ) : null}
 
           <main className="mt-2 md:mt-6 space-y-4 md:space-y-6">
             <MobileView

@@ -46,12 +46,13 @@ export default function InboxPanel() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
+          {/* ADD THIS ABILITY LATER */}
+          {/* <button
             onClick={handleUrlToggle}
             className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
           >
             Paste URL
-          </button>
+          </button> */}
           <button
             onClick={handleUploadClick}
             className="min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted"
