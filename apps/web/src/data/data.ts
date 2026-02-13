@@ -786,26 +786,26 @@ const normalizedLadyfingers = normalizeRecipePayload(recipeLadyfingers);
 const normalizedClaypotRice = normalizeRecipePayload(recipeClaypotRice);
 
 export const libraryRecipes = [
-  {
-    title: recipeTitleBananaBread,
-    steps: stepsBananaBread,
-    ingredients: ingredientsBananaBread,
-  },
-  {
-    title: recipeTitleLemonChicken,
-    steps: stepsLemonChicken,
-    ingredients: ingredientsLemonChicken,
-  },
-  {
-    title: recipeTitleMisoNoodles,
-    steps: stepsMisoNoodles,
-    ingredients: ingredientsMisoNoodles,
-  },
-  {
-    title: recipeTitleSheetPanSalmon,
-    steps: stepsSheetPanSalmon,
-    ingredients: ingredientsSheetPanSalmon,
-  },
+//   {
+//     title: recipeTitleBananaBread,
+//     steps: stepsBananaBread,
+//     ingredients: ingredientsBananaBread,
+//   },
+//   {
+//     title: recipeTitleLemonChicken,
+//     steps: stepsLemonChicken,
+//     ingredients: ingredientsLemonChicken,
+//   },
+//   {
+//     title: recipeTitleMisoNoodles,
+//     steps: stepsMisoNoodles,
+//     ingredients: ingredientsMisoNoodles,
+//   },
+//   {
+//     title: recipeTitleSheetPanSalmon,
+//     steps: stepsSheetPanSalmon,
+//     ingredients: ingredientsSheetPanSalmon,
+//   },
   {
     title: normalizedShrimpCurry.recipeTitle,
     steps: normalizedShrimpCurry.steps,
@@ -823,6 +823,9 @@ export const libraryRecipes = [
   },
 ];
 
+export const ingredientsClaypotRice = normalizedClaypotRice.ingredients;
+export const stepsClaypotRice = normalizedClaypotRice.steps;
+export const recipeTitleClaypotRice = normalizedClaypotRice.recipeTitle;
 
 
 export const quickFixes = [

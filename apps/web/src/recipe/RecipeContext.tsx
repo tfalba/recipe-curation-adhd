@@ -8,9 +8,9 @@ import {
 } from "react";
 import type { Ingredient, RecipeSource, StepData } from "../components";
 import {
-  ingredientsBananaBread as seedIngredients,
-  recipeTitleBananaBread as seedTitle,
-  stepsBananaBread as seedSteps,
+  ingredientsClaypotRice as seedIngredients,
+  recipeTitleClaypotRice as seedTitle,
+  stepsClaypotRice as seedSteps,
 } from "../data/data";
 
 type RecipeStatus = "idle" | "loading" | "success" | "error";
