@@ -5,6 +5,7 @@ import type {
   StepBullet,
   StepData,
 } from "../components/types";
+import { bananaBreadRecipe } from "./bananaBread";
 import { recipeClaypotRice } from "./claypotRice";
 import { recipeLadyfingers } from "./ladyfingers";
 import { recipeShrimpCurry } from "./shrimpCurry";
@@ -779,11 +780,12 @@ export const stepsBananaBread: StepData[] = stepsBananaBreadRaw.map((step) => ({
         }
     ];
 
-export const recipeTitleBananaBread = "Banana Bread";
+// export const recipeTitleBananaBread = "Banana Bread";
 
 const normalizedShrimpCurry = normalizeRecipePayload(recipeShrimpCurry);
 const normalizedLadyfingers = normalizeRecipePayload(recipeLadyfingers);
 const normalizedClaypotRice = normalizeRecipePayload(recipeClaypotRice);
+const normalizedBananaBread = normalizeRecipePayload(bananaBreadRecipe);
 
 export const libraryRecipes = [
 //   {
@@ -820,6 +822,11 @@ export const libraryRecipes = [
     title: normalizedClaypotRice.recipeTitle,
     steps: normalizedClaypotRice.steps,
     ingredients: normalizedClaypotRice.ingredients,
+  },
+  {
+    title: normalizedBananaBread.recipeTitle,
+    steps: normalizedBananaBread.steps,
+    ingredients: normalizedBananaBread.ingredients,
   },
 ];
 
