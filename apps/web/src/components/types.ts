@@ -1,3 +1,13 @@
+export type {
+  BulletPart,
+  Ingredient,
+  NeedsNowItem,
+  RecipePayload,
+  RecipeSource,
+  StepBullet,
+  StepData,
+} from "@rc/types";
+
 export type ViewKey =
   | "overview"
   | "processing"
@@ -5,23 +15,6 @@ export type ViewKey =
   | "cook"
   | "library"
   | "settings";
-
-export type StepData = {
-  title: string;
-  bullets: string[];
-  chips: string[];
-  timerSeconds: number;
-  needsNow: { label: string; type: "ingredient" | "other" }[];
-  ingredients: Ingredient[];
-  nextPreview: string[];
-  summary: string;
-};
-
-export type Ingredient = {
-  name: string;
-  qty: string;
-  note: string;
-};
 
 export type TimerItem = {
   id: string;

@@ -61,32 +61,34 @@ export default function CookPanel({
     };
   }, []);
 
-  const renderBullet = (text: string) => {
-    const names = activeStep.ingredients
-      .map((ingredient) => ingredient.name)
-      .filter((name) => name.trim().length > 0);
-
-    if (names.length === 0) {
-      return text;
-    }
-
-    const escaped = names
-      .sort((a, b) => b.length - a.length)
-      .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    const pattern = new RegExp(`(${escaped.join("|")})`, "gi");
-    const parts = text.split(pattern);
-
-    return parts.map((part, index) => {
-      if (index % 2 === 1) {
+  const renderBulletParts = (
+    parts: { type: string; value?: string; ingredient?: { name: string } }[]
+  ) =>
+    parts.map((part, index) => {
+      if (part.type === "ingredient" && part.ingredient?.name) {
         return (
-          <span key={`${part}-${index}`} className="text-accent underline decoration-accent">
-            {part}
+          <span
+            key={`ingredient-${part.ingredient.name}-${index}`}
+            className="text-accent underline decoration-accent"
+          >
+            {part.ingredient.name}
           </span>
         );
       }
-      return <span key={`${part}-${index}`}>{part}</span>;
+      return <span key={`text-${index}`}>{part.value ?? ""}</span>;
     });
-  };
+
+  const bulletToText = (
+    parts: { type: string; value?: string; ingredient?: { name: string } }[]
+  ) =>
+    parts
+      .map((part) => {
+        if (part.type === "ingredient" && part.ingredient?.name) {
+          return part.ingredient.name;
+        }
+        return part.value ?? "";
+      })
+      .join("");
 
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
@@ -121,8 +123,10 @@ export default function CookPanel({
             {activeStep.title}
           </h4>
           <ul className="recipe-prose mt-4 list-disc space-y-3 pl-5 text-base text-text">
-            {activeStep.bullets.map((bullet) => (
-              <li key={bullet}>{renderBullet(bullet)}</li>
+            {activeStep.bullets.map((bullet, index) => (
+              <li key={`${activeStep.title}-bullet-${index}`}>
+                {renderBulletParts(bullet.parts)}
+              </li>
             ))}
           </ul>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -147,7 +151,7 @@ export default function CookPanel({
           </div>
           <button
             onClick={onRescue}
-            className="mt-4 w-full min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted shadow-inset"
+            className="mt-6 w-full min-h-[44px] rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted shadow-glow"
           >
             I got distracted
           </button>
@@ -158,7 +162,10 @@ export default function CookPanel({
               </p>
               <p className="mt-2 text-sm text-text">{activeStep.summary}</p>
               <p className="mt-1 text-xs text-muted">
-                Next action: {activeStep.bullets[0]}
+                Next action:{" "}
+                {activeStep.bullets[0]
+                  ? bulletToText(activeStep.bullets[0].parts)
+                  : ""}
               </p>
             </div>
           ) : null}

@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import OpenAI from "openai";
+import type { BulletPart, Ingredient, NeedsNowItem, StepBullet, StepData } from "@rc/types";
 
 const app = express();
 
@@ -86,9 +87,12 @@ app.post("/api/transform", async (req: Request, res: Response) => {
         "You are a helpful assistant that outputs JSON only. " +
         "Return a JSON object with keys: recipeTitle (string), ingredients (array), and steps (array). " +
         "Each ingredient: { qty: string, name: string, note: string }. " +
-        "Each step: { title: string, bullets: string[], chips: string[], timerSeconds: number, needsNow: { label: string, type: \"ingredient\" | \"other\" }[], ingredients: Ingredient[], nextPreview: string[], summary: string }. " +
+        "Each step: { title: string, bullets: { parts: { type: \"text\", value: string } | { type: \"ingredient\", ingredient: Ingredient }[] }[], chips: string[], timerSeconds: number, needsNow: { item: string | Ingredient, type: \"ingredient\" | \"other\" }[], ingredients: Ingredient[], nextPreview: string[], summary: string }. " +
         "Classify needsNow.type as \"ingredient\" for edible items from the ingredient list, and \"other\" for tools, cookware, appliances, temperatures, timers, and techniques. " +
+        "For needsNow.item, use an Ingredient object when it matches an ingredient, otherwise use a string. " +
         "Include in step.ingredients the subset of the global ingredients used in that step. " +
+        "When a bullet mentions an ingredient, represent that mention as a part with type \"ingredient\" and the ingredient object; all other text should be type \"text\". " +
+        "If a step is broad, split it into substeps and keep at most 3 bullets per step. " +
         "Examples of other: whisk, skillet, oven, 350F, medium heat, timer.",
       input:
         "Convert the recipe into structured ingredients and short chunked steps. " +
@@ -122,7 +126,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
         ? data.recipeTitle.trim()
         : "Untitled recipe";
 
-    const ingredients = data.ingredients
+    const ingredients: Ingredient[] = data.ingredients
       .filter((item) => typeof item === "object" && item !== null)
       .map((item) => {
         const candidate = item as { qty?: unknown; name?: unknown; note?: unknown };
@@ -134,7 +138,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
       })
       .filter((item) => item.name.trim().length > 0);
 
-    const steps = data.steps
+    const steps: StepData[] = data.steps
       .filter((item) => typeof item === "object" && item !== null)
       .map((item) => {
         const candidate = item as {
@@ -148,29 +152,53 @@ app.post("/api/transform", async (req: Request, res: Response) => {
           summary?: unknown;
         };
 
-        const needsNow = Array.isArray(candidate.needsNow)
+        const needsNow: NeedsNowItem[] = Array.isArray(candidate.needsNow)
           ? candidate.needsNow
               .map((entry) => {
                 if (typeof entry === "string") {
                   return {
-                    label: entry,
-                    type: looksLikeOther(entry) ? ("other" as const) : ("ingredient" as const),
+                    item: entry,
+                    type: looksLikeOther(entry)
+                      ? ("other" as const)
+                      : ("ingredient" as const),
                   };
                 }
                 if (typeof entry === "object" && entry !== null) {
-                  const need = entry as { label?: unknown; type?: unknown };
-                  const label = typeof need.label === "string" ? need.label : "";
+                  const need = entry as { item?: unknown; type?: unknown };
                   const rawType = typeof need.type === "string" ? need.type : "";
                   const type = rawType === "ingredient" ? "ingredient" : "other";
-                  const inferredType = label ? (looksLikeOther(label) ? "other" : "ingredient") : type;
-                  return { label, type: inferredType };
+
+                  if (typeof need.item === "string") {
+                    const inferredType = looksLikeOther(need.item)
+                      ? ("other" as const)
+                      : ("ingredient" as const);
+                    return { item: need.item, type: inferredType };
+                  }
+
+                  if (typeof need.item === "object" && need.item !== null) {
+                    const ing = need.item as { qty?: unknown; name?: unknown; note?: unknown };
+                    const ingredient = {
+                      qty: typeof ing.qty === "string" ? ing.qty : "",
+                      name: typeof ing.name === "string" ? ing.name : "",
+                      note: typeof ing.note === "string" ? ing.note : "",
+                    };
+                    return {
+                      item: ingredient,
+                      type: ingredient.name ? ("ingredient" as const) : ("other" as const),
+                    };
+                  }
                 }
-                return { label: "", type: "other" as const };
+                return { item: "", type: "other" as const };
               })
-              .filter((entry) => entry.label.trim().length > 0)
+              .filter((entry) => {
+                if (typeof entry.item === "string") {
+                  return entry.item.trim().length > 0;
+                }
+                return entry.item.name.trim().length > 0;
+              })
           : [];
 
-        const stepIngredients = Array.isArray(candidate.ingredients)
+        const stepIngredients: Ingredient[] = Array.isArray(candidate.ingredients)
           ? candidate.ingredients
               .filter((entry) => typeof entry === "object" && entry !== null)
               .map((entry) => {
@@ -184,11 +212,96 @@ app.post("/api/transform", async (req: Request, res: Response) => {
               .filter((entry) => entry.name.trim().length > 0)
           : [];
 
+        const ingredientMap = new Map(
+          ingredients
+            .filter((ingredient) => ingredient.name.trim().length > 0)
+            .map((ingredient) => [ingredient.name.toLowerCase(), ingredient])
+        );
+
+        const ingredientNames = Array.from(ingredientMap.keys()).sort(
+          (a, b) => b.length - a.length
+        );
+        const ingredientPattern =
+          ingredientNames.length > 0
+            ? new RegExp(
+                `(${ingredientNames
+                  .map((name) => name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&"))
+                  .join("|")})`,
+                "gi"
+              )
+            : null;
+
+        const toStructuredParts = (text: string): BulletPart[] => {
+          if (!ingredientPattern) {
+            return [{ type: "text", value: text } as BulletPart];
+          }
+          const parts = text.split(ingredientPattern);
+          return parts
+            .map((part, index) => {
+              if (index % 2 === 1) {
+                const ingredient = ingredientMap.get(part.toLowerCase());
+                if (ingredient) {
+                  return { type: "ingredient", ingredient } as BulletPart;
+                }
+              }
+              return { type: "text", value: part } as BulletPart;
+            })
+            .filter((part) =>
+              part.type === "ingredient" || (part.value ?? "").trim() !== ""
+            );
+        };
+
+        const normalizeBullet = (bullet: unknown): StepBullet | null => {
+          if (typeof bullet === "string") {
+            return { parts: toStructuredParts(bullet) };
+          }
+          if (typeof bullet === "object" && bullet !== null) {
+            const b = bullet as { parts?: unknown };
+            if (Array.isArray(b.parts)) {
+              const parts = b.parts
+                .map((part) => {
+                  if (typeof part === "string") {
+                    return { type: "text", value: part } as BulletPart;
+                  }
+                  if (typeof part === "object" && part !== null) {
+                    const p = part as { type?: unknown; value?: unknown; ingredient?: unknown };
+                    if (p.type === "text" && typeof p.value === "string") {
+                      return { type: "text", value: p.value } as BulletPart;
+                    }
+                    if (p.type === "ingredient" && typeof p.ingredient === "object" && p.ingredient !== null) {
+                      const ing = p.ingredient as { qty?: unknown; name?: unknown; note?: unknown };
+                      const ingredient = {
+                        qty: typeof ing.qty === "string" ? ing.qty : "",
+                        name: typeof ing.name === "string" ? ing.name : "",
+                        note: typeof ing.note === "string" ? ing.note : "",
+                      };
+                      if (ingredient.name.trim().length > 0) {
+                        return { type: "ingredient", ingredient } as BulletPart;
+                      }
+                    }
+                  }
+                  return null;
+                })
+                .filter((part): part is BulletPart => part !== null);
+              const normalized = parts.flatMap((part) =>
+                part.type === "text" ? toStructuredParts(part.value ?? "") : [part]
+              );
+              return { parts: normalized };
+            }
+          }
+          return null;
+        };
+
+        const bullets: StepBullet[] = Array.isArray(candidate.bullets)
+          ? candidate.bullets
+              .map(normalizeBullet)
+              .filter((bullet): bullet is StepBullet => Boolean(bullet && bullet.parts.length))
+              .slice(0, 3)
+          : [];
+
         return {
           title: typeof candidate.title === "string" ? candidate.title : "",
-          bullets: Array.isArray(candidate.bullets)
-            ? candidate.bullets.filter((b) => typeof b === "string")
-            : [],
+          bullets,
           chips: Array.isArray(candidate.chips)
             ? candidate.chips.filter((c) => typeof c === "string")
             : [],

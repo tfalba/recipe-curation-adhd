@@ -1,4 +1,4 @@
-import { libraryRecipes } from "../data";
+import { libraryRecipes } from "../data/data";
 import { useRecipe } from "../recipe/RecipeContext";
 
 type LibraryPanelProps = {
@@ -26,11 +26,11 @@ export default function LibraryPanel({
           New Recipe
         </button>
       </div>
-      <div className="mt-5 grid gap-4 md:grid-cols-3">
+      <div className="mt-5 grid gap-5 md:grid-cols-3">
         {libraryRecipes.map((recipe) => (
           <div
             key={recipe.title}
-            className="rounded-2xl border border-border bg-surface-2 p-4"
+            className="rounded-2xl border border-border bg-surface-2 p-4 shadow-focus"
           >
             <p className="text-sm font-semibold">{recipe.title}</p>
             <p className="mt-2 text-xs text-muted">Last cooked 2 days ago</p>

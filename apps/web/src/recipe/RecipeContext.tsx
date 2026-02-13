@@ -6,12 +6,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Ingredient, StepData } from "../components";
+import type { Ingredient, RecipeSource, StepData } from "../components";
 import {
   ingredientsBananaBread as seedIngredients,
   recipeTitleBananaBread as seedTitle,
   stepsBananaBread as seedSteps,
-} from "../data";
+} from "../data/data";
 
 type RecipeStatus = "idle" | "loading" | "success" | "error";
 
@@ -22,7 +22,7 @@ type RecipeContextValue = {
   setRecipeTitle: (value: string) => void;
   recipeVersion: number;
   hasSelectedRecipe: boolean;
-  recipeSource: "generated" | "library" | "none";
+  recipeSource: RecipeSource;
   steps: StepData[];
   ingredients: Ingredient[];
   status: RecipeStatus;
@@ -49,9 +49,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipeTitle, setRecipeTitle] = useState(seedTitle);
   const [recipeVersion, setRecipeVersion] = useState(0);
   const [hasSelectedRecipe, setHasSelectedRecipe] = useState(true);
-  const [recipeSource, setRecipeSource] = useState<
-    "generated" | "library" | "none"
-  >("library");
+  const [recipeSource, setRecipeSource] = useState<RecipeSource>("library");
   const [steps, setSteps] = useState<StepData[]>(seedSteps);
   const [ingredients, setIngredients] = useState<Ingredient[]>(seedIngredients);
   const [status, setStatus] = useState<RecipeStatus>("idle");

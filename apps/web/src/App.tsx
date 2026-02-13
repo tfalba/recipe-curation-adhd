@@ -6,7 +6,7 @@ import {
   TopBar,
 } from "./components";
 import type { TimerItem, ViewKey } from "./components";
-import { quickFixes } from "./data";
+import { quickFixes } from "./data/data";
 import { useRecipe } from "./recipe/RecipeContext";
 import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
 import { FooterBelowTheFold } from "./components/FooterBelowTheFold";
@@ -120,7 +120,7 @@ export default function App() {
     setTimers([]);
     setActiveStepIndex(0);
     setShowRescue(false);
-    setFocusMode(true);
+    setFocusMode(false);
     setReduceMotion(false);
     setLargeText(false);
     setLineSpacing("roomy");

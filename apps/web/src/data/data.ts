@@ -1,21 +1,92 @@
-import type { Ingredient, StepData } from "./components/types";
+import type {
+  BulletPart,
+  Ingredient,
+  RecipePayload,
+  StepBullet,
+  StepData,
+} from "../components/types";
+import { recipeClaypotRice } from "./claypotRice";
+import { recipeLadyfingers } from "./ladyfingers";
+import { recipeShrimpCurry } from "./shrimpCurry";
+
+const textBullets = (bullets: string[]): StepBullet[] =>
+  bullets.map((value) => ({
+    parts: [{ type: "text", value } as BulletPart],
+  }));
+
+const normalizeRecipePayload = (recipe: RecipePayload): RecipePayload => {
+  const normalizeParts = (parts: unknown): BulletPart[] => {
+    if (!Array.isArray(parts)) {
+      return [];
+    }
+    return parts
+      .map((part) => {
+        if (typeof part === "string") {
+          return { type: "text", value: part } as BulletPart;
+        }
+        if (typeof part === "object" && part !== null) {
+          const p = part as { type?: unknown; value?: unknown; ingredient?: unknown };
+          if (p.type === "text" && typeof p.value === "string") {
+            return { type: "text", value: p.value } as BulletPart;
+          }
+          if (p.type === "ingredient" && typeof p.ingredient === "object" && p.ingredient !== null) {
+            const ing = p.ingredient as { qty?: unknown; name?: unknown; note?: unknown };
+            const ingredient = {
+              qty: typeof ing.qty === "string" ? ing.qty : "",
+              name: typeof ing.name === "string" ? ing.name : "",
+              note: typeof ing.note === "string" ? ing.note : "",
+            };
+            return { type: "ingredient", ingredient } as BulletPart;
+          }
+        }
+        return null;
+      })
+      .filter((part): part is BulletPart => Boolean(part));
+  };
+
+  const normalizeBullets = (bullets: unknown): StepBullet[] => {
+    if (!Array.isArray(bullets)) {
+      return [];
+    }
+    return bullets
+      .map((bullet) => {
+        if (typeof bullet === "string") {
+          return { parts: textBullets([bullet])[0].parts };
+        }
+        if (typeof bullet === "object" && bullet !== null) {
+          const b = bullet as { parts?: unknown };
+          return { parts: normalizeParts(b.parts) };
+        }
+        return null;
+      })
+      .filter((bullet): bullet is StepBullet => Boolean(bullet && bullet.parts.length));
+  };
+
+  return {
+    ...recipe,
+    steps: recipe.steps.map((step) => ({
+      ...step,
+      bullets: normalizeBullets(step.bullets),
+    })),
+  };
+};
 
 export const recipeTitleLemonChicken = "Lemon Skillet Chicken";
 export const stepsLemonChicken: StepData[] = [
   {
     title: "Sear the chicken",
-    bullets: [
+    bullets: textBullets([
       "Pat dry, season with salt + pepper.",
       "Sear 3 minutes per side until golden.",
       "Move to plate, keep drippings.",
-    ],
+    ]),
     chips: ["6 min", "Medium heat", "Skillet"],
     timerSeconds: 360,
     needsNow: [
-      { label: "Chicken thighs", type: "ingredient" },
-      { label: "Olive oil", type: "ingredient" },
-      { label: "Skillet", type: "other" },
-      { label: "Tongs", type: "other" },
+      { item: { name: "Chicken thighs", qty: "1.5 lb", note: "patted dry" }, type: "ingredient" },
+      { item: { name: "Olive oil", qty: "2 tbsp", note: "divided" }, type: "ingredient" },
+      { item: "Skillet", type: "other" },
+      { item: "Tongs", type: "other" },
     ],
     ingredients: [
       { name: "Chicken thighs", qty: "1.5 lb", note: "patted dry" },
@@ -26,18 +97,18 @@ export const stepsLemonChicken: StepData[] = [
   },
   {
     title: "Build the sauce",
-    bullets: [
+    bullets: textBullets([
       "Saute garlic 30 seconds until fragrant.",
       "Whisk in broth + lemon zest.",
       "Simmer until glossy, about 3 minutes.",
-    ],
+    ]),
     chips: ["5 min", "Low heat", "Whisk"],
     timerSeconds: 300,
     needsNow: [
-      { label: "Garlic", type: "ingredient" },
-      { label: "Lemon zest", type: "ingredient" },
-      { label: "Broth", type: "ingredient" },
-      { label: "Whisk", type: "other" },
+      { item: { name: "Garlic", qty: "3 cloves", note: "minced" }, type: "ingredient" },
+      { item: { name: "Lemon", qty: "1", note: "zest + juice" }, type: "ingredient" },
+      { item: { name: "Chicken broth", qty: "1 cup", note: "low sodium" }, type: "ingredient" },
+      { item: "Whisk", type: "other" },
     ],
     ingredients: [
       { name: "Garlic", qty: "3 cloves", note: "minced" },
@@ -49,13 +120,17 @@ export const stepsLemonChicken: StepData[] = [
   },
   {
     title: "Finish and serve",
-    bullets: ["Return chicken to pan.", "Spoon sauce over.", "Top with parsley."],
+    bullets: textBullets([
+      "Return chicken to pan.",
+      "Spoon sauce over.",
+      "Top with parsley.",
+    ]),
     chips: ["2 min", "Warm", "Tongs"],
     timerSeconds: 120,
     needsNow: [
-      { label: "Chicken", type: "ingredient" },
-      { label: "Parsley", type: "ingredient" },
-      { label: "Serving plates", type: "other" },
+      { item: { name: "Chicken thighs", qty: "1.5 lb", note: "patted dry" }, type: "ingredient" },
+      { item: { name: "Parsley", qty: "2 tbsp", note: "chopped" }, type: "ingredient" },
+      { item: "Serving plates", type: "other" },
     ],
     ingredients: [
       { name: "Chicken thighs", qty: "1.5 lb", note: "patted dry" },
@@ -70,17 +145,17 @@ export const recipeTitleMisoNoodles = "Miso Noodles";
 export const stepsMisoNoodles: StepData[] = [
   {
     title: "Boil the noodles",
-    bullets: [
+    bullets: textBullets([
       "Bring salted water to a boil.",
       "Cook noodles until tender.",
       "Reserve a splash of pasta water.",
-    ],
+    ]),
     chips: ["8 min", "High heat", "Pot"],
     timerSeconds: 480,
     needsNow: [
-      { label: "Ramen noodles", type: "ingredient" },
-      { label: "Pot", type: "other" },
-      { label: "Stove", type: "other" },
+      { item: { name: "Ramen noodles", qty: "8 oz", note: "fresh or dried" }, type: "ingredient" },
+      { item: "Pot", type: "other" },
+      { item: "Stove", type: "other" },
     ],
     ingredients: [
       { name: "Ramen noodles", qty: "8 oz", note: "fresh or dried" },
@@ -90,18 +165,18 @@ export const stepsMisoNoodles: StepData[] = [
   },
   {
     title: "Whisk the miso sauce",
-    bullets: [
+    bullets: textBullets([
       "Whisk miso, soy, and honey.",
       "Add sesame oil + chili.",
       "Thin with pasta water.",
-    ],
+    ]),
     chips: ["3 min", "Low heat", "Whisk"],
     timerSeconds: 180,
     needsNow: [
-      { label: "Miso paste", type: "ingredient" },
-      { label: "Soy sauce", type: "ingredient" },
-      { label: "Honey", type: "ingredient" },
-      { label: "Whisk", type: "other" },
+      { item: { name: "Miso paste", qty: "2 tbsp", note: "white or yellow" }, type: "ingredient" },
+      { item: { name: "Soy sauce", qty: "1 tbsp", note: "low sodium" }, type: "ingredient" },
+      { item: { name: "Honey", qty: "1 tsp", note: "or maple" }, type: "ingredient" },
+      { item: "Whisk", type: "other" },
     ],
     ingredients: [
       { name: "Miso paste", qty: "2 tbsp", note: "white or yellow" },
@@ -115,17 +190,17 @@ export const stepsMisoNoodles: StepData[] = [
   },
   {
     title: "Toss and serve",
-    bullets: [
+    bullets: textBullets([
       "Toss noodles in the sauce.",
       "Top with scallions and sesame.",
       "Serve immediately.",
-    ],
+    ]),
     chips: ["2 min", "Low heat", "Tongs"],
     timerSeconds: 120,
     needsNow: [
-      { label: "Scallions", type: "ingredient" },
-      { label: "Sesame seeds", type: "ingredient" },
-      { label: "Tongs", type: "other" },
+      { item: { name: "Scallions", qty: "2", note: "thinly sliced" }, type: "ingredient" },
+      { item: { name: "Sesame seeds", qty: "1 tsp", note: "toasted" }, type: "ingredient" },
+      { item: "Tongs", type: "other" },
     ],
     ingredients: [
       { name: "Scallions", qty: "2", note: "thinly sliced" },
@@ -140,18 +215,18 @@ export const recipeTitleSheetPanSalmon = "Sheet Pan Salmon";
 export const stepsSheetPanSalmon: StepData[] = [
   {
     title: "Prep the pan",
-    bullets: [
+    bullets: textBullets([
       "Heat oven to 425F.",
       "Line a sheet pan.",
       "Add salmon and veggies.",
-    ],
+    ]),
     chips: ["5 min", "425F", "Sheet pan"],
     timerSeconds: 300,
     needsNow: [
-      { label: "Salmon fillets", type: "ingredient" },
-      { label: "Broccoli", type: "ingredient" },
-      { label: "Sheet pan", type: "other" },
-      { label: "425F", type: "other" },
+      { item: { name: "Salmon fillets", qty: "4", note: "6 oz each" }, type: "ingredient" },
+      { item: { name: "Broccoli", qty: "4 cups", note: "bite-size florets" }, type: "ingredient" },
+      { item: "Sheet pan", type: "other" },
+      { item: "425F", type: "other" },
     ],
     ingredients: [
       { name: "Salmon fillets", qty: "4", note: "6 oz each" },
@@ -163,18 +238,18 @@ export const stepsSheetPanSalmon: StepData[] = [
   },
   {
     title: "Season and roast",
-    bullets: [
+    bullets: textBullets([
       "Rub salmon with oil and spices.",
       "Toss broccoli with salt.",
       "Roast 12 minutes.",
-    ],
+    ]),
     chips: ["12 min", "Oven", "425F"],
     timerSeconds: 720,
     needsNow: [
-      { label: "Lemon", type: "ingredient" },
-      { label: "Garlic powder", type: "ingredient" },
-      { label: "Oven", type: "other" },
-      { label: "Timer", type: "other" },
+      { item: { name: "Lemon", qty: "1", note: "sliced" }, type: "ingredient" },
+      { item: { name: "Garlic powder", qty: "1 tsp", note: "" }, type: "ingredient" },
+      { item: "Oven", type: "other" },
+      { item: "Timer", type: "other" },
     ],
     ingredients: [
       { name: "Lemon", qty: "1", note: "sliced" },
@@ -186,16 +261,16 @@ export const stepsSheetPanSalmon: StepData[] = [
   },
   {
     title: "Finish and serve",
-    bullets: [
+    bullets: textBullets([
       "Squeeze lemon over salmon.",
       "Top with herbs.",
       "Serve hot.",
-    ],
+    ]),
     chips: ["2 min", "Warm", "Plates"],
     timerSeconds: 120,
     needsNow: [
-      { label: "Fresh dill", type: "ingredient" },
-      { label: "Serving plates", type: "other" },
+      { item: { name: "Fresh dill", qty: "1 tbsp", note: "chopped" }, type: "ingredient" },
+      { item: "Serving plates", type: "other" },
     ],
     ingredients: [
       { name: "Fresh dill", qty: "1 tbsp", note: "chopped" },
@@ -235,7 +310,9 @@ export const ingredientsSheetPanSalmon: Ingredient[] = [
   { name: "Fresh dill", qty: "1 tbsp", note: "chopped" },
 ];
 
-export const stepsBananaBread: StepData[] = 
+type StepDataText = Omit<StepData, "bullets"> & { bullets: string[] };
+
+const stepsBananaBreadRaw: StepDataText[] =
  [
         {
             "title": "Preheat and prepare pan",
@@ -255,19 +332,19 @@ export const stepsBananaBread: StepData[] =
             "timerSeconds": 0,
             "needsNow": [
                 {
-                    "label": "350°F (177°C)",
+                    "item": "350°F (177°C)",
                     "type": "other"
                 },
                 {
-                    "label": "loaf pan",
+                    "item": "loaf pan",
                     "type": "other"
                 },
                 {
-                    "label": "non-stick cooking spray",
+                    "item": "non-stick cooking spray",
                     "type": "other"
                 },
                 {
-                    "label": "parchment paper",
+                    "item": "parchment paper",
                     "type": "other"
                 }
             ],
@@ -291,15 +368,15 @@ export const stepsBananaBread: StepData[] =
             "timerSeconds": 0,
             "needsNow": [
                 {
-                    "label": "very ripe bananas",
+                    "item": "very ripe bananas",
                     "type": "ingredient"
                 },
                 {
-                    "label": "fork",
+                    "item": "fork",
                     "type": "other"
                 },
                 {
-                    "label": "mixing bowl",
+                    "item": "mixing bowl",
                     "type": "other"
                 }
             ],
@@ -331,27 +408,27 @@ export const stepsBananaBread: StepData[] =
             "timerSeconds": 0,
             "needsNow": [
                 {
-                    "label": "all purpose flour",
+                    "item": "all purpose flour",
                     "type": "other"
                 },
                 {
-                    "label": "baking soda",
+                    "item": "baking soda",
                     "type": "ingredient"
                 },
                 {
-                    "label": "fine sea salt",
+                    "item": "fine sea salt",
                     "type": "other"
                 },
                 {
-                    "label": "ground cinnamon",
+                    "item": "ground cinnamon",
                     "type": "other"
                 },
                 {
-                    "label": "whisk",
+                    "item": "whisk",
                     "type": "other"
                 },
                 {
-                    "label": "mixing bowl",
+                    "item": "mixing bowl",
                     "type": "other"
                 }
             ],
@@ -399,27 +476,27 @@ export const stepsBananaBread: StepData[] =
             "timerSeconds": 0,
             "needsNow": [
                 {
-                    "label": "granulated white sugar",
+                    "item": "granulated white sugar",
                     "type": "ingredient"
                 },
                 {
-                    "label": "vegetable oil",
+                    "item": "vegetable oil",
                     "type": "ingredient"
                 },
                 {
-                    "label": "eggs",
+                    "item": "eggs",
                     "type": "ingredient"
                 },
                 {
-                    "label": "vanilla extract",
+                    "item": "vanilla extract",
                     "type": "other"
                 },
                 {
-                    "label": "sour cream",
+                    "item": "sour cream",
                     "type": "other"
                 },
                 {
-                    "label": "whisk",
+                    "item": "whisk",
                     "type": "other"
                 }
             ],
@@ -475,23 +552,23 @@ export const stepsBananaBread: StepData[] =
             "timerSeconds": 0,
             "needsNow": [
                 {
-                    "label": "all purpose flour",
+                    "item": "all purpose flour",
                     "type": "other"
                 },
                 {
-                    "label": "baking soda",
+                    "item": "baking soda",
                     "type": "ingredient"
                 },
                 {
-                    "label": "fine sea salt",
+                    "item": "fine sea salt",
                     "type": "other"
                 },
                 {
-                    "label": "ground cinnamon",
+                    "item": "ground cinnamon",
                     "type": "other"
                 },
                 {
-                    "label": "spatula",
+                    "item": "spatula",
                     "type": "other"
                 }
             ],
@@ -571,19 +648,19 @@ export const stepsBananaBread: StepData[] =
             "timerSeconds": 3900,
             "needsNow": [
                 {
-                    "label": "loaf pan",
+                    "item": "loaf pan",
                     "type": "other"
                 },
                 {
-                    "label": "oven",
+                    "item": "oven",
                     "type": "other"
                 },
                 {
-                    "label": "wire cooling rack",
+                    "item": "wire cooling rack",
                     "type": "other"
                 },
                 {
-                    "label": "timer",
+                    "item": "timer",
                     "type": "other"
                 }
             ],
@@ -642,7 +719,12 @@ export const stepsBananaBread: StepData[] =
             "nextPreview": [],
             "summary": "Bake the banana bread until fully cooked then cool before storing."
         }
-    ];
+];
+
+export const stepsBananaBread: StepData[] = stepsBananaBreadRaw.map((step) => ({
+  ...step,
+  bullets: textBullets(step.bullets),
+}));
 
   export const ingredientsBananaBread = [
         {
@@ -699,6 +781,10 @@ export const stepsBananaBread: StepData[] =
 
 export const recipeTitleBananaBread = "Banana Bread";
 
+const normalizedShrimpCurry = normalizeRecipePayload(recipeShrimpCurry);
+const normalizedLadyfingers = normalizeRecipePayload(recipeLadyfingers);
+const normalizedClaypotRice = normalizeRecipePayload(recipeClaypotRice);
+
 export const libraryRecipes = [
   {
     title: recipeTitleBananaBread,
@@ -719,6 +805,21 @@ export const libraryRecipes = [
     title: recipeTitleSheetPanSalmon,
     steps: stepsSheetPanSalmon,
     ingredients: ingredientsSheetPanSalmon,
+  },
+  {
+    title: normalizedShrimpCurry.recipeTitle,
+    steps: normalizedShrimpCurry.steps,
+    ingredients: normalizedShrimpCurry.ingredients,
+  },
+  {
+    title: normalizedLadyfingers.recipeTitle,
+    steps: normalizedLadyfingers.steps,
+    ingredients: normalizedLadyfingers.ingredients,
+  },
+  {
+    title: normalizedClaypotRice.recipeTitle,
+    steps: normalizedClaypotRice.steps,
+    ingredients: normalizedClaypotRice.ingredients,
   },
 ];
 

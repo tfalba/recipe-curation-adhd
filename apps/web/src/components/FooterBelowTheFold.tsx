@@ -1,10 +1,5 @@
 import backgroundFooterDark from "../assets/colorful-food-cutting-board.jpeg";
 import backgroundFooterLight from "../assets/rustic-table-background.png";
-import backgroundHeroLight2 from "../assets/colorful-food-cutting-board.jpeg";
-import backgroundHeroLight3 from "../assets/congerdesign-chunks-594496_1920.jpg";
-import backgroundHeroLight4 from "../assets/congerdesign-mushrooms-756406_1920.jpg";
-import backgroundHeroLight5 from "../assets/congerdesign-waffles-2190961_1920.jpg";
-import backgroundHeroLight6 from "../assets/daria-yakovleva-cooking-2132874_1920.jpg";
 
 type HeroAboveTheFoldProps = {
   themeMode: "dark" | "light";

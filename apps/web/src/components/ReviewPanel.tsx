@@ -13,6 +13,22 @@ export default function ReviewPanel({
   quickFixes,
   onGenerateCookMode,
 }: ReviewPanelProps) {
+  const renderBulletParts = (
+    parts: { type: string; value?: string; ingredient?: { name: string } }[]
+  ) =>
+    parts.map((part, index) => {
+      if (part.type === "ingredient" && part.ingredient?.name) {
+        return (
+          <span
+            key={`ingredient-${part.ingredient.name}-${index}`}
+            className="text-accent underline decoration-accent"
+          >
+            {part.ingredient.name}
+          </span>
+        );
+      }
+      return <span key={`text-${index}`}>{part.value ?? ""}</span>;
+    });
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -50,8 +66,10 @@ export default function ReviewPanel({
               </div>
               <p className="mt-2 text-base font-display">{step.title}</p>
               <ul className="mt-2 list-disc space-y-2 pl-4 text-sm text-muted">
-                {step.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
+                {step.bullets.map((bullet, index) => (
+                  <li key={`${step.title}-bullet-${index}`}>
+                    {renderBulletParts(bullet.parts)}
+                  </li>
                 ))}
               </ul>
               <div className="mt-3 flex flex-wrap gap-2">
