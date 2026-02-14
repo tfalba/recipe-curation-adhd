@@ -17,5 +17,9 @@ A web app that transforms pasted recipes into structured ingredients and step-by
 3. Start web: `pnpm --filter web dev`
 
 **Environment Variables**
-1. API: `OPENAI_API_KEY` and `FRONTEND_URL` in `apps/api/.env` (see `apps/api/.env.example`)
+1. API: `OPENAI_API_KEY`, `FRONTEND_URL`, and `PORT` in `apps/api/.env` (see `apps/api/.env.example`)
 2. Web: `VITE_API_URL` for API base URL (optional; defaults to `http://localhost:10000`)
+
+**API Endpoints**
+1. `POST /api/transform`: convert recipe text into structured ingredients + steps.
+2. `POST /api/parse`: upload a PDF and extract recipe text for the inbox.

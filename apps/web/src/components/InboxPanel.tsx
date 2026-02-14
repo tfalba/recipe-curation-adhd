@@ -7,16 +7,76 @@ export default function InboxPanel() {
   const [urlMode, setUrlMode] = useState(false);
   const [urlValue, setUrlValue] = useState("");
   const [uploadedName, setUploadedName] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const { recipeText, setRecipeText, generateFromText, status, error } =
     useRecipe();
+
+  const API_BASE =
+    (import.meta.env.VITE_API_URL as string | undefined) ??
+    "http://localhost:10000";
+
+  const stripRtf = (rtf: string) => {
+    const decoded = rtf.replace(/\\'[0-9a-fA-F]{2}/g, (match) =>
+      String.fromCharCode(parseInt(match.slice(2), 16))
+    );
+    return decoded
+      .replace(/\\par[d]?/g, "\n")
+      .replace(/\\[a-zA-Z]+-?\d* ?/g, "")
+      .replace(/[{}]/g, "")
+      .replace(/\n\s*\n/g, "\n\n")
+      .trim();
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleUploadChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    setUploadedName(file ? file.name : null);
+    if (!file) {
+      return;
+    }
+    setUploadedName(file.name);
+    setUploadError(null);
+
+    const isPdf =
+      file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isRtf = file.name.toLowerCase().endsWith(".rtf");
+
+    if (isPdf) {
+      try {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await fetch(`${API_BASE}/api/parse`, {
+          method: "POST",
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload?.error || "Unable to parse PDF.");
+        }
+        setRecipeText(typeof payload?.recipeText === "string" ? payload.recipeText : "");
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Upload failed.";
+        setUploadError(message);
+      } finally {
+        setUploading(false);
+      }
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const parsedText = isRtf ? stripRtf(text) : text;
+      setRecipeText(parsedText);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed.";
+      setUploadError(message);
+    }
   };
 
   // const handleUrlToggle = () => {
@@ -103,7 +163,7 @@ export default function InboxPanel() {
         ref={fileInputRef}
         type="file"
         className="hidden"
-        accept=".txt,.pdf"
+        accept=".txt,.pdf,.rtf"
         onChange={handleUploadChange}
       />
       {uploadedName ? (
@@ -113,13 +173,16 @@ export default function InboxPanel() {
           You can paste text, drop a URL, or upload a file.
         </p>
       )}
+      {uploadError ? <p className="mt-2 text-xs text-danger">{uploadError}</p> : null}
       {error ? <p className="mt-2 text-xs text-danger">{error}</p> : null}
       <button
         onClick={generateFromText}
-        disabled={status === "loading"}
+        disabled={status === "loading" || uploading}
         className="mt-4 w-full min-h-[44px] rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-glow transition duration-quick ease-snappy hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {status === "loading" ? "Building guide..." : "Turn this into a cooking guide"}
+        {status === "loading" || uploading
+          ? "Building guide..."
+          : "Turn this into a cooking guide"}
       </button>
     </section>
   );

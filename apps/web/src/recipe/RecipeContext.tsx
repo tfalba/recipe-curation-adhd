@@ -40,6 +40,7 @@ type RecipeContextValue = {
     ingredients: Ingredient[];
   }) => void;
   clearRecipeSelection: () => void;
+  setSampleRecipeSelection: () => void;
   setSteps: (steps: StepData[]) => void;
   setIngredients: (ingredients: Ingredient[]) => void;
 };
@@ -152,6 +153,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       savedRecipes,
       steps,
       ingredients,
+      setSteps,
+      setIngredients,
       status,
       error,
       generateFromText,
@@ -174,8 +177,11 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
         setHasSelectedRecipe(false);
         setRecipeSource("none");
       },
-      setSteps,
-      setIngredients,
+      setSampleRecipeSelection: () => {
+        setRecipeTitle(seedTitle);
+        setSteps(seedSteps);
+        setIngredients(seedIngredients);
+      },
     }),
     [
       recipeText,

@@ -56,7 +56,7 @@ export default function TopBar({
         {showSaveGuide ? (
           <button
             onClick={onSaveGuide}
-            className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-text shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]"
+            className="min-h-[44px] rounded-2xl bg-primary px-5 text-sm font-semibold text-bg shadow-focus transition duration-quick ease-snappy hover:translate-y-[-1px]"
           >
             Save Guide
           </button>

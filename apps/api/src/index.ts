@@ -3,6 +3,8 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import type { BulletPart, Ingredient, NeedsNowItem, StepBullet, StepData } from "@rc/types";
+import multer from "multer";
+import pdfParse from "pdf-parse";
 
 const app = express();
 
@@ -26,6 +28,7 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const upload = multer();
 
 const OTHER_KEYWORDS = [
   "whisk",
@@ -70,6 +73,27 @@ const looksLikeOther = (label: string) => {
 };
 
 app.get("/health", (_req: Request, res: Response) => res.json({ ok: true }));
+
+app.post("/api/parse", upload.single("file"), async (req: Request, res: Response) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ error: "file is required" });
+    }
+    if (file.mimetype !== "application/pdf") {
+      return res.status(400).json({ error: "Only PDF files are supported." });
+    }
+    const parsed = await pdfParse(file.buffer);
+    const recipeText = parsed.text?.trim() ?? "";
+    if (!recipeText) {
+      return res.status(400).json({ error: "No text could be extracted from PDF." });
+    }
+    return res.json({ recipeText });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unable to parse PDF.";
+    return res.status(500).json({ error: message });
+  }
+});
 
 // Minimal placeholder endpoint — you’ll replace schema/prompting in Codex
 app.post("/api/transform", async (req: Request, res: Response) => {

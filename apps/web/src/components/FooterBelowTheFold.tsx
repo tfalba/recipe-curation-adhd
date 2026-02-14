@@ -9,10 +9,10 @@ export function FooterBelowTheFold({
   themeMode,
 }: HeroAboveTheFoldProps) {
   return (
-    <section className="min-h-[max(300px,30vh)] relative overflow-hidden bg-bg text-text">
+    <section className="min-h-[max(350px,40vh)] relative overflow-hidden bg-bg text-text">
       {/* Background image (Prompt 1) */}
       <div
-        className="relative h-[max(300px,30vh)] bg-cover opacity-80 [background-position-y:70%]"
+        className="relative h-[max(300px,40vh)] bg-cover opacity-80 [background-position-y:70%]"
         style={{ backgroundImage: `url(${themeMode === "dark" ? backgroundFooterDark : backgroundFooterLight})` }}
         aria-hidden="true"
       />

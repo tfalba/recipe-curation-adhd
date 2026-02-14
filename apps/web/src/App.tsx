@@ -27,6 +27,7 @@ export default function App() {
     recipeSource,
     clearRecipeSelection,
     saveCurrentRecipe,
+    setSampleRecipeSelection,
     savedRecipes,
   } = useRecipe();
   const [activeView, setActiveView] = useState<ViewKey>("overview");
@@ -130,6 +131,22 @@ export default function App() {
     }, 0);
   };
 
+  const handleOnSeeExample = () => {
+    setActiveView("cook");
+    setActiveStepIndex(0);
+    setSampleRecipeSelection();
+  };
+
+  const handleSwitchView = (view: ViewKey) => {
+    console.log(recipeTitle, view);
+    if (recipeTitle === "Get Started") {
+      console.log("No recipe selected");
+      setActiveStepIndex(0);
+      setSampleRecipeSelection();
+    }
+    setActiveView(view);
+  };
+
   useEffect(() => {
     if (activeStepIndex >= steps.length && steps.length > 0) {
       setActiveStepIndex(0);
@@ -193,7 +210,7 @@ export default function App() {
         <HeroAboveTheFold
           themeMode={themeMode}
           onCreateNewGuide={() => handleCreateNewGuide()}
-          onSeeExample={() => setActiveView("cook")}
+          onSeeExample={() => handleOnSeeExample()}
         />
       )}
       <AppShell>
@@ -225,8 +242,8 @@ export default function App() {
                 handleCreateNewGuide();
               }}
               onCreateNewRecipe={handleCreateNewGuide}
-              onReviewGuide={() => setActiveView("review")}
-              onCookGuide={() => setActiveView("cook")}
+              onReviewGuide={() => handleSwitchView("review")}
+              onCookGuide={() => handleSwitchView("cook")}
               focusMode={focusMode}
               progressLabel={progressLabel}
               currentTimerLabel={currentTimerLabel}
