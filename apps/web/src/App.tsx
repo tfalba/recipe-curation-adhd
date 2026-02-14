@@ -32,7 +32,7 @@ export default function App() {
     setSampleRecipeSelection,
     savedRecipes,
   } = useRecipe();
-  const { activeView, goCook, goOverview } = useView();
+  const { activeView, setActiveView, goCook, goOverview, goReview } = useView();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const {
     focusMode,
@@ -135,6 +135,19 @@ export default function App() {
       setActiveStepIndex(0);
     }
   }, [activeStepIndex, steps.length]);
+
+  useEffect(() => {
+    if (status === "loading") {
+      setActiveView("processing");
+      return;
+    }
+    if (activeView === "processing" && status === "success") {
+      goReview();
+    }
+    if (activeView === "processing" && status === "error") {
+      goOverview();
+    }
+  }, [activeView, goOverview, goReview, setActiveView, status]);
 
   useEffect(() => {
     setTimers([]);
