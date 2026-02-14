@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import type { Ingredient, StepData, TimerItem, ViewKey } from "./types";
+import type { Ingredient, StepData, TimerItem } from "./types";
 import CookPanel from "./CookPanel";
 import GetStartedPanel from "./GetStartedPanel";
 import InboxPanel from "./InboxPanel";
@@ -8,17 +8,15 @@ import ProcessingPanel from "./ProcessingPanel";
 import ReviewPanel from "./ReviewPanel";
 import SettingsPanel from "./SettingsPanel";
 import WhyPanel from "./WhyPanel";
+import { useView } from "../view/ViewContext";
 
 type MobileViewProps = {
-  view: ViewKey;
   steps: StepData[];
   ingredients: Ingredient[];
   quickFixes: string[];
   hasSelectedRecipe: boolean;
   recipeTitle: string;
   onCreateNewGuide: () => void;
-  onReviewGuide: () => void;
-  onCookGuide: () => void;
   onCreateNewRecipe: () => void;
   focusMode: boolean;
   progressLabel: string;
@@ -34,15 +32,12 @@ type MobileViewProps = {
 };
 
 export default function MobileView({
-  view,
   steps,
   ingredients,
   quickFixes,
   hasSelectedRecipe,
   recipeTitle,
   onCreateNewGuide,
-  onReviewGuide,
-  onCookGuide,
   onCreateNewRecipe,
   focusMode,
   progressLabel,
@@ -56,7 +51,8 @@ export default function MobileView({
   showRescue,
   settingsProps,
 }: MobileViewProps) {
-  switch (view) {
+  const { activeView, goReview, goCook } = useView();
+  switch (activeView) {
     case "processing":
       return <ProcessingPanel />;
     case "overview":
@@ -64,11 +60,11 @@ export default function MobileView({
         <GetStartedPanel
           recipeTitle={recipeTitle}
           onCreateNewGuide={onCreateNewGuide}
-          onReviewGuide={onReviewGuide}
-          onCookGuide={onCookGuide}
+          onReviewGuide={goReview}
+          onCookGuide={goCook}
         />
       ) : (
-        <section>
+        <section className="space-y-6">
           <InboxPanel />
           <WhyPanel />
         </section>
@@ -79,7 +75,7 @@ export default function MobileView({
           steps={steps}
           ingredients={ingredients}
           quickFixes={quickFixes}
-          onGenerateCookMode={onCookGuide}
+          onGenerateCookMode={goCook}
         />
       );
     case "cook":
@@ -100,8 +96,8 @@ export default function MobileView({
     case "library":
       return (
         <LibraryPanel
-          onSelectRecipeReview={onReviewGuide}
-          onSelectRecipeCook={onCookGuide}
+          onSelectRecipeReview={goReview}
+          onSelectRecipeCook={goCook}
           onCreateNewRecipe={onCreateNewRecipe}
         />
       );

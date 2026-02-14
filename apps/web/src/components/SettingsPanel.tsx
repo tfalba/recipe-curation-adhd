@@ -104,7 +104,7 @@ function SettingRow({ label, value, active, onClick }: SettingRowProps) {
     <button
       onClick={onClick}
       className={`flex w-full items-center justify-between rounded-2xl px-3 py-3 text-sm shadow-panel transition duration-quick ease-snappy hover:translate-y-[-2px] hover:shadow-glow ${
-        active ? "bg-accent/80 border border-accent text-bg" : "bg-violet50 border border-violet/40 text-muted"
+        active ? "bg-violet/60 border border-violet/40 text-text" : "border border-violet/40 text-muted"
 
       }`}
     >

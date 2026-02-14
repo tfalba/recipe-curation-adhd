@@ -10,6 +10,7 @@ import { quickFixes } from "./data/data";
 import { useRecipe } from "./recipe/RecipeContext";
 import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
 import { FooterBelowTheFold } from "./components/FooterBelowTheFold";
+import { useView } from "./view/ViewContext";
 
 const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
@@ -30,7 +31,7 @@ export default function App() {
     setSampleRecipeSelection,
     savedRecipes,
   } = useRecipe();
-  const [activeView, setActiveView] = useState<ViewKey>("overview");
+  const { activeView, goCook, goReview, goOverview } = useView();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -122,7 +123,7 @@ export default function App() {
 
   const handleCreateNewGuide = () => {
     clearRecipeSelection();
-    setActiveView("overview");
+    goOverview();
     window.setTimeout(() => {
       document.getElementById("inbox")?.scrollIntoView({
         behavior: "smooth",
@@ -132,19 +133,9 @@ export default function App() {
   };
 
   const handleOnSeeExample = () => {
-    setActiveView("cook");
+    goCook();
     setActiveStepIndex(0);
     setSampleRecipeSelection();
-  };
-
-  const handleSwitchView = (view: ViewKey) => {
-    console.log(recipeTitle, view);
-    if (recipeTitle === "Get Started") {
-      console.log("No recipe selected");
-      setActiveStepIndex(0);
-      setSampleRecipeSelection();
-    }
-    setActiveView(view);
   };
 
   useEffect(() => {
@@ -215,15 +206,17 @@ export default function App() {
       )}
       <AppShell>
         <div className="mx-auto flex w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
-          <TopBar
-            {...appShellProps}
-            recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
-            isCook={activeView === "cook"}
-            showSaveGuide={
-              recipeSource === "generated" && status === "success" && !isRecipeSaved
-            }
-            onSaveGuide={handleSaveGuide}
-          />
+          {activeView === "cook" || activeView === "review" ? (
+            <TopBar
+              {...appShellProps}
+              recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
+              isCook={activeView === "cook"}
+              showSaveGuide={
+                recipeSource === "generated" && status === "success" && !isRecipeSaved
+              }
+              onSaveGuide={handleSaveGuide}
+            />
+          ) : null}
           {saveNotice ? (
             <div className="mt-4 rounded-2xl border border-success/40 bg-success/15 px-4 py-3 text-sm text-text shadow-panel">
               Recipe saved to your library.
@@ -232,7 +225,6 @@ export default function App() {
 
           <main className="mt-2 md:mt-6 space-y-4 md:space-y-6">
             <MobileView
-              view={activeView}
               steps={steps}
               ingredients={ingredients}
               quickFixes={quickFixes}
@@ -242,8 +234,6 @@ export default function App() {
                 handleCreateNewGuide();
               }}
               onCreateNewRecipe={handleCreateNewGuide}
-              onReviewGuide={() => handleSwitchView("review")}
-              onCookGuide={() => handleSwitchView("cook")}
               focusMode={focusMode}
               progressLabel={progressLabel}
               currentTimerLabel={currentTimerLabel}
@@ -277,7 +267,7 @@ export default function App() {
       </AppShell>
       <FooterBelowTheFold themeMode={themeMode} />
 
-      <BottomNav activeView={activeView} onChange={setActiveView} />
+      <BottomNav />
     </div>
   );
 }

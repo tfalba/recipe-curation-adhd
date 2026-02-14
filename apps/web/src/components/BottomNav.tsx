@@ -1,11 +1,10 @@
 import type { ViewKey } from "./types";
+import { useView } from "../view/ViewContext";
+import { useRecipe } from "../recipe/RecipeContext";
 
-type BottomNavProps = {
-  activeView: ViewKey;
-  onChange: (view: ViewKey) => void;
-};
-
-export default function BottomNav({ activeView, onChange }: BottomNavProps) {
+export default function BottomNav() {
+  const { activeView, setActiveView } = useView();
+  const { recipeTitle, setSampleRecipeSelection } = useRecipe();
   const items: { key: ViewKey; label: string }[] = [
     { key: "overview", label: "Overview" },
     { key: "review", label: "Review" },
@@ -19,7 +18,15 @@ export default function BottomNav({ activeView, onChange }: BottomNavProps) {
       {items.map((item) => (
         <button
           key={item.key}
-          onClick={() => onChange(item.key)}
+          onClick={() => {
+            if (
+              (item.key === "review" || item.key === "cook") &&
+              recipeTitle === "Get Started"
+            ) {
+              setSampleRecipeSelection();
+            }
+            setActiveView(item.key);
+          }}
           className={`min-h-[44px] px-2 ${
             activeView === item.key ? "text-accent" : "text-muted"
           }`}
