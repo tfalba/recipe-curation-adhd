@@ -11,6 +11,7 @@ import { useRecipe } from "./recipe/RecipeContext";
 import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
 import { FooterBelowTheFold } from "./components/FooterBelowTheFold";
 import { useView } from "./view/ViewContext";
+import { useSettings } from "./settings/SettingsContext";
 
 const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
@@ -31,28 +32,18 @@ export default function App() {
     setSampleRecipeSelection,
     savedRecipes,
   } = useRecipe();
-  const { activeView, goCook, goReview, goOverview } = useView();
+  const { activeView, goCook, goOverview } = useView();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [focusMode, setFocusMode] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const [largeText, setLargeText] = useState(false);
-  const [lineSpacing, setLineSpacing] = useState<"normal" | "roomy">("roomy");
-  const [soundOn, setSoundOn] = useState(true);
-  const [colorIntensity, setColorIntensity] = useState<
-    "standard" | "extra-contrast"
-  >("extra-contrast");
-  const [themeMode, setThemeMode] = useState<"dark" | "light">(() => {
-    if (typeof window === "undefined") {
-      return "dark";
-    }
-    const stored = window.localStorage.getItem("recipe-theme");
-    if (stored === "light" || stored === "dark") {
-      return stored;
-    }
-    return window.matchMedia("(prefers-color-scheme: dark").matches
-      ? "dark"
-      : "light";
-  });
+  const {
+    focusMode,
+    reduceMotion,
+    largeText,
+    lineSpacing,
+    colorIntensity,
+    themeMode,
+    toggleFocus,
+    resetSettings,
+  } = useSettings();
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
   const [saveNotice, setSaveNotice] = useState(false);
@@ -124,6 +115,7 @@ export default function App() {
   const handleCreateNewGuide = () => {
     clearRecipeSelection();
     goOverview();
+    resetSettings();
     window.setTimeout(() => {
       document.getElementById("inbox")?.scrollIntoView({
         behavior: "smooth",
@@ -143,10 +135,6 @@ export default function App() {
       setActiveStepIndex(0);
     }
   }, [activeStepIndex, steps.length]);
-
-  useEffect(() => {
-    window.localStorage.setItem("recipe-theme", themeMode);
-  }, [themeMode]);
 
   useEffect(() => {
     setTimers([]);
@@ -190,9 +178,9 @@ export default function App() {
       viewTitle: viewTitleMap[activeView],
       progressLabel,
       focusMode,
-      onToggleFocus: () => setFocusMode((value) => !value),
+      onToggleFocus: toggleFocus,
     }),
-    [activeView, focusMode, progressLabel]
+    [activeView, focusMode, progressLabel, toggleFocus]
   );
 
   return (
@@ -244,23 +232,6 @@ export default function App() {
               onRescue={handleRescue}
               timers={timers}
               showRescue={showRescue}
-              settingsProps={{
-                focusMode,
-                reduceMotion,
-                largeText,
-                lineSpacing,
-                soundOn,
-                colorIntensity,
-                themeMode,
-                onToggleFocus: () => setFocusMode((value) => !value),
-                onToggleReduceMotion: () => setReduceMotion((value) => !value),
-                onToggleLargeText: () => setLargeText((value) => !value),
-                onToggleSound: () => setSoundOn((value) => !value),
-                onToggleTheme: () =>
-                  setThemeMode((value) => (value === "dark" ? "light" : "dark")),
-                onChangeLineSpacing: setLineSpacing,
-                onChangeColorIntensity: setColorIntensity,
-              }}
             />
           </main>
         </div>

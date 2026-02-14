@@ -1,4 +1,3 @@
-import type { ComponentProps } from "react";
 import type { Ingredient, StepData, TimerItem } from "./types";
 import CookPanel from "./CookPanel";
 import GetStartedPanel from "./GetStartedPanel";
@@ -28,7 +27,6 @@ type MobileViewProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
-  settingsProps: ComponentProps<typeof SettingsPanel>;
 };
 
 export default function MobileView({
@@ -49,7 +47,6 @@ export default function MobileView({
   onRescue,
   timers,
   showRescue,
-  settingsProps,
 }: MobileViewProps) {
   const { activeView, goReview, goCook } = useView();
   switch (activeView) {
@@ -102,7 +99,7 @@ export default function MobileView({
         />
       );
     case "settings":
-      return <SettingsPanel {...settingsProps} />;
+      return <SettingsPanel />;
     default:
       return <WhyPanel />;
   }

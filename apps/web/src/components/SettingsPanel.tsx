@@ -1,19 +1,4 @@
-type SettingsPanelProps = {
-  focusMode: boolean;
-  reduceMotion: boolean;
-  largeText: boolean;
-  lineSpacing: "normal" | "roomy";
-  soundOn: boolean;
-  colorIntensity: "standard" | "extra-contrast";
-  themeMode: "dark" | "light";
-  onToggleFocus: () => void;
-  onToggleReduceMotion: () => void;
-  onToggleLargeText: () => void;
-  onToggleSound: () => void;
-  onToggleTheme: () => void;
-  onChangeLineSpacing: (value: "normal" | "roomy") => void;
-  onChangeColorIntensity: (value: "standard" | "extra-contrast") => void;
-};
+import { useSettings } from "../settings/SettingsContext";
 
 type SettingRowProps = {
   label: string;
@@ -22,22 +7,23 @@ type SettingRowProps = {
   onClick: () => void;
 };
 
-export default function SettingsPanel({
-  focusMode,
-  reduceMotion,
-  largeText,
-  lineSpacing,
-  soundOn,
-  colorIntensity,
-  themeMode,
-  onToggleFocus,
-  onToggleReduceMotion,
-  onToggleLargeText,
-  onToggleSound,
-  onToggleTheme,
-  onChangeLineSpacing,
-  onChangeColorIntensity,
-}: SettingsPanelProps) {
+export default function SettingsPanel() {
+  const {
+    focusMode,
+    reduceMotion,
+    largeText,
+    lineSpacing,
+    soundOn,
+    colorIntensity,
+    themeMode,
+    toggleFocus,
+    toggleReduceMotion,
+    toggleLargeText,
+    toggleSound,
+    toggleTheme,
+    setLineSpacing,
+    setColorIntensity,
+  } = useSettings();
   return (
     <section className="rounded-3xl border border-border bg-surface p-5 shadow-panel">
       <h4 className="text-lg font-display font-semibold">
@@ -47,38 +33,38 @@ export default function SettingsPanel({
         <SettingRow
           label="Focus Mode default"
           value={focusMode ? "On" : "Off"}
-          onClick={onToggleFocus}
+          onClick={toggleFocus}
           active={focusMode}
         />
         <SettingRow
           label="Reduce motion"
           value={reduceMotion ? "On" : "Off"}
-          onClick={onToggleReduceMotion}
+          onClick={toggleReduceMotion}
           active={reduceMotion}
         />
         <SettingRow
           label="Large text"
           value={largeText ? "On" : "Off"}
-          onClick={onToggleLargeText}
+          onClick={toggleLargeText}
           active={largeText}
         />
         <SettingRow
           label="Sound on timer"
           value={soundOn ? "On" : "Off"}
-          onClick={onToggleSound}
+          onClick={toggleSound}
           active={soundOn}
         />
         <SettingRow
           label="Theme"
           value={themeMode === "dark" ? "Dark" : "Light"}
-          onClick={onToggleTheme}
+          onClick={toggleTheme}
           active={themeMode === "light"}
         />
         <SettingRow
           label="Line spacing"
           value={lineSpacing === "roomy" ? "Roomy" : "Normal"}
           onClick={() =>
-            onChangeLineSpacing(lineSpacing === "roomy" ? "normal" : "roomy")
+            setLineSpacing(lineSpacing === "roomy" ? "normal" : "roomy")
           }
           active={lineSpacing === "roomy"}
         />
@@ -86,7 +72,7 @@ export default function SettingsPanel({
           label="Color intensity"
           value={colorIntensity === "extra-contrast" ? "Extra" : "Standard"}
           onClick={() =>
-            onChangeColorIntensity(
+            setColorIntensity(
               colorIntensity === "extra-contrast"
                 ? "standard"
                 : "extra-contrast"
