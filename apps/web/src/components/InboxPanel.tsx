@@ -19,9 +19,9 @@ export default function InboxPanel() {
     setUploadedName(file ? file.name : null);
   };
 
-  const handleUrlToggle = () => {
-    setUrlMode((value) => !value);
-  };
+  // const handleUrlToggle = () => {
+  //   setUrlMode((value) => !value);
+  // };
 
   const handleUrlSubmit = () => {
     if (!urlValue.trim()) {
