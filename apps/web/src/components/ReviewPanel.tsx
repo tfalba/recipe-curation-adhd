@@ -13,6 +13,8 @@ type ReviewPanelProps = {
   onToggleHighlightTemperatures: () => void;
   splitLongStepsApplied: boolean;
   onSplitLongStepsQuickFix: () => void;
+  doubleRecipeEnabled: boolean;
+  onToggleDoubleRecipe: () => void;
 };
 
 export default function ReviewPanel({
@@ -27,6 +29,8 @@ export default function ReviewPanel({
   onToggleHighlightTemperatures,
   splitLongStepsApplied,
   onSplitLongStepsQuickFix,
+  doubleRecipeEnabled,
+  onToggleDoubleRecipe,
 }: ReviewPanelProps) {
   const timePattern = useMemo(
     () =>
@@ -144,11 +148,19 @@ export default function ReviewPanel({
 
   const getQuickFixButtonState = (fix: string) => {
     const normalized = fix.toLowerCase();
+    const isDoubleRecipeFix = normalized === "double recipe";
     const isSplitFix = normalized === "split long steps";
     const isTimesFix = normalized === "highlight times";
     const isTemperaturesFix =
       normalized === "highlight temperatures" ||
       normalized === "highlight temps";
+
+    if (isDoubleRecipeFix) {
+      return {
+        active: doubleRecipeEnabled,
+        onClick: onToggleDoubleRecipe,
+      };
+    }
 
     if (isSplitFix) {
       return {

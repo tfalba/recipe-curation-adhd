@@ -841,6 +841,7 @@ export const recipeSummaryClaypotRice = normalizedClaypotRice.recipeSummary;
 
 
 export const quickFixes = [
+  "Double recipe",
   "Split long steps",
   "Highlight times",
   "Highlight temperatures",

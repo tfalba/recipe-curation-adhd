@@ -33,6 +33,8 @@ type MobileViewProps = {
   onToggleHighlightTemperatures: () => void;
   splitLongStepsApplied: boolean;
   onSplitLongStepsQuickFix: () => void;
+  doubleRecipeEnabled: boolean;
+  onToggleDoubleRecipe: () => void;
 };
 
 export default function MobileView({
@@ -59,6 +61,8 @@ export default function MobileView({
   onToggleHighlightTemperatures,
   splitLongStepsApplied,
   onSplitLongStepsQuickFix,
+  doubleRecipeEnabled,
+  onToggleDoubleRecipe,
 }: MobileViewProps) {
   const { activeView, goReview, goCook } = useView();
   switch (activeView) {
@@ -92,6 +96,8 @@ export default function MobileView({
           onToggleHighlightTemperatures={onToggleHighlightTemperatures}
           splitLongStepsApplied={splitLongStepsApplied}
           onSplitLongStepsQuickFix={onSplitLongStepsQuickFix}
+          doubleRecipeEnabled={doubleRecipeEnabled}
+          onToggleDoubleRecipe={onToggleDoubleRecipe}
         />
       );
     case "cook":

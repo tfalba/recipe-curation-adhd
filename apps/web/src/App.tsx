@@ -5,7 +5,7 @@ import {
   MobileView,
   TopBar,
 } from "./components";
-import type { TimerItem, ViewKey } from "./components";
+import type { Ingredient, StepData, TimerItem, ViewKey } from "./components";
 import { quickFixes } from "./data/data";
 import { useRecipe } from "./recipe/RecipeContext";
 import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
@@ -17,6 +17,113 @@ const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
 const prevStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index - 1 + total) % total;
+
+const FRACTION_MAP: Record<string, string> = {
+  "¼": "1/4",
+  "½": "1/2",
+  "¾": "3/4",
+  "⅐": "1/7",
+  "⅑": "1/9",
+  "⅒": "1/10",
+  "⅓": "1/3",
+  "⅔": "2/3",
+  "⅕": "1/5",
+  "⅖": "2/5",
+  "⅗": "3/5",
+  "⅘": "4/5",
+  "⅙": "1/6",
+  "⅚": "5/6",
+  "⅛": "1/8",
+  "⅜": "3/8",
+  "⅝": "5/8",
+  "⅞": "7/8",
+};
+
+const normalizeUnicodeFractions = (value: string) =>
+  value
+    .split("")
+    .map((char, index, source) => {
+      const mapped = FRACTION_MAP[char];
+      if (!mapped) {
+        return char;
+      }
+      const prev = source[index - 1] ?? "";
+      return /\d/.test(prev) ? ` ${mapped}` : mapped;
+    })
+    .join("");
+
+const parseNumberToken = (token: string) => {
+  const mixed = token.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if (mixed) {
+    const whole = Number.parseInt(mixed[1], 10);
+    const top = Number.parseInt(mixed[2], 10);
+    const bottom = Number.parseInt(mixed[3], 10);
+    if (bottom === 0) {
+      return null;
+    }
+    return whole + top / bottom;
+  }
+
+  const fraction = token.match(/^(\d+)\/(\d+)$/);
+  if (fraction) {
+    const top = Number.parseInt(fraction[1], 10);
+    const bottom = Number.parseInt(fraction[2], 10);
+    if (bottom === 0) {
+      return null;
+    }
+    return top / bottom;
+  }
+
+  const decimal = Number.parseFloat(token);
+  return Number.isFinite(decimal) ? decimal : null;
+};
+
+const formatNumber = (value: number) => {
+  const rounded = Math.round(value * 100) / 100;
+  if (Number.isInteger(rounded)) {
+    return `${rounded}`;
+  }
+  return `${rounded}`
+    .replace(/\.0+$/, "")
+    .replace(/(\.\d*[1-9])0+$/, "$1");
+};
+
+const doubleQuantityText = (value: string) => {
+  const normalized = normalizeUnicodeFractions(value);
+  return normalized.replace(
+    /\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?/g,
+    (match) => {
+      const parsed = parseNumberToken(match);
+      if (parsed === null) {
+        return match;
+      }
+      return formatNumber(parsed * 2);
+    }
+  );
+};
+
+const doubleIngredient = (ingredient: Ingredient): Ingredient => ({
+  ...ingredient,
+  qty: doubleQuantityText(ingredient.qty),
+});
+
+const doubleStepData = (step: StepData): StepData => ({
+  ...step,
+  bullets: step.bullets.map((bullet) => ({
+    ...bullet,
+    parts: bullet.parts.map((part) =>
+      part.type === "ingredient"
+        ? { ...part, ingredient: doubleIngredient(part.ingredient) }
+        : part
+    ),
+  })),
+  needsNow: step.needsNow.map((entry) =>
+    typeof entry.item === "string"
+      ? entry
+      : { ...entry, item: doubleIngredient(entry.item) }
+  ),
+  ingredients: step.ingredients.map(doubleIngredient),
+});
 
 export default function App() {
   const {
@@ -48,6 +155,7 @@ export default function App() {
   const [highlightTimes, setHighlightTimes] = useState(false);
   const [highlightTemperatures, setHighlightTemperatures] = useState(false);
   const [splitLongStepsApplied, setSplitLongStepsApplied] = useState(false);
+  const [doubleRecipeEnabled, setDoubleRecipeEnabled] = useState(false);
 
   const getStepBaseTitle = (title: string) =>
     title.replace(/\s+\(part\s+\d+\)$/i, "").trim();
@@ -169,8 +277,18 @@ export default function App() {
     splitStepsIntoSmallerSteps();
   };
 
-  const activeStep = steps[activeStepIndex] ?? steps[0];
-  const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
+  const displayIngredients = useMemo(
+    () => (doubleRecipeEnabled ? ingredients.map(doubleIngredient) : ingredients),
+    [doubleRecipeEnabled, ingredients]
+  );
+
+  const displaySteps = useMemo(
+    () => (doubleRecipeEnabled ? steps.map(doubleStepData) : steps),
+    [doubleRecipeEnabled, steps]
+  );
+
+  const activeStep = displaySteps[activeStepIndex] ?? displaySteps[0];
+  const progressLabel = `Step ${activeStepIndex + 1} of ${displaySteps.length || 1}`;
 
   useEffect(() => {
     if (!timers.some((timer) => timer.running)) {
@@ -211,7 +329,7 @@ export default function App() {
       return [
         {
           id,
-          label: `${activeStep.title} timer`,
+          label: `${activeStep.title}`,
           remainingSeconds: activeStep.timerSeconds,
           running: true,
         },
@@ -221,11 +339,11 @@ export default function App() {
   };
 
   const handleNextStep = () => {
-    setActiveStepIndex((index) => nextStepIndex(index, steps.length));
+    setActiveStepIndex((index) => nextStepIndex(index, displaySteps.length));
   };
 
   const handlePrevStep = () => {
-    setActiveStepIndex((index) => prevStepIndex(index, steps.length));
+    setActiveStepIndex((index) => prevStepIndex(index, displaySteps.length));
   };
 
   const handleRescue = () => {
@@ -252,10 +370,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (activeStepIndex >= steps.length && steps.length > 0) {
+    if (activeStepIndex >= displaySteps.length && displaySteps.length > 0) {
       setActiveStepIndex(0);
     }
-  }, [activeStepIndex, steps.length]);
+  }, [activeStepIndex, displaySteps.length]);
 
   useEffect(() => {
     if (status === "loading") {
@@ -276,6 +394,7 @@ export default function App() {
     setHighlightTimes(false);
     setHighlightTemperatures(false);
     setSplitLongStepsApplied(false);
+    setDoubleRecipeEnabled(false);
   }, [recipeVersion]);
 
   const rootClass = [
@@ -333,8 +452,8 @@ export default function App() {
 
           <main className="mt-2 md:mt-6 space-y-4 md:space-y-6">
             <MobileView
-              steps={steps}
-              ingredients={ingredients}
+              steps={displaySteps}
+              ingredients={displayIngredients}
               recipeSummary={recipeSummary}
               quickFixes={quickFixes}
               hasSelectedRecipe={hasSelectedRecipe}
@@ -360,6 +479,10 @@ export default function App() {
               }
               splitLongStepsApplied={splitLongStepsApplied}
               onSplitLongStepsQuickFix={handleSplitLongStepsQuickFix}
+              doubleRecipeEnabled={doubleRecipeEnabled}
+              onToggleDoubleRecipe={() =>
+                setDoubleRecipeEnabled((current) => !current)
+              }
             />
           </main>
         </div>
