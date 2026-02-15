@@ -11,6 +11,8 @@ type ReviewPanelProps = {
   highlightTemperatures: boolean;
   onToggleHighlightTimes: () => void;
   onToggleHighlightTemperatures: () => void;
+  splitLongStepsApplied: boolean;
+  onSplitLongStepsQuickFix: () => void;
 };
 
 export default function ReviewPanel({
@@ -23,31 +25,32 @@ export default function ReviewPanel({
   highlightTemperatures,
   onToggleHighlightTimes,
   onToggleHighlightTemperatures,
+  splitLongStepsApplied,
+  onSplitLongStepsQuickFix,
 }: ReviewPanelProps) {
-
   const timePattern = useMemo(
     () =>
       /\b\d+(?:\.\d+)?(?:\s*(?:-|to)\s*\d+(?:\.\d+)?)?\s*(?:hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/gi,
-    []
+    [],
   );
 
   const temperaturePattern = useMemo(
-    () =>
-      /\b\d{2,3}\s*(?:°\s?[CF]|degrees?\s*(?:Celsius|Fahrenheit|C|F))\b/gi,
-    []
+    () => /\b\d{2,3}\s*(?:°\s?[CF]|degrees?\s*(?:Celsius|Fahrenheit|C|F))\b/gi,
+    [],
   );
 
   const highlightTextByPattern = (
     text: string,
     pattern: RegExp,
-    kind: "time" | "temperature"
+    kind: "time" | "temperature",
   ) => {
     const matches = Array.from(text.matchAll(pattern));
     if (!matches.length) {
       return [{ value: text, kind: "text" as const }];
     }
 
-    const parts: { value: string; kind: "text" | "time" | "temperature" }[] = [];
+    const parts: { value: string; kind: "text" | "time" | "temperature" }[] =
+      [];
     let cursor = 0;
     matches.forEach((match) => {
       const matchText = match[0];
@@ -72,8 +75,12 @@ export default function ReviewPanel({
     if (highlightTemperatures) {
       parts = parts.flatMap((part) =>
         part.kind === "text"
-          ? highlightTextByPattern(part.value, temperaturePattern, "temperature")
-          : [part]
+          ? highlightTextByPattern(
+              part.value,
+              temperaturePattern,
+              "temperature",
+            )
+          : [part],
       );
     }
 
@@ -81,7 +88,7 @@ export default function ReviewPanel({
       parts = parts.flatMap((part) =>
         part.kind === "text"
           ? highlightTextByPattern(part.value, timePattern, "time")
-          : [part]
+          : [part],
       );
     }
 
@@ -112,9 +119,7 @@ export default function ReviewPanel({
     });
   };
 
-  const renderBulletParts = (
-    parts: BulletPart[]
-  ) =>
+  const renderBulletParts = (parts: BulletPart[]) =>
     parts.map((part, index) => {
       if (part.type === "ingredient" && part.ingredient?.name) {
         return (
@@ -139,9 +144,18 @@ export default function ReviewPanel({
 
   const getQuickFixButtonState = (fix: string) => {
     const normalized = fix.toLowerCase();
+    const isSplitFix = normalized === "split long steps";
     const isTimesFix = normalized === "highlight times";
     const isTemperaturesFix =
-      normalized === "highlight temperatures" || normalized === "highlight temps";
+      normalized === "highlight temperatures" ||
+      normalized === "highlight temps";
+
+    if (isSplitFix) {
+      return {
+        active: splitLongStepsApplied,
+        onClick: onSplitLongStepsQuickFix,
+      };
+    }
 
     if (isTimesFix) {
       return {
@@ -158,6 +172,13 @@ export default function ReviewPanel({
     }
 
     return { active: false, onClick: undefined };
+  };
+
+  const getQuickFixLabel = (fix: string) => {
+    if (fix.toLowerCase() === "split long steps" && splitLongStepsApplied) {
+      return "Reduce to fewer steps";
+    }
+    return fix;
   };
 
   const recipeSummaryChips = [
@@ -191,7 +212,7 @@ export default function ReviewPanel({
                     : "border-border bg-surface-2 text-muted"
                 }`}
               >
-                {fix}
+                {getQuickFixLabel(fix)}
               </button>
             );
           })}
@@ -204,21 +225,22 @@ export default function ReviewPanel({
               key={step.title}
               className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4"
             >
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold">Step {index + 1}</p>
-                <button className="text-xs font-semibold text-accent">
-                  Simplify
-                </button>
+              <div className="flex items-center gap-1">
+                <p className="text-base font-semibold text-primary">
+                  Step {index + 1}:
+                </p>
+
+                <p className="text-base font-display">{step.title}</p>
               </div>
-              <p className="mt-2 text-base font-display">{step.title}</p>
-              <ul className="mt-2 list-disc space-y-2 pl-4 text-sm text-muted">
+
+              <ul className="mt-4 list-disc space-y-2 pl-4 text-sm text-muted">
                 {step.bullets.map((bullet, index) => (
                   <li key={`${step.title}-bullet-${index}`}>
                     {renderBulletParts(bullet.parts)}
                   </li>
                 ))}
               </ul>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {step.chips.map((chip) => (
                   <span
                     key={chip}
@@ -234,7 +256,9 @@ export default function ReviewPanel({
         <div className="space-y-3">
           <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
             <h4 className="text-sm font-semibold">Ingredients</h4>
-            <p className="text-xs text-muted">Grouped by step (tap to change)</p>
+            <p className="text-xs text-muted">
+              Grouped by step (tap to change)
+            </p>
             <div className="mt-3 space-y-3">
               {ingredients.map((item) => (
                 <label

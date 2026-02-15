@@ -29,6 +29,7 @@ export default function App() {
     hasSelectedRecipe,
     clearRecipeSelection,
     setSampleRecipeSelection,
+    setSteps,
   } = useRecipe();
   const { activeView, setActiveView, goCook, goOverview, goReview } = useView();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
@@ -46,6 +47,119 @@ export default function App() {
   const [showRescue, setShowRescue] = useState(false);
   const [highlightTimes, setHighlightTimes] = useState(false);
   const [highlightTemperatures, setHighlightTemperatures] = useState(false);
+  const [splitLongStepsApplied, setSplitLongStepsApplied] = useState(false);
+
+  const getStepBaseTitle = (title: string) =>
+    title.replace(/\s+\(part\s+\d+\)$/i, "").trim();
+
+  const splitStepsIntoSmallerSteps = () => {
+    const next = steps.flatMap((step) => {
+      if (step.bullets.length <= 2) {
+        return [step];
+      }
+
+      const baseTitle = getStepBaseTitle(step.title);
+      const chunks = Array.from(
+        { length: Math.ceil(step.bullets.length / 2) },
+        (_, chunkIndex) =>
+          step.bullets.slice(chunkIndex * 2, chunkIndex * 2 + 2)
+      );
+
+      return chunks.map((chunk, index) => ({
+        ...step,
+        title: `${baseTitle} (part ${index + 1})`,
+        bullets: chunk,
+        nextPreview: index === chunks.length - 1 ? step.nextPreview : [],
+      }));
+    });
+
+    setSteps(next);
+    setSplitLongStepsApplied(true);
+  };
+
+  const reduceToFewerSteps = () => {
+    const mergeGroup = (group: typeof steps) => {
+      if (group.length === 0) {
+        return [];
+      }
+      const first = group[0];
+      const baseTitle = getStepBaseTitle(first.title);
+      const mergedBullets = group.flatMap((step) => step.bullets);
+      const mergedIngredients = Array.from(
+        new Map(
+          group
+            .flatMap((step) => step.ingredients)
+            .map((ingredient) => [
+              `${ingredient.name}-${ingredient.qty}-${ingredient.note}`,
+              ingredient,
+            ])
+        ).values()
+      );
+      const mergedNeedsNow = Array.from(
+        new Map(
+          group
+            .flatMap((step) => step.needsNow)
+            .map((item) => [
+              typeof item.item === "string"
+                ? `${item.type}-${item.item}`
+                : `${item.type}-${item.item.name}-${item.item.qty}-${item.item.note}`,
+              item,
+            ])
+        ).values()
+      );
+
+      const mergedStep = {
+        ...first,
+        title: baseTitle,
+        bullets: mergedBullets,
+        ingredients: mergedIngredients,
+        needsNow: mergedNeedsNow,
+        nextPreview: group[group.length - 1]?.nextPreview ?? first.nextPreview,
+      };
+
+      const chunks = Array.from(
+        { length: Math.ceil(mergedStep.bullets.length / 4) },
+        (_, chunkIndex) =>
+          mergedStep.bullets.slice(chunkIndex * 4, chunkIndex * 4 + 4)
+      );
+
+      return chunks.map((chunk, index) => ({
+        ...mergedStep,
+        title:
+          chunks.length > 1 ? `${baseTitle} (part ${index + 1})` : baseTitle,
+        bullets: chunk,
+        nextPreview:
+          index === chunks.length - 1 ? mergedStep.nextPreview : [],
+      }));
+    };
+
+    const grouped: typeof steps[] = [];
+    steps.forEach((step) => {
+      const baseTitle = getStepBaseTitle(step.title);
+      const lastGroup = grouped[grouped.length - 1];
+      if (!lastGroup) {
+        grouped.push([step]);
+        return;
+      }
+      const lastBaseTitle = getStepBaseTitle(lastGroup[0]?.title ?? "");
+      if (baseTitle === lastBaseTitle) {
+        lastGroup.push(step);
+        return;
+      }
+      grouped.push([step]);
+    });
+
+    setSteps(grouped.flatMap(mergeGroup));
+    setSplitLongStepsApplied(false);
+  };
+
+  const handleSplitLongStepsQuickFix = () => {
+    if (splitLongStepsApplied) {
+      reduceToFewerSteps();
+      return;
+    }
+    splitStepsIntoSmallerSteps();
+  };
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
   const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
@@ -153,6 +267,7 @@ export default function App() {
     setActiveStepIndex(0);
     setHighlightTimes(false);
     setHighlightTemperatures(false);
+    setSplitLongStepsApplied(false);
   }, [recipeVersion]);
 
   const rootClass = [
@@ -229,6 +344,8 @@ export default function App() {
               onToggleHighlightTemperatures={() =>
                 setHighlightTemperatures((current) => !current)
               }
+              splitLongStepsApplied={splitLongStepsApplied}
+              onSplitLongStepsQuickFix={handleSplitLongStepsQuickFix}
             />
           </main>
         </div>
