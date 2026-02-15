@@ -16,7 +16,6 @@ type MobileViewProps = {
   hasSelectedRecipe: boolean;
   recipeTitle: string;
   onCreateNewGuide: () => void;
-  onCreateNewRecipe: () => void;
   focusMode: boolean;
   progressLabel: string;
   currentTimerLabel: string;
@@ -27,8 +26,6 @@ type MobileViewProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
-  alarmActive: boolean;
-  onStopAlarm: () => void;
 };
 
 export default function MobileView({
@@ -38,7 +35,6 @@ export default function MobileView({
   hasSelectedRecipe,
   recipeTitle,
   onCreateNewGuide,
-  onCreateNewRecipe,
   focusMode,
   progressLabel,
   currentTimerLabel,
@@ -49,8 +45,6 @@ export default function MobileView({
   onRescue,
   timers,
   showRescue,
-  alarmActive,
-  onStopAlarm,
 }: MobileViewProps) {
   const { activeView, goReview, goCook } = useView();
   switch (activeView) {
@@ -92,8 +86,6 @@ export default function MobileView({
           onRescue={onRescue}
           timers={timers}
           showRescue={showRescue}
-          alarmActive={alarmActive}
-          onStopAlarm={onStopAlarm}
         />
       );
     case "library":
@@ -101,7 +93,7 @@ export default function MobileView({
         <LibraryPanel
           onSelectRecipeReview={goReview}
           onSelectRecipeCook={goCook}
-          onCreateNewRecipe={onCreateNewRecipe}
+          onCreateNewGuide={onCreateNewGuide}
         />
       );
     case "settings":

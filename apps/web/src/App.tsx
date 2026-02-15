@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AppShell,
   BottomNav,
@@ -12,7 +12,6 @@ import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
 import { FooterBelowTheFold } from "./components/FooterBelowTheFold";
 import { useView } from "./view/ViewContext";
 import { useSettings } from "./settings/SettingsContext";
-import alarmSound from "./assets/microwave-bell-ding.mp3";
 
 const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
@@ -39,16 +38,11 @@ export default function App() {
     lineSpacing,
     colorIntensity,
     themeMode,
-    soundOn,
     toggleFocus,
     resetSettings,
   } = useSettings();
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
-  const completedTimersRef = useRef<Set<string>>(new Set());
-  const alarmAudioRef = useRef<HTMLAudioElement | null>(null);
-  const [alarmActive, setAlarmActive] = useState(false);
-  const alarmTimeoutRef = useRef<number | null>(null);
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
   const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
@@ -101,41 +95,6 @@ export default function App() {
     });
   };
 
-  const playTimerChime = async () => {
-    try {
-      if (!alarmAudioRef.current) {
-        const audio = new Audio(alarmSound);
-        audio.volume = 0.9;
-        audio.loop = true;
-        alarmAudioRef.current = audio;
-      }
-      const audio = alarmAudioRef.current;
-      audio.currentTime = 0;
-      await audio.play();
-      setAlarmActive(true);
-      if (alarmTimeoutRef.current) {
-        window.clearTimeout(alarmTimeoutRef.current);
-      }
-      alarmTimeoutRef.current = window.setTimeout(() => {
-        stopAlarm();
-      }, 10000);
-    } catch {
-      // Ignore audio failures (autoplay or unsupported browser).
-    }
-  };
-
-  const stopAlarm = () => {
-    if (alarmTimeoutRef.current) {
-      window.clearTimeout(alarmTimeoutRef.current);
-      alarmTimeoutRef.current = null;
-    }
-    if (alarmAudioRef.current) {
-      alarmAudioRef.current.pause();
-      alarmAudioRef.current.currentTime = 0;
-    }
-    setAlarmActive(false);
-  };
-
   const handleNextStep = () => {
     setActiveStepIndex((index) => nextStepIndex(index, steps.length));
   };
@@ -172,22 +131,6 @@ export default function App() {
       setActiveStepIndex(0);
     }
   }, [activeStepIndex, steps.length]);
-
-  useEffect(() => {
-    const completedIds = completedTimersRef.current;
-    timers.forEach((timer) => {
-      if (timer.remainingSeconds > 0) {
-        completedIds.delete(timer.id);
-        return;
-      }
-      if (!completedIds.has(timer.id)) {
-        completedIds.add(timer.id);
-        if (soundOn) {
-          void playTimerChime();
-        }
-      }
-    });
-  }, [soundOn, timers]);
 
   useEffect(() => {
     if (status === "loading") {
@@ -261,10 +204,7 @@ export default function App() {
               quickFixes={quickFixes}
               hasSelectedRecipe={hasSelectedRecipe}
               recipeTitle={recipeTitle}
-              onCreateNewGuide={() => {
-                handleCreateNewGuide();
-              }}
-              onCreateNewRecipe={handleCreateNewGuide}
+              onCreateNewGuide={handleCreateNewGuide}
               focusMode={focusMode}
               progressLabel={progressLabel}
               currentTimerLabel={currentTimerLabel}
@@ -275,8 +215,6 @@ export default function App() {
               onRescue={handleRescue}
               timers={timers}
               showRescue={showRescue}
-              alarmActive={alarmActive}
-              onStopAlarm={stopAlarm}
             />
           </main>
         </div>

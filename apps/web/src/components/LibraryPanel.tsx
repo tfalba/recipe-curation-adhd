@@ -4,13 +4,13 @@ import { useRecipe } from "../recipe/RecipeContext";
 type LibraryPanelProps = {
   onSelectRecipeReview?: () => void;
   onSelectRecipeCook?: () => void;
-  onCreateNewRecipe?: () => void;
+  onCreateNewGuide?: () => void;
 };
 
 export default function LibraryPanel({
   onSelectRecipeReview,
   onSelectRecipeCook,
-  onCreateNewRecipe,
+  onCreateNewGuide,
 }: LibraryPanelProps) {
   const { applyRecipe, savedRecipes } = useRecipe();
   const savedTitles = new Set(savedRecipes.map((recipe) => recipe.title));
@@ -38,7 +38,7 @@ export default function LibraryPanel({
           </h3>
         </div>
         <button
-          onClick={onCreateNewRecipe}
+          onClick={onCreateNewGuide}
           className="min-h-[44px] rounded-2xl bg-primary px-4 text-sm font-semibold text-bg"
         >
           New Recipe

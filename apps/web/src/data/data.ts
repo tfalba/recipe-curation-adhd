@@ -837,7 +837,6 @@ export const recipeTitleClaypotRice = normalizedClaypotRice.recipeTitle;
 
 export const quickFixes = [
   "Split long steps",
-  "Convert to bullets",
   "Normalize units",
   "Highlight times",
   "Highlight temperatures",

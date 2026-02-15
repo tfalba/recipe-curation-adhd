@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { StepData, TimerItem } from "./types";
 import { formatTime } from "./utils";
 import { useRecipe } from "../recipe/RecipeContext";
+import { useSettings } from "../settings/SettingsContext";
+import alarmSound from "../assets/microwave-bell-ding.mp3";
 
 type CookPanelProps = {
   focusMode: boolean;
@@ -14,8 +16,6 @@ type CookPanelProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
-  alarmActive: boolean;
-  onStopAlarm: () => void;
 };
 
 export default function CookPanel({
@@ -29,13 +29,51 @@ export default function CookPanel({
   onRescue,
   timers,
   showRescue,
-  alarmActive,
-  onStopAlarm,
 }: CookPanelProps) {
   const [touchedIngredient, setTouchedIngredient] = useState<string | null>(null);
   const [hoveredIngredient, setHoveredIngredient] = useState<string | null>(null);
+  const [alarmActive, setAlarmActive] = useState(false);
   const ingredientsRef = useRef<HTMLUListElement | null>(null);
-  const {recipeTitle} = useRecipe();
+  const completedTimersRef = useRef<Set<string>>(new Set());
+  const alarmAudioRef = useRef<HTMLAudioElement | null>(null);
+  const alarmTimeoutRef = useRef<number | null>(null);
+  const { recipeTitle } = useRecipe();
+  const { soundOn } = useSettings();
+
+  const stopAlarm = () => {
+    if (alarmTimeoutRef.current) {
+      window.clearTimeout(alarmTimeoutRef.current);
+      alarmTimeoutRef.current = null;
+    }
+    if (alarmAudioRef.current) {
+      alarmAudioRef.current.pause();
+      alarmAudioRef.current.currentTime = 0;
+    }
+    setAlarmActive(false);
+  };
+
+  const playTimerChime = async () => {
+    try {
+      if (!alarmAudioRef.current) {
+        const audio = new Audio(alarmSound);
+        audio.volume = 0.9;
+        audio.loop = true;
+        alarmAudioRef.current = audio;
+      }
+      const audio = alarmAudioRef.current;
+      audio.currentTime = 0;
+      await audio.play();
+      setAlarmActive(true);
+      if (alarmTimeoutRef.current) {
+        window.clearTimeout(alarmTimeoutRef.current);
+      }
+      alarmTimeoutRef.current = window.setTimeout(() => {
+        stopAlarm();
+      }, 10000);
+    } catch {
+      // Ignore audio failures (autoplay or unsupported browser).
+    }
+  };
 
   useEffect(() => {
     if (!touchedIngredient) {
@@ -66,6 +104,29 @@ export default function CookPanel({
       document.removeEventListener("touchstart", handleOutside);
     };
   }, []);
+
+  useEffect(() => {
+    const completedIds = completedTimersRef.current;
+    timers.forEach((timer) => {
+      if (timer.remainingSeconds > 0) {
+        completedIds.delete(timer.id);
+        return;
+      }
+      if (!completedIds.has(timer.id)) {
+        completedIds.add(timer.id);
+        if (soundOn) {
+          void playTimerChime();
+        }
+      }
+    });
+  }, [soundOn, timers]);
+
+  useEffect(
+    () => () => {
+      stopAlarm();
+    },
+    []
+  );
 
   const renderBulletParts = (
     parts: { type: string; value?: string; ingredient?: { name: string } }[]
@@ -267,7 +328,7 @@ export default function CookPanel({
               </div>
               {alarmActive ? (
                 <button
-                  onClick={onStopAlarm}
+                  onClick={stopAlarm}
                   className="mt-3 w-full min-h-[44px] rounded-2xl border border-danger/50 bg-danger/20 px-4 text-sm font-semibold text-danger"
                 >
                   Stop alarm
