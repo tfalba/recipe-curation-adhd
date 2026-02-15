@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AppShell,
   BottomNav,
@@ -41,12 +41,15 @@ export default function App() {
     lineSpacing,
     colorIntensity,
     themeMode,
+    soundOn,
     toggleFocus,
     resetSettings,
   } = useSettings();
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
   const [saveNotice, setSaveNotice] = useState(false);
+  const completedTimersRef = useRef<Set<string>>(new Set());
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
   const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
@@ -99,6 +102,32 @@ export default function App() {
     });
   };
 
+  const playTimerChime = async () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
+      if (audioContextRef.current.state === "suspended") {
+        await audioContextRef.current.resume();
+      }
+      const ctx = audioContextRef.current;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = 880;
+      gainNode.gain.value = 0.0001;
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+      oscillator.stop(ctx.currentTime + 0.55);
+    } catch {
+      // Ignore audio failures (autoplay or unsupported browser).
+    }
+  };
+
   const handleNextStep = () => {
     setActiveStepIndex((index) => nextStepIndex(index, steps.length));
   };
@@ -135,6 +164,22 @@ export default function App() {
       setActiveStepIndex(0);
     }
   }, [activeStepIndex, steps.length]);
+
+  useEffect(() => {
+    const completedIds = completedTimersRef.current;
+    timers.forEach((timer) => {
+      if (timer.remainingSeconds > 0) {
+        completedIds.delete(timer.id);
+        return;
+      }
+      if (!completedIds.has(timer.id)) {
+        completedIds.add(timer.id);
+        if (soundOn) {
+          void playTimerChime();
+        }
+      }
+    });
+  }, [soundOn, timers]);
 
   useEffect(() => {
     if (status === "loading") {
