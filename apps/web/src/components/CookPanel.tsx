@@ -54,6 +54,12 @@ export default function CookPanel({
   const alarmTimeoutRef = useRef<number | null>(null);
   const { recipeTitle } = useRecipe();
   const { soundOn } = useSettings();
+  const canHover = useMemo(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches,
+    []
+  );
 
   const stopAlarm = () => {
     if (alarmTimeoutRef.current) {
@@ -90,15 +96,17 @@ export default function CookPanel({
     }
   };
 
+  const activeIngredientId = hoveredIngredient ?? touchedIngredient;
+
   useEffect(() => {
     if (!touchedIngredient) {
       return;
     }
-    const timeout = window.setTimeout(() => setTouchedIngredient(null), 2000);
+    const timeout = window.setTimeout(() => {
+      setTouchedIngredient(null);
+    }, 3000);
     return () => window.clearTimeout(timeout);
   }, [touchedIngredient]);
-
-  const activeIngredientId = hoveredIngredient ?? touchedIngredient;
 
   useEffect(() => {
     const handleOutside = (event: MouseEvent | TouchEvent) => {
@@ -413,12 +421,20 @@ export default function CookPanel({
                     >
                       <button
                         type="button"
-                        onMouseEnter={() =>
+                        onMouseEnter={() => {
+                          if (!canHover) {
+                            return;
+                          }
                           setHoveredIngredient(
                             `${ingredient.name}-${ingredient.qty}`
-                          )
-                        }
-                        onMouseLeave={() => setHoveredIngredient(null)}
+                          );
+                        }}
+                        onMouseLeave={() => {
+                          if (!canHover) {
+                            return;
+                          }
+                          setHoveredIngredient(null);
+                        }}
                         onFocus={() =>
                           setHoveredIngredient(
                             `${ingredient.name}-${ingredient.qty}`
@@ -426,11 +442,12 @@ export default function CookPanel({
                         }
                         onBlur={() => setHoveredIngredient(null)}
                         onTouchStart={() =>
-                          setTouchedIngredient(
-                            `${ingredient.name}-${ingredient.qty}`
+                          setTouchedIngredient((current) =>
+                            current === `${ingredient.name}-${ingredient.qty}`
+                              ? null
+                              : `${ingredient.name}-${ingredient.qty}`
                           )
                         }
-                        onTouchEnd={() => setTouchedIngredient(null)}
                         className="text-left text-text focus:outline-none"
                       >
                         {ingredient.name}
