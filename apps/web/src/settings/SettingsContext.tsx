@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -19,11 +20,13 @@ type SettingsContextValue = {
   soundOn: boolean;
   colorIntensity: ColorIntensity;
   themeMode: ThemeMode;
+  keepScreenAwake: boolean;
   toggleFocus: () => void;
   toggleReduceMotion: () => void;
   toggleLargeText: () => void;
   toggleSound: () => void;
   toggleTheme: () => void;
+  toggleKeepScreenAwake: () => void;
   setLineSpacing: (value: LineSpacing) => void;
   setColorIntensity: (value: ColorIntensity) => void;
   resetSettings: () => void;
@@ -51,6 +54,51 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [colorIntensity, setColorIntensity] =
     useState<ColorIntensity>("extra-contrast");
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialTheme);
+  const [keepScreenAwake, setKeepScreenAwake] = useState(false);
+  const wakeLockRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || typeof document === "undefined") {
+      return;
+    }
+
+    const requestWakeLock = async () => {
+      if (!keepScreenAwake) {
+        return;
+      }
+      if (!("wakeLock" in navigator)) {
+        return;
+      }
+      try {
+        wakeLockRef.current = await (navigator as any).wakeLock.request("screen");
+        wakeLockRef.current?.addEventListener?.("release", () => {
+          wakeLockRef.current = null;
+        });
+      } catch {
+        wakeLockRef.current = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void requestWakeLock();
+      }
+    };
+
+    if (keepScreenAwake) {
+      void requestWakeLock();
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+    } else {
+      wakeLockRef.current?.release?.();
+      wakeLockRef.current = null;
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      wakeLockRef.current?.release?.();
+      wakeLockRef.current = null;
+    };
+  }, [keepScreenAwake]);
 
   useEffect(() => {
     window.localStorage.setItem("recipe-theme", themeMode);
@@ -65,12 +113,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       soundOn,
       colorIntensity,
       themeMode,
+      keepScreenAwake,
       toggleFocus: () => setFocusMode((value) => !value),
       toggleReduceMotion: () => setReduceMotion((value) => !value),
       toggleLargeText: () => setLargeText((value) => !value),
       toggleSound: () => setSoundOn((value) => !value),
       toggleTheme: () =>
         setThemeMode((value) => (value === "dark" ? "light" : "dark")),
+      toggleKeepScreenAwake: () => setKeepScreenAwake((value) => !value),
       setLineSpacing,
       setColorIntensity,
       resetSettings: () => {
@@ -81,6 +131,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setSoundOn(true);
         setColorIntensity("extra-contrast");
         setThemeMode(getInitialTheme());
+        setKeepScreenAwake(false);
       },
     }),
     [
@@ -91,6 +142,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       soundOn,
       colorIntensity,
       themeMode,
+      keepScreenAwake,
     ]
   );
 
