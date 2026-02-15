@@ -1,4 +1,5 @@
-import type { Ingredient, StepData } from "./types";
+import { useMemo, useState } from "react";
+import type { BulletPart, Ingredient, StepData } from "./types";
 
 type ReviewPanelProps = {
   steps: StepData[];
@@ -13,8 +14,98 @@ export default function ReviewPanel({
   quickFixes,
   onGenerateCookMode,
 }: ReviewPanelProps) {
+  const [highlightTimes, setHighlightTimes] = useState(false);
+  const [highlightTemperatures, setHighlightTemperatures] = useState(false);
+
+  const timePattern = useMemo(
+    () =>
+      /\b\d+(?:\.\d+)?(?:\s*(?:-|to)\s*\d+(?:\.\d+)?)?\s*(?:hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/gi,
+    []
+  );
+
+  const temperaturePattern = useMemo(
+    () =>
+      /\b\d{2,3}\s*(?:°\s?[CF]|degrees?\s*(?:Celsius|Fahrenheit|C|F))\b/gi,
+    []
+  );
+
+  const highlightTextByPattern = (
+    text: string,
+    pattern: RegExp,
+    kind: "time" | "temperature"
+  ) => {
+    const matches = Array.from(text.matchAll(pattern));
+    if (!matches.length) {
+      return [{ value: text, kind: "text" as const }];
+    }
+
+    const parts: { value: string; kind: "text" | "time" | "temperature" }[] = [];
+    let cursor = 0;
+    matches.forEach((match) => {
+      const matchText = match[0];
+      const start = match.index ?? 0;
+      if (start > cursor) {
+        parts.push({ value: text.slice(cursor, start), kind: "text" });
+      }
+      parts.push({ value: matchText, kind });
+      cursor = start + matchText.length;
+    });
+    if (cursor < text.length) {
+      parts.push({ value: text.slice(cursor), kind: "text" });
+    }
+    return parts;
+  };
+
+  const renderHighlightedText = (value: string, keyPrefix: string) => {
+    let parts: { value: string; kind: "text" | "time" | "temperature" }[] = [
+      { value, kind: "text" },
+    ];
+
+    if (highlightTemperatures) {
+      parts = parts.flatMap((part) =>
+        part.kind === "text"
+          ? highlightTextByPattern(part.value, temperaturePattern, "temperature")
+          : [part]
+      );
+    }
+
+    if (highlightTimes) {
+      parts = parts.flatMap((part) =>
+        part.kind === "text"
+          ? highlightTextByPattern(part.value, timePattern, "time")
+          : [part]
+      );
+    }
+
+    return parts.map((part, index) => {
+      if (part.kind === "temperature") {
+        return (
+          <span
+            key={`${keyPrefix}-temp-${index}`}
+            className="rounded bg-danger/20 px-1 py-0.5 font-semibold text-danger"
+          >
+            {part.value}
+          </span>
+        );
+      }
+
+      if (part.kind === "time") {
+        return (
+          <span
+            key={`${keyPrefix}-time-${index}`}
+            className="rounded bg-warning/20 px-1 py-0.5 font-semibold text-warning"
+          >
+            {part.value}
+          </span>
+        );
+      }
+
+      return <span key={`${keyPrefix}-text-${index}`}>{part.value}</span>;
+    });
+  };
+
   const renderBulletParts = (
-    parts: { type: string; value?: string; ingredient?: { name: string } }[]
+    parts: BulletPart[]
   ) =>
     parts.map((part, index) => {
       if (part.type === "ingredient" && part.ingredient?.name) {
@@ -27,8 +118,40 @@ export default function ReviewPanel({
           </span>
         );
       }
-      return <span key={`text-${index}`}>{part.value ?? ""}</span>;
+      if (part.type === "text") {
+        return (
+          <span key={`text-${index}`}>
+            {renderHighlightedText(part.value ?? "", `part-${index}`)}
+          </span>
+        );
+      }
+
+      return null;
     });
+
+  const getQuickFixButtonState = (fix: string) => {
+    const normalized = fix.toLowerCase();
+    const isTimesFix = normalized === "highlight times";
+    const isTemperaturesFix =
+      normalized === "highlight temperatures" || normalized === "highlight temps";
+
+    if (isTimesFix) {
+      return {
+        active: highlightTimes,
+        onClick: () => setHighlightTimes((current) => !current),
+      };
+    }
+
+    if (isTemperaturesFix) {
+      return {
+        active: highlightTemperatures,
+        onClick: () => setHighlightTemperatures((current) => !current),
+      };
+    }
+
+    return { active: false, onClick: undefined };
+  };
+
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -41,14 +164,23 @@ export default function ReviewPanel({
           </h3>
         </div>
         <div className="flex flex-wrap gap-2">
-          {quickFixes.map((fix) => (
-            <button
-              key={fix}
-              className="min-h-[36px] rounded-full border border-border bg-surface-2 px-3 text-xs font-semibold text-muted"
-            >
-              {fix}
-            </button>
-          ))}
+          {quickFixes.map((fix) => {
+            const { active, onClick } = getQuickFixButtonState(fix);
+            return (
+              <button
+                key={fix}
+                type="button"
+                onClick={onClick}
+                className={`min-h-[36px] rounded-full border px-3 text-xs font-semibold ${
+                  active
+                    ? "border-accent bg-accent/20 text-accent"
+                    : "border-border bg-surface-2 text-muted"
+                }`}
+              >
+                {fix}
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-[1.1fr_0.9fr]">

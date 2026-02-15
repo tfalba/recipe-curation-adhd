@@ -27,11 +27,8 @@ export default function App() {
     recipeVersion,
     status,
     hasSelectedRecipe,
-    recipeSource,
     clearRecipeSelection,
-    saveCurrentRecipe,
     setSampleRecipeSelection,
-    savedRecipes,
   } = useRecipe();
   const { activeView, setActiveView, goCook, goOverview, goReview } = useView();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
@@ -48,7 +45,6 @@ export default function App() {
   } = useSettings();
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
-  const [saveNotice, setSaveNotice] = useState(false);
   const completedTimersRef = useRef<Set<string>>(new Set());
   const alarmAudioRef = useRef<HTMLAudioElement | null>(null);
   const [alarmActive, setAlarmActive] = useState(false);
@@ -209,22 +205,7 @@ export default function App() {
   useEffect(() => {
     setTimers([]);
     setActiveStepIndex(0);
-    setSaveNotice(false);
   }, [recipeVersion]);
-
-  const isRecipeSaved = savedRecipes.some(
-    (recipe) => recipe.title === recipeTitle
-  );
-  const showSaveGuide =
-    recipeSource === "generated" && status === "success" && !isRecipeSaved;
-
-  const handleSaveGuide = () => {
-    const didSave = saveCurrentRecipe();
-    if (didSave) {
-      setSaveNotice(true);
-      window.setTimeout(() => setSaveNotice(false), 3000);
-    }
-  };
 
   const rootClass = [
     "app-glass-bg text-text font-body",
@@ -270,14 +251,7 @@ export default function App() {
             <TopBar
               {...appShellProps}
               isCook={activeView === "cook"}
-              showSaveGuide={showSaveGuide}
-              onSaveGuide={handleSaveGuide}
             />
-          ) : null}
-          {saveNotice ? (
-            <div className="mt-4 rounded-2xl border border-success/40 bg-success/15 px-4 py-3 text-sm text-text shadow-panel">
-              Recipe saved to your library.
-            </div>
           ) : null}
 
           <main className="mt-2 md:mt-6 space-y-4 md:space-y-6">
@@ -303,8 +277,6 @@ export default function App() {
               showRescue={showRescue}
               alarmActive={alarmActive}
               onStopAlarm={stopAlarm}
-              showSaveGuide={showSaveGuide}
-              onSaveGuide={handleSaveGuide}
             />
           </main>
         </div>

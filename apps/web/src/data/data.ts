@@ -839,5 +839,6 @@ export const quickFixes = [
   "Split long steps",
   "Convert to bullets",
   "Normalize units",
-  "Highlight times/temps",
+  "Highlight times",
+  "Highlight temperatures",
 ];
