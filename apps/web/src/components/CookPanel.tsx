@@ -34,6 +34,11 @@ export default function CookPanel({
   highlightTimes,
   highlightTemperatures,
 }: CookPanelProps) {
+  const [pageTurnDirection, setPageTurnDirection] = useState<
+    "next" | "prev" | null
+  >(
+    null
+  );
   const [touchedIngredient, setTouchedIngredient] = useState<string | null>(null);
   const [hoveredIngredient, setHoveredIngredient] = useState<string | null>(null);
   const [alarmActive, setAlarmActive] = useState(false);
@@ -258,6 +263,32 @@ export default function CookPanel({
       })
       .join("");
 
+  const handleNextWithPageTurn = () => {
+    if (pageTurnDirection) {
+      return;
+    }
+    setPageTurnDirection("next");
+    window.setTimeout(() => {
+      onNext();
+    }, 260);
+    window.setTimeout(() => {
+      setPageTurnDirection(null);
+    }, 900);
+  };
+
+  const handlePrevWithPageTurn = () => {
+    if (pageTurnDirection) {
+      return;
+    }
+    setPageTurnDirection("prev");
+    window.setTimeout(() => {
+      onPrev();
+    }, 260);
+    window.setTimeout(() => {
+      setPageTurnDirection(null);
+    }, 900);
+  };
+
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -278,7 +309,9 @@ export default function CookPanel({
           focusMode ? "lg:grid-cols-1" : "md:grid-cols-[minmax(0,1fr)_280px]"
         }`}
       >
-        <div className="rounded-3xl border border-border bg-bg p-2 md:p-6">
+        <div
+          className="cook-instruction-card cook-turn-underlay rounded-3xl border border-border bg-bg p-2 md:p-6"
+        >
           <div className="flex items-center justify-between">
             <span className="rounded-full bg-surface-2 px-3 py-1 text-xs text-muted">
               {progressLabel}
@@ -299,7 +332,7 @@ export default function CookPanel({
           </ul>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
-              onClick={onPrev}
+              onClick={handlePrevWithPageTurn}
               className="min-h-[52px] flex-1 rounded-2xl border border-border bg-surface-2 px-4 text-sm font-semibold text-muted shadow-focus"
             >
               Back
@@ -312,7 +345,7 @@ export default function CookPanel({
               Start timer
             </button>
             <button
-              onClick={onNext}
+              onClick={handleNextWithPageTurn}
               className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-panel"
             >
               Next
@@ -337,6 +370,15 @@ export default function CookPanel({
                   : ""}
               </p>
             </div>
+          ) : null}
+          {pageTurnDirection ? (
+            <div
+              className={`cook-turn-page ${
+                pageTurnDirection === "next"
+                  ? "cook-turn-page-next"
+                  : "cook-turn-page-prev"
+              }`}
+            />
           ) : null}
         </div>
 
