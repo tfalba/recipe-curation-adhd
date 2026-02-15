@@ -144,7 +144,8 @@ export default function CookPanel({
             </button>
             <button
               onClick={onStartTimer}
-              className="min-h-[52px] flex-1 rounded-2xl border border-violet/50 bg-violet/70 px-4 text-sm font-semibold text-muted shadow-panel"
+              disabled={!activeStep.timerSeconds || activeStep.timerSeconds <= 0}
+              className="min-h-[52px] flex-1 rounded-2xl border border-violet/50 bg-violet/70 px-4 text-sm font-semibold text-muted shadow-panel disabled:cursor-not-allowed disabled:opacity-60"
             >
               Start timer
             </button>
