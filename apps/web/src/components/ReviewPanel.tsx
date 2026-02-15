@@ -109,7 +109,7 @@ export default function ReviewPanel({
             </div>
             <button
               onClick={onGenerateCookMode}
-              className="mt-4 min-h-[36px] w-full rounded-2xl bg-primary px-4 text-sm font-semibold text-muted"
+              className="mt-4 min-h-[36px] w-full rounded-2xl bg-primary px-4 text-sm font-semibold text-white/80"
             >
               Go To Cook Mode
             </button>

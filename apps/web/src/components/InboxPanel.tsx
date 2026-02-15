@@ -141,14 +141,14 @@ export default function InboxPanel() {
       <div className="mt-6 rounded-2xl border border-border bg-surface-2 p-2">
         {status === "loading" ? (
           <div className="flex h-60 items-center justify-center overflow-hidden rounded-xl">
-            <video
+            {/* <video
               className="h-full w-full object-cover"
               src={boilingVideo}
               autoPlay
               loop
               muted
               playsInline
-            />
+            /> */}
           </div>
         ) : (
           <textarea

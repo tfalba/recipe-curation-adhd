@@ -27,6 +27,10 @@ type MobileViewProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
+  alarmActive: boolean;
+  onStopAlarm: () => void;
+  showSaveGuide: boolean;
+  onSaveGuide: () => void;
 };
 
 export default function MobileView({
@@ -47,6 +51,10 @@ export default function MobileView({
   onRescue,
   timers,
   showRescue,
+  alarmActive,
+  onStopAlarm,
+  showSaveGuide,
+  onSaveGuide,
 }: MobileViewProps) {
   const { activeView, goReview, goCook } = useView();
   switch (activeView) {
@@ -73,6 +81,8 @@ export default function MobileView({
           ingredients={ingredients}
           quickFixes={quickFixes}
           onGenerateCookMode={goCook}
+          showSaveGuide={showSaveGuide}
+          onSaveGuide={onSaveGuide}
         />
       );
     case "cook":
@@ -88,6 +98,10 @@ export default function MobileView({
           onRescue={onRescue}
           timers={timers}
           showRescue={showRescue}
+          alarmActive={alarmActive}
+          onStopAlarm={onStopAlarm}
+          showSaveGuide={showSaveGuide}
+          onSaveGuide={onSaveGuide}
         />
       );
     case "library":

@@ -45,7 +45,7 @@ export default function GetStartedPanel({
       </div>
        <button
             onClick={onCreateNewGuide}
-            className="mt-6 min-h-[56px] p-4 w-full rounded-3xl bg-primary/90 px-4 text-left text-lg font-semibold text-text shadow-panel transition duration-quick ease-snappy hover:translate-y-[-1px] hover:shadow-glow"
+            className="mt-6 min-h-[56px] p-4 w-full rounded-3xl bg-primary/90 px-4 text-left text-lg font-semibold text-white/80 shadow-panel transition duration-quick ease-snappy hover:translate-y-[-1px] hover:shadow-glow"
           >
             Create a new guide from any recipe...
           </button>

@@ -12,6 +12,7 @@ import { HeroAboveTheFold } from "./components/HeroAboveTheFold";
 import { FooterBelowTheFold } from "./components/FooterBelowTheFold";
 import { useView } from "./view/ViewContext";
 import { useSettings } from "./settings/SettingsContext";
+import alarmSound from "./assets/microwave-bell-ding.mp3";
 
 const nextStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index + 1) % total;
@@ -49,7 +50,9 @@ export default function App() {
   const [showRescue, setShowRescue] = useState(false);
   const [saveNotice, setSaveNotice] = useState(false);
   const completedTimersRef = useRef<Set<string>>(new Set());
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const alarmAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [alarmActive, setAlarmActive] = useState(false);
+  const alarmTimeoutRef = useRef<number | null>(null);
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
   const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
@@ -104,28 +107,37 @@ export default function App() {
 
   const playTimerChime = async () => {
     try {
-      if (!audioContextRef.current) {
-        audioContextRef.current = new AudioContext();
+      if (!alarmAudioRef.current) {
+        const audio = new Audio(alarmSound);
+        audio.volume = 0.9;
+        audio.loop = true;
+        alarmAudioRef.current = audio;
       }
-      if (audioContextRef.current.state === "suspended") {
-        await audioContextRef.current.resume();
+      const audio = alarmAudioRef.current;
+      audio.currentTime = 0;
+      await audio.play();
+      setAlarmActive(true);
+      if (alarmTimeoutRef.current) {
+        window.clearTimeout(alarmTimeoutRef.current);
       }
-      const ctx = audioContextRef.current;
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = 880;
-      gainNode.gain.value = 0.0001;
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      oscillator.start();
-      gainNode.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
-      oscillator.stop(ctx.currentTime + 0.55);
+      alarmTimeoutRef.current = window.setTimeout(() => {
+        stopAlarm();
+      }, 10000);
     } catch {
       // Ignore audio failures (autoplay or unsupported browser).
     }
+  };
+
+  const stopAlarm = () => {
+    if (alarmTimeoutRef.current) {
+      window.clearTimeout(alarmTimeoutRef.current);
+      alarmTimeoutRef.current = null;
+    }
+    if (alarmAudioRef.current) {
+      alarmAudioRef.current.pause();
+      alarmAudioRef.current.currentTime = 0;
+    }
+    setAlarmActive(false);
   };
 
   const handleNextStep = () => {
@@ -203,6 +215,8 @@ export default function App() {
   const isRecipeSaved = savedRecipes.some(
     (recipe) => recipe.title === recipeTitle
   );
+  const showSaveGuide =
+    recipeSource === "generated" && status === "success" && !isRecipeSaved;
 
   const handleSaveGuide = () => {
     const didSave = saveCurrentRecipe();
@@ -255,11 +269,8 @@ export default function App() {
           {activeView === "cook" || activeView === "review" ? (
             <TopBar
               {...appShellProps}
-              recipeTitle={status === "loading" ? "Building guide..." : recipeTitle}
               isCook={activeView === "cook"}
-              showSaveGuide={
-                recipeSource === "generated" && status === "success" && !isRecipeSaved
-              }
+              showSaveGuide={showSaveGuide}
               onSaveGuide={handleSaveGuide}
             />
           ) : null}
@@ -290,6 +301,10 @@ export default function App() {
               onRescue={handleRescue}
               timers={timers}
               showRescue={showRescue}
+              alarmActive={alarmActive}
+              onStopAlarm={stopAlarm}
+              showSaveGuide={showSaveGuide}
+              onSaveGuide={handleSaveGuide}
             />
           </main>
         </div>

@@ -3,7 +3,6 @@ type TopBarProps = {
   progressLabel: string;
   focusMode: boolean;
   onToggleFocus: () => void;
-  recipeTitle: string;
   isCook: boolean;
   showSaveGuide: boolean;
   onSaveGuide?: () => void;
@@ -14,7 +13,6 @@ export default function TopBar({
   progressLabel,
   focusMode,
   onToggleFocus,
-  recipeTitle,
   isCook,
   showSaveGuide,
   onSaveGuide,
@@ -30,7 +28,7 @@ export default function TopBar({
             Recipe Genius
           </p>
           <p className="text-lg font-display font-semibold">
-            {recipeTitle}
+            One step per screen. Big, calm, focused.
             <span className="sr-only">{viewTitle}</span>
           </p>
         </div>

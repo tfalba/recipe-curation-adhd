@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { StepData, TimerItem } from "./types";
 import { formatTime } from "./utils";
+import { useRecipe } from "../recipe/RecipeContext";
 
 type CookPanelProps = {
   focusMode: boolean;
@@ -13,6 +14,8 @@ type CookPanelProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
+  alarmActive: boolean;
+  onStopAlarm: () => void;
 };
 
 export default function CookPanel({
@@ -26,10 +29,13 @@ export default function CookPanel({
   onRescue,
   timers,
   showRescue,
+  alarmActive,
+  onStopAlarm,
 }: CookPanelProps) {
   const [touchedIngredient, setTouchedIngredient] = useState<string | null>(null);
   const [hoveredIngredient, setHoveredIngredient] = useState<string | null>(null);
   const ingredientsRef = useRef<HTMLUListElement | null>(null);
+  const {recipeTitle} = useRecipe();
 
   useEffect(() => {
     if (!touchedIngredient) {
@@ -98,7 +104,7 @@ export default function CookPanel({
             Cook Mode
           </p>
           <h3 className="text-2xl font-display font-semibold">
-            One step per screen. Big, calm, focused.
+            {recipeTitle}
           </h3>
         </div>
         <span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-bg">
@@ -258,6 +264,14 @@ export default function CookPanel({
                   </div>
                 ))}
               </div>
+              {alarmActive ? (
+                <button
+                  onClick={onStopAlarm}
+                  className="mt-3 w-full min-h-[44px] rounded-2xl border border-danger/50 bg-danger/20 px-4 text-sm font-semibold text-danger"
+                >
+                  Stop alarm
+                </button>
+              ) : null}
             </div>
           </div>
         )}
