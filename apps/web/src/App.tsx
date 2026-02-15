@@ -18,6 +18,58 @@ const nextStepIndex = (index: number, total: number) =>
 const prevStepIndex = (index: number, total: number) =>
   total === 0 ? 0 : (index - 1 + total) % total;
 
+const TIME_PATTERN =
+  /\b(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*(\d+(?:\.\d+)?))?\s*(hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/gi;
+
+const getUnitSeconds = (unit: string) => {
+  const normalized = unit.toLowerCase();
+  if (
+    normalized === "hour" ||
+    normalized === "hours" ||
+    normalized === "hr" ||
+    normalized === "hrs"
+  ) {
+    return 3600;
+  }
+  if (
+    normalized === "minute" ||
+    normalized === "minutes" ||
+    normalized === "min" ||
+    normalized === "mins"
+  ) {
+    return 60;
+  }
+  return 1;
+};
+
+const getStepTimerSequence = (step: StepData) => {
+  const text = step.bullets
+    .flatMap((bullet) =>
+      bullet.parts
+        .filter(
+          (part): part is { type: "text"; value: string } => part.type === "text"
+        )
+        .map((part) => part.value)
+    )
+    .join(" ");
+
+  const sequence: number[] = [];
+  for (const match of text.matchAll(TIME_PATTERN)) {
+    const firstValue = Number.parseFloat(match[1]);
+    const secondValue = match[2] ? Number.parseFloat(match[2]) : null;
+    const valueToUse =
+      secondValue !== null && Number.isFinite(secondValue)
+        ? Math.max(firstValue, secondValue)
+        : firstValue;
+
+    if (!Number.isFinite(valueToUse)) {
+      continue;
+    }
+    sequence.push(Math.round(valueToUse * getUnitSeconds(match[3] ?? "sec")));
+  }
+  return sequence.filter((value) => value > 0);
+};
+
 const FRACTION_MAP: Record<string, string> = {
   "¼": "1/4",
   "½": "1/2",
@@ -124,6 +176,14 @@ const doubleStepData = (step: StepData): StepData => ({
   ),
   ingredients: step.ingredients.map(doubleIngredient),
 });
+
+const getStepTimerSeconds = (step: StepData) => {
+  const totalSeconds = getStepTimerSequence(step).reduce(
+    (sum, value) => sum + value,
+    0
+  );
+  return totalSeconds > 0 ? totalSeconds : step.timerSeconds;
+};
 
 export default function App() {
   const {
@@ -288,6 +348,34 @@ export default function App() {
   );
 
   const activeStep = displaySteps[activeStepIndex] ?? displaySteps[0];
+  const isLastStep = displaySteps.length > 0 && activeStepIndex === displaySteps.length - 1;
+  const activeStepTimerSeconds = useMemo(
+    () => (activeStep ? getStepTimerSeconds(activeStep) : 0),
+    [activeStep]
+  );
+  const activeStepTimerSequence = useMemo(
+    () => (activeStep ? getStepTimerSequence(activeStep) : []),
+    [activeStep]
+  );
+  const activeStepTimerPrefix = `step-${activeStepIndex}-timer-`;
+  const activeStepTimers = useMemo(
+    () => timers.filter((timer) => timer.id.startsWith(activeStepTimerPrefix)),
+    [activeStepTimerPrefix, timers]
+  );
+  const activeRunningStepTimersCount = useMemo(
+    () => activeStepTimers.filter((timer) => timer.remainingSeconds > 0).length,
+    [activeStepTimers]
+  );
+  const canStartTimer = useMemo(() => {
+    if (activeStepTimerSequence.length > 0) {
+      return activeRunningStepTimersCount < activeStepTimerSequence.length;
+    }
+    return activeStepTimerSeconds > 0 && activeRunningStepTimersCount === 0;
+  }, [
+    activeRunningStepTimersCount,
+    activeStepTimerSeconds,
+    activeStepTimerSequence.length,
+  ]);
   const progressLabel = `Step ${activeStepIndex + 1} of ${displaySteps.length || 1}`;
 
   useEffect(() => {
@@ -318,19 +406,41 @@ export default function App() {
   const currentTimerLabel = timersRunning ? "Timer running" : "No active timer";
 
   const handleStartTimer = () => {
-    const id = `step-${activeStepIndex}`;
+    const stepId = `step-${activeStepIndex}`;
+    const sequence = activeStepTimerSequence;
+    const fallbackSeconds =
+      activeStepTimerSeconds > 0 ? activeStepTimerSeconds : activeStep.timerSeconds;
     setTimers((current) => {
-      const existing = current.find((timer) => timer.id === id);
-      if (existing) {
-        return current.map((timer) =>
-          timer.id === id ? { ...timer, running: !timer.running } : timer
-        );
+      const stepTimerPrefix = `${stepId}-timer-`;
+      const stepTimers = current.filter((timer) =>
+        timer.id.startsWith(stepTimerPrefix)
+      );
+      const runningCount = stepTimers.filter(
+        (timer) => timer.remainingSeconds > 0
+      ).length;
+
+      if (sequence.length > 0 && runningCount >= sequence.length) {
+        return current;
       }
+      if (sequence.length === 0 && runningCount > 0) {
+        return current;
+      }
+
+      const createdCount = stepTimers.length;
+      const nextTimerSeconds =
+        sequence.length > 0
+          ? sequence[Math.min(createdCount, sequence.length - 1)]
+          : fallbackSeconds;
+
+      if (!nextTimerSeconds || nextTimerSeconds <= 0) {
+        return current;
+      }
+
       return [
         {
-          id,
-          label: `${activeStep.title}`,
-          remainingSeconds: activeStep.timerSeconds,
+          id: `${stepId}-timer-${createdCount + 1}-${Date.now()}`,
+          label: activeStep.title,
+          remainingSeconds: nextTimerSeconds,
           running: true,
         },
         ...current,
@@ -465,7 +575,10 @@ export default function App() {
               activeStep={activeStep}
               onPrev={handlePrevStep}
               onNext={handleNextStep}
+              isLastStep={isLastStep}
               onStartTimer={handleStartTimer}
+              activeStepTimerSeconds={activeStepTimerSeconds}
+              canStartTimer={canStartTimer}
               onRescue={handleRescue}
               timers={timers}
               showRescue={showRescue}

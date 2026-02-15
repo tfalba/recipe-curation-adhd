@@ -12,7 +12,10 @@ type CookPanelProps = {
   activeStep: StepData;
   onPrev: () => void;
   onNext: () => void;
+  isLastStep: boolean;
   onStartTimer: () => void;
+  activeStepTimerSeconds: number;
+  canStartTimer: boolean;
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
@@ -27,7 +30,10 @@ export default function CookPanel({
   activeStep,
   onPrev,
   onNext,
+  isLastStep,
   onStartTimer,
+  activeStepTimerSeconds,
+  canStartTimer,
   onRescue,
   timers,
   showRescue,
@@ -339,14 +345,15 @@ export default function CookPanel({
             </button>
             <button
               onClick={onStartTimer}
-              disabled={!activeStep.timerSeconds || activeStep.timerSeconds <= 0}
+              disabled={!canStartTimer || activeStepTimerSeconds <= 0}
               className="min-h-[52px] flex-1 rounded-2xl border border-violet/50 bg-violet/70 px-4 text-sm font-semibold text-muted shadow-panel disabled:cursor-not-allowed disabled:opacity-60"
             >
               Start timer
             </button>
             <button
               onClick={handleNextWithPageTurn}
-              className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-panel"
+              disabled={isLastStep}
+              className="min-h-[52px] flex-1 rounded-2xl bg-accent px-4 text-sm font-semibold text-bg shadow-panel disabled:cursor-not-allowed disabled:opacity-60"
             >
               Next
             </button>

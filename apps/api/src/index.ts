@@ -121,6 +121,8 @@ app.post("/api/transform", async (req: Request, res: Response) => {
         "recipeSummary: { servings: string, prepTime: string, cookTime: string }. " +
         "Each ingredient: { qty: string, name: string, note: string }. " +
         "Each step: { title: string, bullets: { parts: { type: \"text\", value: string } | { type: \"ingredient\", ingredient: Ingredient }[] }[], chips: string[], timerSeconds: number, needsNow: { item: string | Ingredient, type: \"ingredient\" | \"other\" }[], ingredients: Ingredient[], nextPreview: string[], summary: string }. " +
+        "Keep all timing and temperature instructions inside bullet text exactly where they are relevant (for example: 'simmer 8 minutes', 'bake at 350F'). " +
+        "Do not move time/temperature instructions only into chips or needsNow; bullets must still include them. " +
         "Classify needsNow.type as \"ingredient\" for edible items from the ingredient list, and \"other\" for tools, cookware, appliances, temperatures, timers, and techniques. " +
         "For needsNow.item, use an Ingredient object when it matches an ingredient, otherwise use a string. " +
         "Include in step.ingredients the subset of the global ingredients used in that step. " +
@@ -361,23 +363,93 @@ app.post("/api/transform", async (req: Request, res: Response) => {
           return null;
         };
 
-        const bullets: StepBullet[] = Array.isArray(candidate.bullets)
+        const chips = Array.isArray(candidate.chips)
+          ? candidate.chips.filter((c): c is string => typeof c === "string")
+          : [];
+
+        let bullets: StepBullet[] = Array.isArray(candidate.bullets)
           ? candidate.bullets
               .map(normalizeBullet)
               .filter((bullet): bullet is StepBullet => Boolean(bullet && bullet.parts.length))
               .slice(0, 3)
           : [];
 
+        const bulletText = bullets
+          .flatMap((bullet) =>
+            bullet.parts
+              .filter((part): part is { type: "text"; value: string } => part.type === "text")
+              .map((part) => part.value)
+          )
+          .join(" ");
+
+        const hasTimingInBullets =
+          /\b\d+(?:\.\d+)?(?:\s*(?:-|to)\s*\d+(?:\.\d+)?)?\s*(?:hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/i.test(
+            bulletText
+          );
+        const hasTemperatureInBullets =
+          /\b\d{2,3}\s*(?:°\s?[CF]|degrees?\s*(?:Celsius|Fahrenheit|C|F))\b|\b(?:low|medium|high)\s+heat\b|\bpreheat\b/i.test(
+            bulletText
+          );
+
+        const needsNowText = needsNow
+          .map((entry) =>
+            typeof entry.item === "string" ? entry.item : entry.item.note
+          )
+          .filter((value) => value.trim().length > 0);
+        const hintSources = [...chips, ...needsNowText];
+
+        const timingHints = hintSources.filter((hint) =>
+          /\b\d+(?:\.\d+)?(?:\s*(?:-|to)\s*\d+(?:\.\d+)?)?\s*(?:hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/i.test(
+            hint
+          )
+        );
+        const temperatureHints = hintSources.filter((hint) =>
+          /\b\d{2,3}\s*(?:°\s?[CF]|degrees?\s*(?:Celsius|Fahrenheit|C|F))\b|\b(?:low|medium|high)\s+heat\b|\bpreheat\b/i.test(
+            hint
+          )
+        );
+
+        const timerSeconds =
+          typeof candidate.timerSeconds === "number" &&
+          Number.isFinite(candidate.timerSeconds)
+            ? Math.max(0, Math.round(candidate.timerSeconds))
+            : 0;
+
+        const fallbackSegments: string[] = [];
+        if (!hasTimingInBullets && (timingHints.length > 0 || timerSeconds > 0)) {
+          if (timingHints.length > 0) {
+            fallbackSegments.push(`Timing: ${timingHints[0]}`);
+          } else {
+            const totalMinutes = Math.ceil(timerSeconds / 60);
+            fallbackSegments.push(
+              totalMinutes >= 1
+                ? `Timing: cook for ${totalMinutes} minute${totalMinutes === 1 ? "" : "s"}`
+                : `Timing: cook for ${timerSeconds} second${timerSeconds === 1 ? "" : "s"}`
+            );
+          }
+        }
+
+        if (!hasTemperatureInBullets && temperatureHints.length > 0) {
+          fallbackSegments.push(`Temperature: ${temperatureHints[0]}`);
+        }
+
+        if (fallbackSegments.length > 0) {
+          const fallbackText = `${fallbackSegments.join(". ")}.`;
+          if (bullets.length < 3) {
+            bullets = [...bullets, { parts: toStructuredParts(fallbackText) }];
+          } else if (bullets.length > 0) {
+            const lastBullet = bullets[bullets.length - 1];
+            bullets[bullets.length - 1] = {
+              parts: [...lastBullet.parts, { type: "text", value: ` ${fallbackText}` }],
+            };
+          }
+        }
+
         return {
           title: typeof candidate.title === "string" ? candidate.title : "",
           bullets,
-          chips: Array.isArray(candidate.chips)
-            ? candidate.chips.filter((c) => typeof c === "string")
-            : [],
-          timerSeconds:
-            typeof candidate.timerSeconds === "number" && Number.isFinite(candidate.timerSeconds)
-              ? Math.max(0, Math.round(candidate.timerSeconds))
-              : 0,
+          chips,
+          timerSeconds,
           needsNow,
           ingredients: stepIngredients,
           nextPreview: Array.isArray(candidate.nextPreview)

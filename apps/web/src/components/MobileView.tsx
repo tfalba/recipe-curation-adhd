@@ -23,7 +23,10 @@ type MobileViewProps = {
   activeStep: StepData;
   onPrev: () => void;
   onNext: () => void;
+  isLastStep: boolean;
   onStartTimer: () => void;
+  activeStepTimerSeconds: number;
+  canStartTimer: boolean;
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
@@ -51,7 +54,10 @@ export default function MobileView({
   activeStep,
   onPrev,
   onNext,
+  isLastStep,
   onStartTimer,
+  activeStepTimerSeconds,
+  canStartTimer,
   onRescue,
   timers,
   showRescue,
@@ -109,7 +115,10 @@ export default function MobileView({
           activeStep={activeStep}
           onPrev={onPrev}
           onNext={onNext}
+          isLastStep={isLastStep}
           onStartTimer={onStartTimer}
+          activeStepTimerSeconds={activeStepTimerSeconds}
+          canStartTimer={canStartTimer}
           onRescue={onRescue}
           timers={timers}
           showRescue={showRescue}

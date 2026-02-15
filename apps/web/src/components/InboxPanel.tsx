@@ -15,18 +15,6 @@ export default function InboxPanel() {
     (import.meta.env.VITE_API_URL as string | undefined) ??
     "http://localhost:10000";
 
-  const stripRtf = (rtf: string) => {
-    const decoded = rtf.replace(/\\'[0-9a-fA-F]{2}/g, (match) =>
-      String.fromCharCode(parseInt(match.slice(2), 16)),
-    );
-    return decoded
-      .replace(/\\par[d]?/g, "\n")
-      .replace(/\\[a-zA-Z]+-?\d* ?/g, "")
-      .replace(/[{}]/g, "")
-      .replace(/\n\s*\n/g, "\n\n")
-      .trim();
-  };
-
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
@@ -44,7 +32,6 @@ export default function InboxPanel() {
     const isPdf =
       file.type === "application/pdf" ||
       file.name.toLowerCase().endsWith(".pdf");
-    const isRtf = file.name.toLowerCase().endsWith(".rtf");
 
     if (isPdf) {
       try {
@@ -73,8 +60,7 @@ export default function InboxPanel() {
 
     try {
       const text = await file.text();
-      const parsedText = isRtf ? stripRtf(text) : text;
-      setRecipeText(parsedText);
+      setRecipeText(text);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed.";
       setUploadError(message);
@@ -156,7 +142,7 @@ export default function InboxPanel() {
         ref={fileInputRef}
         type="file"
         className="hidden"
-        accept=".txt,.pdf,.rtf"
+        accept=".txt,.pdf"
         onChange={handleUploadChange}
       />
       {uploadedName ? (
