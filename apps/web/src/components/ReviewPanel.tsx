@@ -1,21 +1,29 @@
-import { useMemo, useState } from "react";
-import type { BulletPart, Ingredient, StepData } from "./types";
+import { useMemo } from "react";
+import type { BulletPart, Ingredient, RecipeSummary, StepData } from "./types";
 
 type ReviewPanelProps = {
   steps: StepData[];
   ingredients: Ingredient[];
+  recipeSummary: RecipeSummary;
   quickFixes: string[];
   onGenerateCookMode?: () => void;
+  highlightTimes: boolean;
+  highlightTemperatures: boolean;
+  onToggleHighlightTimes: () => void;
+  onToggleHighlightTemperatures: () => void;
 };
 
 export default function ReviewPanel({
   steps,
   ingredients,
+  recipeSummary,
   quickFixes,
   onGenerateCookMode,
+  highlightTimes,
+  highlightTemperatures,
+  onToggleHighlightTimes,
+  onToggleHighlightTemperatures,
 }: ReviewPanelProps) {
-  const [highlightTimes, setHighlightTimes] = useState(false);
-  const [highlightTemperatures, setHighlightTemperatures] = useState(false);
 
   const timePattern = useMemo(
     () =>
@@ -138,19 +146,25 @@ export default function ReviewPanel({
     if (isTimesFix) {
       return {
         active: highlightTimes,
-        onClick: () => setHighlightTimes((current) => !current),
+        onClick: onToggleHighlightTimes,
       };
     }
 
     if (isTemperaturesFix) {
       return {
         active: highlightTemperatures,
-        onClick: () => setHighlightTemperatures((current) => !current),
+        onClick: onToggleHighlightTemperatures,
       };
     }
 
     return { active: false, onClick: undefined };
   };
+
+  const recipeSummaryChips = [
+    recipeSummary.servings,
+    `Prep: ${recipeSummary.prepTime}`,
+    `Cook: ${recipeSummary.cookTime}`,
+  ].filter((chip) => chip.trim().length > 0);
 
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
@@ -249,7 +263,7 @@ export default function ReviewPanel({
           <div className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4">
             <h4 className="text-sm font-semibold">Recipe summary</h4>
             <div className="mt-3 flex flex-wrap gap-2">
-              {["4 servings", "25 min", "Skillet", "High protein"].map((chip) => (
+              {recipeSummaryChips.map((chip) => (
                 <span
                   key={chip}
                   className="rounded-full bg-bg px-3 py-1 text-xs text-muted"

@@ -810,21 +810,25 @@ export const libraryRecipes = [
 //   },
   {
     title: normalizedShrimpCurry.recipeTitle,
+    recipeSummary: normalizedShrimpCurry.recipeSummary,
     steps: normalizedShrimpCurry.steps,
     ingredients: normalizedShrimpCurry.ingredients,
   },
   {
     title: normalizedLadyfingers.recipeTitle,
+    recipeSummary: normalizedLadyfingers.recipeSummary,
     steps: normalizedLadyfingers.steps,
     ingredients: normalizedLadyfingers.ingredients,
   },
   {
     title: normalizedClaypotRice.recipeTitle,
+    recipeSummary: normalizedClaypotRice.recipeSummary,
     steps: normalizedClaypotRice.steps,
     ingredients: normalizedClaypotRice.ingredients,
   },
   {
     title: normalizedBananaBread.recipeTitle,
+    recipeSummary: normalizedBananaBread.recipeSummary,
     steps: normalizedBananaBread.steps,
     ingredients: normalizedBananaBread.ingredients,
   },
@@ -833,11 +837,11 @@ export const libraryRecipes = [
 export const ingredientsClaypotRice = normalizedClaypotRice.ingredients;
 export const stepsClaypotRice = normalizedClaypotRice.steps;
 export const recipeTitleClaypotRice = normalizedClaypotRice.recipeTitle;
+export const recipeSummaryClaypotRice = normalizedClaypotRice.recipeSummary;
 
 
 export const quickFixes = [
   "Split long steps",
-  "Normalize units",
   "Highlight times",
   "Highlight temperatures",
 ];

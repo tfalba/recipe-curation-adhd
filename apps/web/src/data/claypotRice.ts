@@ -5,6 +5,11 @@ export const recipeClaypotRice: RecipePayload =
 
 {
     "recipeTitle": "Claypot Rice",
+    "recipeSummary": {
+        "servings": "4 servings",
+        "prepTime": "25 min",
+        "cookTime": "35 min"
+    },
     "ingredients": [
         {
             "qty": "½ cup",

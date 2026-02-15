@@ -1,4 +1,4 @@
-import type { Ingredient, StepData, TimerItem } from "./types";
+import type { Ingredient, RecipeSummary, StepData, TimerItem } from "./types";
 import CookPanel from "./CookPanel";
 import GetStartedPanel from "./GetStartedPanel";
 import InboxPanel from "./InboxPanel";
@@ -12,6 +12,7 @@ import { useView } from "../view/ViewContext";
 type MobileViewProps = {
   steps: StepData[];
   ingredients: Ingredient[];
+  recipeSummary: RecipeSummary;
   quickFixes: string[];
   hasSelectedRecipe: boolean;
   recipeTitle: string;
@@ -26,11 +27,16 @@ type MobileViewProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
+  highlightTimes: boolean;
+  highlightTemperatures: boolean;
+  onToggleHighlightTimes: () => void;
+  onToggleHighlightTemperatures: () => void;
 };
 
 export default function MobileView({
   steps,
   ingredients,
+  recipeSummary,
   quickFixes,
   hasSelectedRecipe,
   recipeTitle,
@@ -45,6 +51,10 @@ export default function MobileView({
   onRescue,
   timers,
   showRescue,
+  highlightTimes,
+  highlightTemperatures,
+  onToggleHighlightTimes,
+  onToggleHighlightTemperatures,
 }: MobileViewProps) {
   const { activeView, goReview, goCook } = useView();
   switch (activeView) {
@@ -69,8 +79,13 @@ export default function MobileView({
         <ReviewPanel
           steps={steps}
           ingredients={ingredients}
+          recipeSummary={recipeSummary}
           quickFixes={quickFixes}
           onGenerateCookMode={goCook}
+          highlightTimes={highlightTimes}
+          highlightTemperatures={highlightTemperatures}
+          onToggleHighlightTimes={onToggleHighlightTimes}
+          onToggleHighlightTemperatures={onToggleHighlightTemperatures}
         />
       );
     case "cook":
@@ -86,6 +101,8 @@ export default function MobileView({
           onRescue={onRescue}
           timers={timers}
           showRescue={showRescue}
+          highlightTimes={highlightTimes}
+          highlightTemperatures={highlightTemperatures}
         />
       );
     case "library":

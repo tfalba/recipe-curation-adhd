@@ -2,6 +2,11 @@ import type { RecipePayload } from "../components/types";
 
 export const recipeShrimpCurry: RecipePayload = {
     "recipeTitle": "Shrimp Curry with Pineapple and Thai Basil",
+    "recipeSummary": {
+        "servings": "4 servings",
+        "prepTime": "20 min",
+        "cookTime": "25 min"
+    },
     "ingredients": [
         {
             "qty": "2",

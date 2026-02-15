@@ -3,6 +3,7 @@ export type {
   Ingredient,
   NeedsNowItem,
   RecipePayload,
+  RecipeSummary,
   RecipeSource,
   StepBullet,
   StepData,

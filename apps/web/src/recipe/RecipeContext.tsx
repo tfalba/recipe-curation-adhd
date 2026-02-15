@@ -6,9 +6,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Ingredient, RecipeSource, StepData } from "../components";
+import type {
+  Ingredient,
+  RecipeSource,
+  RecipeSummary,
+  StepData,
+} from "../components";
 import {
   ingredientsClaypotRice as seedIngredients,
+  recipeSummaryClaypotRice as seedRecipeSummary,
   recipeTitleClaypotRice as seedTitle,
   stepsClaypotRice as seedSteps,
 } from "../data/data";
@@ -20,11 +26,13 @@ type RecipeContextValue = {
   setRecipeText: (value: string) => void;
   recipeTitle: string;
   setRecipeTitle: (value: string) => void;
+  recipeSummary: RecipeSummary;
   recipeVersion: number;
   hasSelectedRecipe: boolean;
   recipeSource: RecipeSource;
   savedRecipes: {
     title: string;
+    recipeSummary: RecipeSummary;
     steps: StepData[];
     ingredients: Ingredient[];
   }[];
@@ -36,6 +44,7 @@ type RecipeContextValue = {
   saveCurrentRecipe: () => boolean;
   applyRecipe: (recipe: {
     title: string;
+    recipeSummary?: RecipeSummary;
     steps: StepData[];
     ingredients: Ingredient[];
   }) => void;
@@ -51,14 +60,60 @@ const API_BASE =
   (import.meta.env.VITE_API_URL as string | undefined) ??
   "http://localhost:10000";
 
+const DEFAULT_RECIPE_SUMMARY: RecipeSummary = {
+  servings: "4 servings",
+  prepTime: "10 min",
+  cookTime: "20 min",
+};
+
+const normalizeRecipeSummary = (candidate: unknown): RecipeSummary => {
+  const source =
+    typeof candidate === "object" && candidate !== null
+      ? (candidate as {
+          servings?: unknown;
+          prepTime?: unknown;
+          cookTime?: unknown;
+          totalTime?: unknown;
+          activeTime?: unknown;
+        })
+      : null;
+
+  return {
+    servings:
+      typeof source?.servings === "string" && source.servings.trim().length > 0
+        ? source.servings
+        : DEFAULT_RECIPE_SUMMARY.servings,
+    prepTime:
+      typeof source?.prepTime === "string" && source.prepTime.trim().length > 0
+        ? source.prepTime
+        : typeof source?.activeTime === "string" && source.activeTime.trim().length > 0
+          ? source.activeTime
+          : DEFAULT_RECIPE_SUMMARY.prepTime,
+    cookTime:
+      typeof source?.cookTime === "string" && source.cookTime.trim().length > 0
+        ? source.cookTime
+        : typeof source?.totalTime === "string" && source.totalTime.trim().length > 0
+          ? source.totalTime
+          : DEFAULT_RECIPE_SUMMARY.cookTime,
+  };
+};
+
 export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipeText, setRecipeText] = useState("");
-  const [recipeTitle, setRecipeTitle] = useState(seedTitle);
+  const [recipeTitle, setRecipeTitle] = useState("Get Started");
+  const [recipeSummary, setRecipeSummary] = useState<RecipeSummary>(
+    DEFAULT_RECIPE_SUMMARY
+  );
   const [recipeVersion, setRecipeVersion] = useState(0);
-  const [hasSelectedRecipe, setHasSelectedRecipe] = useState(true);
-  const [recipeSource, setRecipeSource] = useState<RecipeSource>("library");
+  const [hasSelectedRecipe, setHasSelectedRecipe] = useState(false);
+  const [recipeSource, setRecipeSource] = useState<RecipeSource>("none");
   const [savedRecipes, setSavedRecipes] = useState<
-    { title: string; steps: StepData[]; ingredients: Ingredient[] }[]
+    {
+      title: string;
+      recipeSummary: RecipeSummary;
+      steps: StepData[];
+      ingredients: Ingredient[];
+    }[]
   >(() => {
     if (typeof window === "undefined") {
       return [];
@@ -69,7 +124,22 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
         return [];
       }
       const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : [];
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed
+        .filter((recipe): recipe is Record<string, unknown> => {
+          return typeof recipe === "object" && recipe !== null;
+        })
+        .map((recipe) => ({
+          title:
+            typeof recipe.title === "string" ? recipe.title : "Untitled recipe",
+          recipeSummary: normalizeRecipeSummary(recipe.recipeSummary),
+          steps: Array.isArray(recipe.steps) ? (recipe.steps as StepData[]) : [],
+          ingredients: Array.isArray(recipe.ingredients)
+            ? (recipe.ingredients as Ingredient[])
+            : [],
+        }));
     } catch {
       return [];
     }
@@ -113,6 +183,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       if (typeof payload?.recipeTitle === "string" && payload.recipeTitle.trim()) {
         setRecipeTitle(payload.recipeTitle.trim());
       }
+      setRecipeSummary(normalizeRecipeSummary(payload?.recipeSummary));
       setSteps(payload.steps);
       setIngredients(payload.ingredients);
       setStatus("success");
@@ -132,14 +203,14 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     }
     setSavedRecipes((current) => {
       const next = [
-        { title: recipeTitle.trim(), steps, ingredients },
+        { title: recipeTitle.trim(), recipeSummary, steps, ingredients },
         ...current.filter((recipe) => recipe.title !== recipeTitle.trim()),
       ];
       window.localStorage.setItem("saved-recipes", JSON.stringify(next));
       return next;
     });
     return true;
-  }, [recipeTitle, steps, ingredients]);
+  }, [recipeTitle, recipeSummary, steps, ingredients]);
 
   const value = useMemo<RecipeContextValue>(
     () => ({
@@ -147,6 +218,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       setRecipeText,
       recipeTitle,
       setRecipeTitle,
+      recipeSummary,
       recipeVersion,
       hasSelectedRecipe,
       recipeSource,
@@ -161,6 +233,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       saveCurrentRecipe,
       applyRecipe: (recipe) => {
         setRecipeTitle(recipe.title);
+        setRecipeSummary(normalizeRecipeSummary(recipe.recipeSummary));
         setSteps(recipe.steps);
         setIngredients(recipe.ingredients);
         setStatus("success");
@@ -171,6 +244,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       },
       clearRecipeSelection: () => {
         setRecipeTitle("Get Started");
+        setRecipeSummary(DEFAULT_RECIPE_SUMMARY);
         setRecipeText("");
         setStatus("idle");
         setError(null);
@@ -179,13 +253,20 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       },
       setSampleRecipeSelection: () => {
         setRecipeTitle(seedTitle);
+        setRecipeSummary(seedRecipeSummary);
         setSteps(seedSteps);
         setIngredients(seedIngredients);
+        setStatus("success");
+        setError(null);
+        setHasSelectedRecipe(true);
+        setRecipeSource("library");
+        setRecipeVersion((value) => value + 1);
       },
     }),
     [
       recipeText,
       recipeTitle,
+      recipeSummary,
       recipeVersion,
       hasSelectedRecipe,
       recipeSource,

@@ -3,6 +3,11 @@ import type { RecipePayload } from "../components/types";
 export const bananaBreadRecipe: RecipePayload =
 {
     "recipeTitle": "Banana Bread",
+    "recipeSummary": {
+        "servings": "10 slices",
+        "prepTime": "15 min",
+        "cookTime": "1 hr 5 min"
+    },
     "ingredients": [
         {
             "qty": "1 ½ cups (340 g)",

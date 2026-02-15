@@ -3,6 +3,11 @@ import type { RecipePayload } from "../components/types";
 export const recipeLadyfingers: RecipePayload =
 {
     "recipeTitle": "Ladyfingers",
+    "recipeSummary": {
+        "servings": "24 cookies",
+        "prepTime": "25 min",
+        "cookTime": "20 min"
+    },
     "ingredients": [
         {
             "qty": "1 c.",

@@ -22,6 +22,7 @@ export default function App() {
   const {
     steps,
     ingredients,
+    recipeSummary,
     recipeTitle,
     recipeVersion,
     status,
@@ -43,6 +44,8 @@ export default function App() {
   } = useSettings();
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const [showRescue, setShowRescue] = useState(false);
+  const [highlightTimes, setHighlightTimes] = useState(false);
+  const [highlightTemperatures, setHighlightTemperatures] = useState(false);
 
   const activeStep = steps[activeStepIndex] ?? steps[0];
   const progressLabel = `Step ${activeStepIndex + 1} of ${steps.length || 1}`;
@@ -148,6 +151,8 @@ export default function App() {
   useEffect(() => {
     setTimers([]);
     setActiveStepIndex(0);
+    setHighlightTimes(false);
+    setHighlightTemperatures(false);
   }, [recipeVersion]);
 
   const rootClass = [
@@ -201,6 +206,7 @@ export default function App() {
             <MobileView
               steps={steps}
               ingredients={ingredients}
+              recipeSummary={recipeSummary}
               quickFixes={quickFixes}
               hasSelectedRecipe={hasSelectedRecipe}
               recipeTitle={recipeTitle}
@@ -215,6 +221,14 @@ export default function App() {
               onRescue={handleRescue}
               timers={timers}
               showRescue={showRescue}
+              highlightTimes={highlightTimes}
+              highlightTemperatures={highlightTemperatures}
+              onToggleHighlightTimes={() =>
+                setHighlightTimes((current) => !current)
+              }
+              onToggleHighlightTemperatures={() =>
+                setHighlightTemperatures((current) => !current)
+              }
             />
           </main>
         </div>

@@ -4,7 +4,7 @@ import { useRecipe } from "../recipe/RecipeContext";
 
 export default function BottomNav() {
   const { activeView, setActiveView } = useView();
-  const { recipeTitle, setSampleRecipeSelection } = useRecipe();
+  const { hasSelectedRecipe, setSampleRecipeSelection } = useRecipe();
   const items: { key: ViewKey; label: string }[] = [
     { key: "overview", label: "Overview" },
     { key: "review", label: "Review" },
@@ -21,7 +21,7 @@ export default function BottomNav() {
           onClick={() => {
             if (
               (item.key === "review" || item.key === "cook") &&
-              recipeTitle === "Get Started"
+              !hasSelectedRecipe
             ) {
               setSampleRecipeSelection();
             }

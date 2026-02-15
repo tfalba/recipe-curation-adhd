@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import type { StepData, TimerItem } from "./types";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { BulletPart, StepData, TimerItem } from "./types";
 import { formatTime } from "./utils";
 import { useRecipe } from "../recipe/RecipeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -16,6 +16,8 @@ type CookPanelProps = {
   onRescue: () => void;
   timers: TimerItem[];
   showRescue: boolean;
+  highlightTimes: boolean;
+  highlightTemperatures: boolean;
 };
 
 export default function CookPanel({
@@ -29,6 +31,8 @@ export default function CookPanel({
   onRescue,
   timers,
   showRescue,
+  highlightTimes,
+  highlightTemperatures,
 }: CookPanelProps) {
   const [touchedIngredient, setTouchedIngredient] = useState<string | null>(null);
   const [hoveredIngredient, setHoveredIngredient] = useState<string | null>(null);
@@ -128,8 +132,95 @@ export default function CookPanel({
     []
   );
 
+  const timePattern = useMemo(
+    () =>
+      /\b\d+(?:\.\d+)?(?:\s*(?:-|to)\s*\d+(?:\.\d+)?)?\s*(?:hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/gi,
+    []
+  );
+
+  const temperaturePattern = useMemo(
+    () =>
+      /\b\d{2,3}\s*(?:°\s?[CF]|degrees?\s*(?:Celsius|Fahrenheit|C|F))\b/gi,
+    []
+  );
+
+  const highlightTextByPattern = (
+    text: string,
+    pattern: RegExp,
+    kind: "time" | "temperature"
+  ) => {
+    const matches = Array.from(text.matchAll(pattern));
+    if (!matches.length) {
+      return [{ value: text, kind: "text" as const }];
+    }
+
+    const parts: { value: string; kind: "text" | "time" | "temperature" }[] = [];
+    let cursor = 0;
+    matches.forEach((match) => {
+      const matchText = match[0];
+      const start = match.index ?? 0;
+      if (start > cursor) {
+        parts.push({ value: text.slice(cursor, start), kind: "text" });
+      }
+      parts.push({ value: matchText, kind });
+      cursor = start + matchText.length;
+    });
+    if (cursor < text.length) {
+      parts.push({ value: text.slice(cursor), kind: "text" });
+    }
+    return parts;
+  };
+
+  const renderHighlightedText = (value: string, keyPrefix: string) => {
+    let parts: { value: string; kind: "text" | "time" | "temperature" }[] = [
+      { value, kind: "text" },
+    ];
+
+    if (highlightTemperatures) {
+      parts = parts.flatMap((part) =>
+        part.kind === "text"
+          ? highlightTextByPattern(part.value, temperaturePattern, "temperature")
+          : [part]
+      );
+    }
+
+    if (highlightTimes) {
+      parts = parts.flatMap((part) =>
+        part.kind === "text"
+          ? highlightTextByPattern(part.value, timePattern, "time")
+          : [part]
+      );
+    }
+
+    return parts.map((part, index) => {
+      if (part.kind === "temperature") {
+        return (
+          <span
+            key={`${keyPrefix}-temp-${index}`}
+            className="rounded bg-danger/20 px-1 py-0.5 font-semibold text-danger"
+          >
+            {part.value}
+          </span>
+        );
+      }
+
+      if (part.kind === "time") {
+        return (
+          <span
+            key={`${keyPrefix}-time-${index}`}
+            className="rounded bg-warning/20 px-1 py-0.5 font-semibold text-warning"
+          >
+            {part.value}
+          </span>
+        );
+      }
+
+      return <span key={`${keyPrefix}-text-${index}`}>{part.value}</span>;
+    });
+  };
+
   const renderBulletParts = (
-    parts: { type: string; value?: string; ingredient?: { name: string } }[]
+    parts: BulletPart[]
   ) =>
     parts.map((part, index) => {
       if (part.type === "ingredient" && part.ingredient?.name) {
@@ -142,18 +233,28 @@ export default function CookPanel({
           </span>
         );
       }
-      return <span key={`text-${index}`}>{part.value ?? ""}</span>;
+      if (part.type === "text") {
+        return (
+          <span key={`text-${index}`}>
+            {renderHighlightedText(part.value ?? "", `part-${index}`)}
+          </span>
+        );
+      }
+      return null;
     });
 
   const bulletToText = (
-    parts: { type: string; value?: string; ingredient?: { name: string } }[]
+    parts: BulletPart[]
   ) =>
     parts
       .map((part) => {
         if (part.type === "ingredient" && part.ingredient?.name) {
           return part.ingredient.name;
         }
-        return part.value ?? "";
+        if (part.type === "text") {
+          return part.value ?? "";
+        }
+        return "";
       })
       .join("");
 

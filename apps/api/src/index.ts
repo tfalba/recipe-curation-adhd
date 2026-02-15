@@ -2,7 +2,14 @@ import "dotenv/config";
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import OpenAI from "openai";
-import type { BulletPart, Ingredient, NeedsNowItem, StepBullet, StepData } from "@rc/types";
+import type {
+  BulletPart,
+  Ingredient,
+  NeedsNowItem,
+  RecipeSummary,
+  StepBullet,
+  StepData,
+} from "@rc/types";
 import multer from "multer";
 import pdfParse from "pdf-parse";
 
@@ -110,7 +117,8 @@ app.post("/api/transform", async (req: Request, res: Response) => {
       model: "gpt-4.1-mini",
       instructions:
         "You are a helpful assistant that outputs JSON only. " +
-        "Return a JSON object with keys: recipeTitle (string), ingredients (array), and steps (array). " +
+        "Return a JSON object with keys: recipeTitle (string), recipeSummary (object), ingredients (array), and steps (array). " +
+        "recipeSummary: { servings: string, prepTime: string, cookTime: string }. " +
         "Each ingredient: { qty: string, name: string, note: string }. " +
         "Each step: { title: string, bullets: { parts: { type: \"text\", value: string } | { type: \"ingredient\", ingredient: Ingredient }[] }[], chips: string[], timerSeconds: number, needsNow: { item: string | Ingredient, type: \"ingredient\" | \"other\" }[], ingredients: Ingredient[], nextPreview: string[], summary: string }. " +
         "Classify needsNow.type as \"ingredient\" for edible items from the ingredient list, and \"other\" for tools, cookware, appliances, temperatures, timers, and techniques. " +
@@ -138,6 +146,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
 
     const data = parsed as {
       recipeTitle?: unknown;
+      recipeSummary?: unknown;
       ingredients?: unknown;
       steps?: unknown;
     };
@@ -162,6 +171,41 @@ app.post("/api/transform", async (req: Request, res: Response) => {
         };
       })
       .filter((item) => item.name.trim().length > 0);
+
+    const recipeSummarySource =
+      typeof data.recipeSummary === "object" && data.recipeSummary !== null
+        ? (data.recipeSummary as {
+            servings?: unknown;
+            prepTime?: unknown;
+            cookTime?: unknown;
+            totalTime?: unknown;
+            activeTime?: unknown;
+          })
+        : null;
+
+    const recipeSummary: RecipeSummary = {
+      servings:
+        typeof recipeSummarySource?.servings === "string" &&
+        recipeSummarySource.servings.trim().length > 0
+          ? recipeSummarySource.servings
+          : "4 servings",
+      prepTime:
+        typeof recipeSummarySource?.prepTime === "string" &&
+        recipeSummarySource.prepTime.trim().length > 0
+          ? recipeSummarySource.prepTime
+          : typeof recipeSummarySource?.activeTime === "string" &&
+              recipeSummarySource.activeTime.trim().length > 0
+            ? recipeSummarySource.activeTime
+            : "10 min",
+      cookTime:
+        typeof recipeSummarySource?.cookTime === "string" &&
+        recipeSummarySource.cookTime.trim().length > 0
+          ? recipeSummarySource.cookTime
+          : typeof recipeSummarySource?.totalTime === "string" &&
+              recipeSummarySource.totalTime.trim().length > 0
+            ? recipeSummarySource.totalTime
+            : "20 min",
+    };
 
     const steps: StepData[] = data.steps
       .filter((item) => typeof item === "object" && item !== null)
@@ -348,7 +392,7 @@ app.post("/api/transform", async (req: Request, res: Response) => {
       return res.status(500).json({ error: "OpenAI response missing usable steps or ingredients." });
     }
 
-    res.json({ recipeTitle, ingredients, steps });
+    res.json({ recipeTitle, recipeSummary, ingredients, steps });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     res.status(500).json({ error: message });

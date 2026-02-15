@@ -28,8 +28,15 @@ export type StepData = {
   summary: string;
 };
 
+export type RecipeSummary = {
+  servings: string;
+  prepTime: string;
+  cookTime: string;
+};
+
 export type RecipePayload = {
   recipeTitle: string;
+  recipeSummary: RecipeSummary;
   ingredients: Ingredient[];
   steps: StepData[];
 };
