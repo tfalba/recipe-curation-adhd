@@ -52,6 +52,14 @@ export default function App() {
   const getStepBaseTitle = (title: string) =>
     title.replace(/\s+\(part\s+\d+\)$/i, "").trim();
 
+  const withUpdatedNextPreviews = (currentSteps: typeof steps) =>
+    currentSteps.map((step, index) => ({
+      ...step,
+      nextPreview: currentSteps
+        .slice(index + 1, index + 4)
+        .map((nextStep) => nextStep.title),
+    }));
+
   const splitStepsIntoSmallerSteps = () => {
     const next = steps.flatMap((step) => {
       if (step.bullets.length <= 2) {
@@ -73,7 +81,7 @@ export default function App() {
       }));
     });
 
-    setSteps(next);
+    setSteps(withUpdatedNextPreviews(next));
     setSplitLongStepsApplied(true);
   };
 
@@ -149,7 +157,7 @@ export default function App() {
       grouped.push([step]);
     });
 
-    setSteps(grouped.flatMap(mergeGroup));
+    setSteps(withUpdatedNextPreviews(grouped.flatMap(mergeGroup)));
     setSplitLongStepsApplied(false);
   };
 
