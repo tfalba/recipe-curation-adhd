@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { useRecipe } from "../recipe/RecipeContext";
-import boilingVideo from "../assets/water-boiling.mp4";
 
 export default function InboxPanel() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -18,7 +17,7 @@ export default function InboxPanel() {
 
   const stripRtf = (rtf: string) => {
     const decoded = rtf.replace(/\\'[0-9a-fA-F]{2}/g, (match) =>
-      String.fromCharCode(parseInt(match.slice(2), 16))
+      String.fromCharCode(parseInt(match.slice(2), 16)),
     );
     return decoded
       .replace(/\\par[d]?/g, "\n")
@@ -33,7 +32,7 @@ export default function InboxPanel() {
   };
 
   const handleUploadChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) {
@@ -43,7 +42,8 @@ export default function InboxPanel() {
     setUploadError(null);
 
     const isPdf =
-      file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
     const isRtf = file.name.toLowerCase().endsWith(".rtf");
 
     if (isPdf) {
@@ -59,7 +59,9 @@ export default function InboxPanel() {
         if (!response.ok) {
           throw new Error(payload?.error || "Unable to parse PDF.");
         }
-        setRecipeText(typeof payload?.recipeText === "string" ? payload.recipeText : "");
+        setRecipeText(
+          typeof payload?.recipeText === "string" ? payload.recipeText : "",
+        );
       } catch (err) {
         const message = err instanceof Error ? err.message : "Upload failed.";
         setUploadError(message);
@@ -98,7 +100,9 @@ export default function InboxPanel() {
     >
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-muted">Inbox</p>
+          <p className="text-xs uppercase tracking-[0.25em] text-muted">
+            Inbox
+          </p>
           <h2 className="text-2xl font-display font-semibold">
             Paste a recipe. We build the guide.
           </h2>
@@ -139,18 +143,7 @@ export default function InboxPanel() {
         </div>
       ) : null}
       <div className="mt-6 rounded-2xl border border-border bg-surface-2 p-2">
-        {status === "loading" ? (
-          <div className="flex h-60 items-center justify-center overflow-hidden rounded-xl">
-            {/* <video
-              className="h-full w-full object-cover"
-              src={boilingVideo}
-              autoPlay
-              loop
-              muted
-              playsInline
-            /> */}
-          </div>
-        ) : (
+        {status === "loading" ? null : (
           <textarea
             className="h-60 w-full p-2 resize-none bg-transparent text-sm text-text focus:outline-none"
             placeholder="Paste recipe text here..."
@@ -173,7 +166,9 @@ export default function InboxPanel() {
           You can paste text, drop a URL, or upload a file.
         </p>
       )}
-      {uploadError ? <p className="mt-2 text-xs text-danger">{uploadError}</p> : null}
+      {uploadError ? (
+        <p className="mt-2 text-xs text-danger">{uploadError}</p>
+      ) : null}
       {error ? <p className="mt-2 text-xs text-danger">{error}</p> : null}
       <button
         onClick={generateFromText}

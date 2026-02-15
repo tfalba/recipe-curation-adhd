@@ -27,18 +27,8 @@ export default function ProcessingPanel() {
 
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
-      <div className="flex h-60 items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface-2">
-        <video
-          className="h-full w-full object-cover"
-          src={boilingVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-      </div>
       <div className="flex items-center justify-between gap-4">
-        <div className="mt-4">
+        <div>
           <p className="text-xs uppercase tracking-[0.25em] text-muted">
             Processing
           </p>
@@ -64,6 +54,16 @@ export default function ProcessingPanel() {
             </span>
           </div>
         ))}
+      </div>
+      <div className="flex h-72 mt-4 items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface-2">
+        <video
+          className="h-full w-full object-cover"
+          src={boilingVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
       </div>
     </section>
   );
