@@ -60,9 +60,9 @@
   --color-accent: #2b7609;
   --color-violet: #FF9800;
   --color-success: #3e9c6d;
-  --color-warning: #e9b949;
+  --color-warning: #673ab7;
   --color-danger: #e2504c;
-  --color-info: #5aa9e6;
+  --color-info: #2563eb;
   --shadow-panel: 0 12px 30px rgba(139, 103, 69, 0.18);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   --shadow-focus: 0 0 0 3px rgba(228, 87, 61, 0.35);

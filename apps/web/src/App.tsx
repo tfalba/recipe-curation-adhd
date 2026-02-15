@@ -318,10 +318,16 @@ export default function App() {
       )}
       <AppShell>
         <div className="mx-auto flex w-full max-w-6xl flex-col px-5 pb-20 pt-6 md:px-10">
-          {activeView === "cook" || activeView === "review" ? (
+          {activeView === "cook" ||
+          activeView === "review" ||
+          activeView === "library" ||
+          activeView === "settings" ? (
             <TopBar
               {...appShellProps}
               isCook={activeView === "cook"}
+              showSaveGuideActions={
+                activeView === "cook" || activeView === "review"
+              }
             />
           ) : null}
 

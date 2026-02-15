@@ -55,8 +55,8 @@ export default function LibraryPanel({
               <span
                 className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${
                   recipe.badge === "Saved"
-                    ? "bg-accent/20 text-accent"
-                    : "bg-violet/20 text-violet"
+                    ? "bg-info/20 text-info"
+                    : "bg-warning/20 text-warning"
                 }`}
               >
                 {recipe.badge}

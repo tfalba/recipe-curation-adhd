@@ -226,7 +226,7 @@ export default function ReviewPanel({
               className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4"
             >
               <div className="flex items-center gap-1">
-                <p className="text-base font-semibold text-primary">
+                <p className="text-base font-semibold text-accent">
                   Step {index + 1}:
                 </p>
 

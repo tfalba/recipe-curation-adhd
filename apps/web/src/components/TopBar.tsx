@@ -7,6 +7,7 @@ type TopBarProps = {
   focusMode: boolean;
   onToggleFocus: () => void;
   isCook: boolean;
+  showSaveGuideActions: boolean;
 };
 
 export default function TopBar({
@@ -15,6 +16,7 @@ export default function TopBar({
   focusMode,
   onToggleFocus,
   isCook,
+  showSaveGuideActions,
 }: TopBarProps) {
 
   const [saveNotice, setSaveNotice] = useState(false);
@@ -25,6 +27,7 @@ export default function TopBar({
     (recipe) => recipe.title === recipeTitle
   );
   const showSaveGuide =
+    showSaveGuideActions &&
     recipeSource === "generated" && status === "success" && !isRecipeSaved;
 
   const handleSaveGuide = () => {
@@ -60,16 +63,18 @@ export default function TopBar({
         ) : (
           null
         )}
-        <button
-          onClick={onToggleFocus}
-          className={`min-h-[44px] rounded-2xl border border-border px-4 text-sm font-semibold transition duration-quick ease-snappy ${
-            focusMode
-              ? "bg-accent/20 text-accent"
-              : "bg-surface-2 text-muted hover:text-text"
-          }`}
-        >
-          Focus
-        </button>
+        {isCook ? (
+          <button
+            onClick={onToggleFocus}
+            className={`min-h-[44px] rounded-2xl border border-border px-4 text-sm font-semibold transition duration-quick ease-snappy ${
+              focusMode
+                ? "bg-accent/20 text-accent"
+                : "bg-surface-2 text-muted hover:text-text"
+            }`}
+          >
+            Focus
+          </button>
+        ) : null}
         {showSaveGuide ? (
           <button
             onClick={handleSaveGuide}
