@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { BulletPart, Ingredient, RecipeSummary, StepData } from "./types";
 
 type ReviewPanelProps = {
@@ -32,6 +32,8 @@ export default function ReviewPanel({
   doubleRecipeEnabled,
   onToggleDoubleRecipe,
 }: ReviewPanelProps) {
+  const sectionRef = useRef<HTMLElement | null>(null);
+
   const timePattern = useMemo(
     () =>
       /\b\d+(?:\.\d+)?(?:\s*(?:-|to)\s*\d+(?:\.\d+)?)?\s*(?:hours?|hrs?|hr|minutes?|mins?|min|seconds?|secs?|sec)\b/gi,
@@ -199,8 +201,121 @@ export default function ReviewPanel({
     `Cook: ${recipeSummary.cookTime}`,
   ].filter((chip) => chip.trim().length > 0);
 
+  const bulletOrderByStep = useMemo(() => {
+    let runningIndex = 0;
+    return steps.map((step) =>
+      step.bullets.map(() => {
+        const current = runningIndex;
+        runningIndex += 1;
+        return current;
+      }),
+    );
+  }, [steps]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const root = document.documentElement;
+    const shouldReduceMotion =
+      root.classList.contains("reduce-motion") ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (shouldReduceMotion || !sectionRef.current) {
+      return;
+    }
+
+    const section = sectionRef.current;
+    const startY = window.scrollY;
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+    const sectionBottom = sectionTop + section.getBoundingClientRect().height;
+    const firstStepElement = section.querySelector<HTMLElement>(
+      '[data-review-step-index="0"]',
+    );
+    const firstStepTop = firstStepElement
+      ? firstStepElement.getBoundingClientRect().top + window.scrollY
+      : sectionTop + 24;
+    const returnTargetY = Math.max(0, firstStepTop - 20);
+    const targetY = Math.max(
+      startY,
+      Math.min(
+        sectionBottom - window.innerHeight + 24,
+        document.documentElement.scrollHeight - window.innerHeight,
+      ),
+    );
+
+    if (targetY <= startY + 4) {
+      return;
+    }
+
+    const bulletCount = steps.reduce((sum, step) => sum + step.bullets.length, 0);
+    const downDuration = Math.min(Math.max(1800, bulletCount * 220), 5200);
+    const returnDuration = Math.min(Math.max(950, bulletCount * 120), 2200);
+    const delayMs = 180;
+    let rafId = 0;
+    const timeoutIds: number[] = [];
+
+    const animate = (
+      fromY: number,
+      toY: number,
+      durationMs: number,
+      easing: (value: number) => number,
+      onComplete?: () => void,
+    ) => {
+      let startTs = 0;
+      const frame = (ts: number) => {
+        if (startTs === 0) {
+          startTs = ts;
+        }
+        const elapsed = ts - startTs;
+        const progress = Math.min(elapsed / durationMs, 1);
+        const eased = easing(progress);
+        window.scrollTo(0, fromY + (toY - fromY) * eased);
+        if (progress < 1) {
+          rafId = window.requestAnimationFrame(frame);
+          return;
+        }
+        onComplete?.();
+      };
+      rafId = window.requestAnimationFrame(frame);
+    };
+
+    const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
+    const easeOutBack = (value: number) => {
+      const overshoot = 1.1;
+      const shifted = value - 1;
+      return 1 + (overshoot + 1) * Math.pow(shifted, 3) + overshoot * Math.pow(shifted, 2);
+    };
+
+    const startDownwardScroll = () => {
+      animate(startY, targetY, downDuration, easeOutCubic, () => {
+        const bounceBackTimeout = window.setTimeout(() => {
+          const currentY = window.scrollY;
+          animate(currentY, returnTargetY, returnDuration, easeOutBack);
+        }, 220);
+        timeoutIds.push(bounceBackTimeout);
+      });
+    };
+
+    const startTimeout = window.setTimeout(() => {
+      startDownwardScroll();
+    }, delayMs);
+    timeoutIds.push(startTimeout);
+
+    return () => {
+      timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, [steps]);
+
   return (
-    <section className="rounded-3xl border border-border bg-surface p-6 shadow-panel">
+    <section
+      ref={sectionRef}
+      className="rounded-3xl border border-border bg-surface p-6 shadow-panel"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-muted">
@@ -235,10 +350,11 @@ export default function ReviewPanel({
           {steps.map((step, index) => (
             <div
               key={step.title}
+              data-review-step-index={index}
               className="rounded-2xl border border-border bg-surface-2 p-2 md:p-4"
             >
               <div className="flex items-center gap-1">
-                <p className="text-base font-semibold text-accent">
+                <p className="text-base font-semibold">
                   Step {index + 1}:
                 </p>
 
@@ -246,8 +362,14 @@ export default function ReviewPanel({
               </div>
 
               <ul className="mt-4 list-disc space-y-2 pl-4 text-sm text-muted">
-                {step.bullets.map((bullet, index) => (
-                  <li key={`${step.title}-bullet-${index}`}>
+                {step.bullets.map((bullet, bulletIndex) => (
+                  <li
+                    key={`${step.title}-bullet-${bulletIndex}`}
+                    className="review-line-reveal"
+                    style={{
+                      animationDelay: `${(bulletOrderByStep[index]?.[bulletIndex] ?? 0) * 140}ms`,
+                    }}
+                  >
                     {renderBulletParts(bullet.parts)}
                   </li>
                 ))}

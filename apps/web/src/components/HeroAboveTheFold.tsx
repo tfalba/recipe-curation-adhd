@@ -12,6 +12,12 @@ export function HeroAboveTheFold({
   onCreateNewGuide,
   onSeeExample,
 }: HeroAboveTheFoldProps) {
+  const heroFlow = [
+    { title: "Paste", desc: "Any recipe text" },
+    { title: "Review", desc: "Quick auto-fixes" },
+    { title: "Cook", desc: "One step per screen" },
+  ] as const;
+
   return (
     <section className="relative overflow-hidden bg-bg text-text">
       {/* Background image (Prompt 1) */}
@@ -28,8 +34,13 @@ export function HeroAboveTheFold({
               Built for focus in the kitchen
             </div>
 
-            <h1 className="font-display text-4xl md:text-6xl leading-tight">
-              Cook one clear step <span className="text-muted">at a time.</span>
+            <h1 className="hero-headline font-display text-4xl md:text-6xl leading-tight">
+              <span className="hero-headline-part" style={{ animationDelay: "20ms" }}>
+                Cook.
+              </span>{" "}
+              <span className="hero-headline-part text-muted" style={{ animationDelay: "180ms" }}>
+                One clear step at a time...
+              </span>
             </h1>
 
             <p className="text-lg md:text-xl text-text max-w-xl rounded-2xl bg-surface/70 px-4 py-3 shadow-panel backdrop-blur">
@@ -38,7 +49,7 @@ export function HeroAboveTheFold({
             </p>
 
             {/* Primary CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <div className="hero-cta-glow flex flex-col sm:flex-row gap-4 pt-2">
               <button
                 onClick={onCreateNewGuide}
                 className="h-[44px] px-6 rounded-2xl bg-primary text-white font-semibold shadow-panel hover:opacity-90 transition-normal"
@@ -62,14 +73,11 @@ export function HeroAboveTheFold({
             </div>
 
             <div className="pt-4 grid grid-cols-3 gap-3 max-w-xl">
-              {[
-                { title: "Paste", desc: "Any recipe text" },
-                { title: "Review", desc: "Quick auto-fixes" },
-                { title: "Cook", desc: "One step per screen" },
-              ].map((x) => (
+              {heroFlow.map((x, index) => (
                 <div
                   key={x.title}
-                  className="rounded-2xl border border-border bg-surface/70 p-4 shadow-panel backdrop-blur"
+                  className="hero-chip-cascade rounded-2xl border border-border bg-surface/70 p-4 shadow-panel backdrop-blur"
+                  style={{ animationDelay: `${index * 120}ms` }}
                 >
                   <div className="font-semibold">{x.title}</div>
                   <div className="text-sm text-muted mt-1">{x.desc}</div>

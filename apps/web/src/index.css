@@ -203,6 +203,93 @@ body {
   transform-style: preserve-3d;
 }
 
+@keyframes hero-chip-cascade {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.96);
+    filter: blur(4px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-headline-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(5px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-1px);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-cta-pulse {
+  0% {
+    box-shadow: 0 0 0 rgba(37, 99, 235, 0);
+  }
+  45% {
+    box-shadow:
+      0 0 0 1px rgba(37, 99, 235, 0.18),
+      0 0 32px rgba(37, 99, 235, 0.28);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+@keyframes review-line-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-headline {
+  text-wrap: balance;
+}
+
+.hero-headline-part {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hero-headline-reveal 1620ms cubic-bezier(0.2, 0.72, 0.22, 1) forwards;
+}
+
+.hero-chip-cascade {
+  opacity: 0;
+  transform: translateY(22px) scale(0.96);
+  animation: hero-chip-cascade 1680ms cubic-bezier(0.2, 0.72, 0.22, 1) forwards;
+}
+
+.hero-cta-glow button:first-child {
+  animation: hero-cta-pulse 1900ms ease-out 540ms 1 both;
+}
+
+.review-line-reveal {
+  opacity: 0;
+  animation: review-line-fade-in 460ms ease-out forwards;
+}
+
 .cook-instruction-card {
   position: relative;
   overflow: hidden;
@@ -224,8 +311,8 @@ body {
   border: inherit;
   background: linear-gradient(
       110deg,
-      rgba(248, 250, 252, 0.26) 0%,
-      rgba(248, 250, 252, 0.08) 26%,
+      rgba(17, 96, 176, 0.601) 0%,
+      rgba(53, 117, 182, 0.528) 26%,
       rgba(15, 23, 42, 0.2) 74%,
       rgba(15, 23, 42, 0.45) 100%
     ),
@@ -247,7 +334,30 @@ body {
     rgba(2, 6, 23, 0.08) 46%,
     rgba(248, 250, 252, 0.12)
   );
-  animation: cook-turn-shadow 900ms cubic-bezier(0.19, 0.72, 0.25, 1);
+  animation: cook-turn-shadow 1900ms cubic-bezier(0.19, 0.72, 0.25, 1);
+}
+
+.theme-light .cook-turn-page {
+  background: linear-gradient(
+      112deg,
+      rgba(255, 249, 236, 0.95) 0%,
+      rgba(246, 233, 200, 0.78) 34%,
+      rgba(228, 87, 61, 0.18) 72%,
+      rgba(100, 86, 75, 0.2) 100%
+    ),
+    rgba(255, 250, 237, 0.82);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    0 10px 24px rgba(139, 103, 69, 0.24);
+}
+
+.theme-light .cook-turn-page::after {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 103, 69, 0.22),
+    rgba(139, 103, 69, 0.08) 46%,
+    rgba(255, 255, 255, 0.38)
+  );
 }
 
 @keyframes cook-turn-shadow {
@@ -294,15 +404,39 @@ body {
 
 .cook-turn-page-next {
   transform-origin: left center;
-  animation: cook-turn-page-next 900ms cubic-bezier(0.19, 0.72, 0.25, 1);
+  animation: cook-turn-page-next 1900ms cubic-bezier(0.19, 0.72, 0.25, 1);
 }
 
 .cook-turn-page-prev {
   transform-origin: right center;
-  animation: cook-turn-page-prev 900ms cubic-bezier(0.19, 0.72, 0.25, 1);
+  animation: cook-turn-page-prev 1900ms cubic-bezier(0.19, 0.72, 0.25, 1);
 }
 
 .reduce-motion .cook-turn-page,
 .reduce-motion .cook-turn-page::after {
   animation: none;
+}
+
+.reduce-motion .hero-chip-cascade {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.reduce-motion .hero-cta-glow button:first-child {
+  animation: none;
+}
+
+.reduce-motion .hero-headline-part {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.reduce-motion .review-line-reveal {
+  opacity: 1;
+  animation: none;
+  transform: none;
 }
