@@ -1,4 +1,5 @@
 import backgroundHero from "../assets/genius-kitchen.jpg";
+import backgroundHero1 from "../assets/artsybee-digital-art.jpg";
 import backgroundHeroLight2 from "../assets/congerdesign-mushrooms-756406_1920.jpg";
 
 type HeroAboveTheFoldProps = {
@@ -23,7 +24,7 @@ export function HeroAboveTheFold({
       {/* Background image (Prompt 1) */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-80"
-        style={{ backgroundImage: `url(${themeMode === "dark" ? backgroundHero : backgroundHeroLight2})` }}
+        style={{ backgroundImage: `url(${themeMode === "dark" ? backgroundHero1 : backgroundHeroLight2})` }}
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-6xl px-6 py-14 md:py-20">
