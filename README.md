@@ -23,3 +23,10 @@ A web app that transforms pasted recipes into structured ingredients and step-by
 **API Endpoints**
 1. `POST /api/transform`: convert recipe text into structured ingredients + steps.
 2. `POST /api/parse`: upload a PDF and extract recipe text for the inbox.
+
+**Testing**
+1. Run web unit tests: `pnpm --filter web test`
+2. Web test modules:
+   - `apps/web/tests/recipeMath.test.ts`: quantity doubling + timer parsing/summing utilities.
+   - `apps/web/tests/timerAvailability.test.ts`: step timer enable/disable availability rules.
+3. Run web type check: `pnpm --filter web exec tsc -p tsconfig.app.json --noEmit`

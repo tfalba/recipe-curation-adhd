@@ -80,6 +80,71 @@ const looksLikeOther = (label: string) => {
   return OTHER_KEYWORDS.some((keyword) => normalized.includes(keyword));
 };
 
+const RECIPE_UNITS = [
+  "cup",
+  "cups",
+  "tbsp",
+  "tablespoon",
+  "tablespoons",
+  "tsp",
+  "teaspoon",
+  "teaspoons",
+  "oz",
+  "ounce",
+  "ounces",
+  "lb",
+  "pound",
+  "pounds",
+  "g",
+  "gram",
+  "grams",
+  "kg",
+  "ml",
+  "l",
+];
+
+const RECIPE_VERBS = [
+  "mix",
+  "stir",
+  "whisk",
+  "bake",
+  "boil",
+  "simmer",
+  "saute",
+  "chop",
+  "slice",
+  "preheat",
+  "season",
+  "marinate",
+  "roast",
+  "grill",
+  "fry",
+  "cook",
+];
+
+const looksLikeRecipeText = (input: string) => {
+  const text = input.toLowerCase();
+  const hasIngredientHeader = /\bingredients?\b/.test(text);
+  const hasInstructionHeader = /\b(instructions?|directions?|method)\b/.test(text);
+  const hasMeasurement = new RegExp(
+    `\\b\\d+(?:[./]\\d+)?\\s*(?:${RECIPE_UNITS.join("|")})\\b`,
+    "i"
+  ).test(text);
+  const hasCookingVerb = new RegExp(`\\b(?:${RECIPE_VERBS.join("|")})\\b`, "i").test(text);
+  const lineCount = input.split(/\n+/).filter((line) => line.trim().length > 0).length;
+  const wordCount = input.trim().split(/\s+/).filter(Boolean).length;
+
+  let score = 0;
+  if (hasIngredientHeader) score += 1;
+  if (hasInstructionHeader) score += 1;
+  if (hasMeasurement) score += 1;
+  if (hasCookingVerb) score += 1;
+  if (lineCount >= 4) score += 1;
+  if (wordCount >= 40) score += 1;
+
+  return score >= 3;
+};
+
 app.get("/health", (_req: Request, res: Response) => res.json({ ok: true }));
 
 app.post("/api/parse", upload.single("file"), async (req: Request, res: Response) => {
@@ -109,6 +174,12 @@ app.post("/api/transform", async (req: Request, res: Response) => {
     const recipeText = typeof req.body?.recipeText === "string" ? req.body.recipeText : null;
     if (!recipeText) {
       return res.status(400).json({ error: "recipeText is required" });
+    }
+    if (!looksLikeRecipeText(recipeText)) {
+      return res.status(400).json({
+        error:
+          "The input does not look like a recipe. Include ingredients and cooking steps, then try again.",
+      });
     }
 
     // Server-side OpenAI call so OPENAI_API_KEY never hits the client.

@@ -10,6 +10,9 @@ export default function InboxPanel() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const { recipeText, setRecipeText, generateFromText, status, error } =
     useRecipe();
+  const isRecipeFormatError =
+    typeof error === "string" &&
+    error.toLowerCase().includes("does not look like a recipe");
 
   const API_BASE =
     (import.meta.env.VITE_API_URL as string | undefined) ??
@@ -156,6 +159,20 @@ export default function InboxPanel() {
         <p className="mt-2 text-xs text-danger">{uploadError}</p>
       ) : null}
       {error ? <p className="mt-2 text-xs text-danger">{error}</p> : null}
+      {isRecipeFormatError ? (
+        <div className="mt-3 rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-xs text-text">
+          <p className="font-semibold text-warning">Try this format:</p>
+          <p className="mt-2 whitespace-pre-line text-muted">
+            Ingredients:
+            {"\n"}- 1 cup flour
+            {"\n"}- 2 eggs
+            {"\n\n"}Instructions:
+            {"\n"}1. Preheat oven to 350F.
+            {"\n"}2. Mix ingredients.
+            {"\n"}3. Bake 25 minutes.
+          </p>
+        </div>
+      ) : null}
       <button
         onClick={generateFromText}
         disabled={status === "loading" || uploading}
