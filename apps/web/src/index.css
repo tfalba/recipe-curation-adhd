@@ -6,16 +6,16 @@
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-focus: 0 0 0 3px rgba(226, 62, 54, 0.52);
   --shadow-glow: 0 0 24px rgba(245, 87, 64, 0.26);
-  --color-bg: #1a0d0d;
-  --color-surface: #261313;
-  --color-surface-2: #331919;
+  --color-bg: #6b002a;
+  --color-surface: #75002c;
+  --color-surface-2: #65012d;
   --color-border: #4d2424;
   --color-text: #fff3f1;
   --color-muted: #e4bbb5;
 
-  --color-primary: #d63b2f;
+  --color-primary: #b70333;
   --color-accent: #f06a4f;
-  --color-violet: #b53d3d;
+  --color-violet: #a83281;
 
   --color-success: #e27562;
   --color-warning: #f0a05e;
@@ -25,6 +25,7 @@
 
 :root {
   color-scheme: dark;
+  
   --hero-radial-1: radial-gradient(
     900px 620px at 12% -8%,
     rgba(124, 58, 237, 0.68),
@@ -47,6 +48,26 @@
     rgba(255, 255, 255, 0.02)
   );
 }
+/* 
+.theme-dark {
+  color-scheme: dark ;
+    --color-bg: #1a0d0d;
+  --color-surface: #261313;
+  --color-surface-2: #331919;
+  --color-border: #4d2424;
+  --color-text: #fff3f1;
+  --color-muted: #e4bbb5;
+
+  --color-primary: #d63b2f;
+  --color-accent: #f06a4f;
+  --color-violet: #b53d3d;
+
+  --color-success: #e27562;
+  --color-warning: #f0a05e;
+  --color-danger: #ff6d5e;
+  --color-info: #ff987d;
+} */
+
 
 .theme-light {
   color-scheme: light;
@@ -96,24 +117,23 @@
   --shadow-panel: 0 12px 30px rgba(0, 0, 0, 0.45);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-focus: 0 0 0 3px rgba(226, 62, 54, 0.52);
-  --shadow-glow: 0 0 0 1px rgba(245, 87, 64, 0.28),
-    0 0 24px rgba(245, 87, 64, 0.16);
-  --shadow-contrast: 0 0 0 3px rgba(255, 156, 131, 0.58);
-  --color-bg: rgb(26, 13, 13);
-  --color-surface: rgb(38, 19, 19);
-  --color-surface-2: rgb(51, 25, 25);
-  --color-border: rgb(77, 36, 36);
-  --color-text: rgb(255, 243, 241);
-  --color-muted: rgb(228, 187, 181);
-
+  --shadow-glow: 0 0 24px rgba(245, 87, 64, 0.26);
+  --color-bg: #6b002a;
+  --color-surface: #6d1034;
+  --color-surface-2: #650129;
+  --color-border: #4d2424;
+  --color-text: #fff3f1;
+  --color-muted: #e4bbb5;
   --color-primary: rgb(214, 59, 47);
-  --color-accent: rgb(240, 106, 79);
-  --color-violet: rgb(181, 61, 61);
 
-  --color-success: rgb(226, 117, 98);
-  --color-warning: rgb(240, 160, 94);
-  --color-danger: rgb(255, 109, 94);
-  --color-info: rgb(255, 152, 125);
+  --color-primary: #b70333;
+  --color-accent: #86f763;
+  --color-violet: #a83281;
+
+  --color-success: #e27562;
+  --color-warning: #f0a05e;
+  --color-danger: #ff6d5e;
+  --color-info: #ff987d;
 
   --hero-radial-1: radial-gradient(
     900px 620px at 10% -12%,
