@@ -42,6 +42,7 @@ type RecipeContextValue = {
   error: string | null;
   generateFromText: () => Promise<void>;
   saveCurrentRecipe: () => boolean;
+  deleteSavedRecipe: (title: string) => void;
   applyRecipe: (recipe: {
     title: string;
     recipeSummary?: RecipeSummary;
@@ -212,6 +213,19 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     return true;
   }, [recipeTitle, recipeSummary, steps, ingredients]);
 
+  const deleteSavedRecipe = useCallback((title: string) => {
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle) {
+      return;
+    }
+
+    setSavedRecipes((current) => {
+      const next = current.filter((recipe) => recipe.title !== normalizedTitle);
+      window.localStorage.setItem("saved-recipes", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const value = useMemo<RecipeContextValue>(
     () => ({
       recipeText,
@@ -231,6 +245,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       error,
       generateFromText,
       saveCurrentRecipe,
+      deleteSavedRecipe,
       applyRecipe: (recipe) => {
         setRecipeTitle(recipe.title);
         setRecipeSummary(normalizeRecipeSummary(recipe.recipeSummary));
@@ -277,6 +292,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       error,
       generateFromText,
       saveCurrentRecipe,
+      deleteSavedRecipe,
     ]
   );
 

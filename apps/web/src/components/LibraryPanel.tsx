@@ -12,7 +12,7 @@ export default function LibraryPanel({
   onSelectRecipeCook,
   onCreateNewGuide,
 }: LibraryPanelProps) {
-  const { applyRecipe, savedRecipes } = useRecipe();
+  const { applyRecipe, savedRecipes, deleteSavedRecipe } = useRecipe();
   const savedTitles = new Set(savedRecipes.map((recipe) => recipe.title));
   const allRecipes = [
     ...savedRecipes.map((recipe) => ({
@@ -83,6 +83,23 @@ export default function LibraryPanel({
                 Cook
               </button>
             </div>
+            {recipe.badge === "Saved" ? (
+              <button
+                type="button"
+                onClick={() => {
+                  const shouldDelete = window.confirm(
+                    `Delete "${recipe.title}" from saved recipes?`
+                  );
+                  if (!shouldDelete) {
+                    return;
+                  }
+                  deleteSavedRecipe(recipe.title);
+                }}
+                className="mt-3 min-h-[32px] w-full rounded-full border border-danger/50 bg-danger/15 px-3 text-xs font-semibold text-danger transition duration-quick ease-snappy hover:bg-danger/25"
+              >
+                Delete
+              </button>
+            ) : null}
           </div>
         ))}
       </div>
