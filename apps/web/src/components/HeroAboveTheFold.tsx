@@ -1,4 +1,3 @@
-import backgroundHero from "../assets/genius-kitchen.jpg";
 import backgroundHero1 from "../assets/artsybee-digital-art.jpg";
 import backgroundHeroLight2 from "../assets/congerdesign-mushrooms-756406_1920.jpg";
 
