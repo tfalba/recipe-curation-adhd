@@ -168,7 +168,6 @@ app.post("/api/parse", upload.single("file"), async (req: Request, res: Response
   }
 });
 
-// Minimal placeholder endpoint — you’ll replace schema/prompting in Codex
 app.post("/api/transform", async (req: Request, res: Response) => {
   try {
     const recipeText = typeof req.body?.recipeText === "string" ? req.body.recipeText : null;

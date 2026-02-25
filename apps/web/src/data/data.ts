@@ -780,34 +780,12 @@ export const stepsBananaBread: StepData[] = stepsBananaBreadRaw.map((step) => ({
         }
     ];
 
-// export const recipeTitleBananaBread = "Banana Bread";
-
 const normalizedShrimpCurry = normalizeRecipePayload(recipeShrimpCurry);
 const normalizedLadyfingers = normalizeRecipePayload(recipeLadyfingers);
 const normalizedClaypotRice = normalizeRecipePayload(recipeClaypotRice);
 const normalizedBananaBread = normalizeRecipePayload(bananaBreadRecipe);
 
 export const libraryRecipes = [
-//   {
-//     title: recipeTitleBananaBread,
-//     steps: stepsBananaBread,
-//     ingredients: ingredientsBananaBread,
-//   },
-//   {
-//     title: recipeTitleLemonChicken,
-//     steps: stepsLemonChicken,
-//     ingredients: ingredientsLemonChicken,
-//   },
-//   {
-//     title: recipeTitleMisoNoodles,
-//     steps: stepsMisoNoodles,
-//     ingredients: ingredientsMisoNoodles,
-//   },
-//   {
-//     title: recipeTitleSheetPanSalmon,
-//     steps: stepsSheetPanSalmon,
-//     ingredients: ingredientsSheetPanSalmon,
-//   },
   {
     title: normalizedShrimpCurry.recipeTitle,
     recipeSummary: normalizedShrimpCurry.recipeSummary,
