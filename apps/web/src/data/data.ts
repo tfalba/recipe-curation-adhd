@@ -6,6 +6,7 @@ import type {
   StepData,
 } from "../components/types";
 import { bananaBreadRecipe } from "./bananaBread";
+import { chickenPotPie } from "./chickenPotPie";
 import { recipeClaypotRice } from "./claypotRice";
 import { recipeLadyfingers } from "./ladyfingers";
 import { recipeShrimpCurry } from "./shrimpCurry";
@@ -784,8 +785,15 @@ const normalizedShrimpCurry = normalizeRecipePayload(recipeShrimpCurry);
 const normalizedLadyfingers = normalizeRecipePayload(recipeLadyfingers);
 const normalizedClaypotRice = normalizeRecipePayload(recipeClaypotRice);
 const normalizedBananaBread = normalizeRecipePayload(bananaBreadRecipe);
+const normalizedChickenPotPie = normalizeRecipePayload(chickenPotPie);
 
 export const libraryRecipes = [
+  {
+    title: normalizedChickenPotPie.recipeTitle,
+    recipeSummary: normalizedChickenPotPie.recipeSummary,
+    steps: normalizedChickenPotPie.steps,
+    ingredients: normalizedChickenPotPie.ingredients,
+  },
   {
     title: normalizedShrimpCurry.recipeTitle,
     recipeSummary: normalizedShrimpCurry.recipeSummary,
